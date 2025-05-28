@@ -65,11 +65,13 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     && apt-get clean
 
 # create document root, fix permissions for www-data user and change owner to www-data
-RUN mkdir -p $APP_HOME/public && \
-    mkdir -p /home/$USERNAME && chown $USERNAME:$USERNAME /home/$USERNAME \
-    && usermod -o -u $HOST_UID $USERNAME -d /home/$USERNAME \
-    && groupmod -o -g $HOST_GID $USERNAME \
-    && chown -R ${USERNAME}:${USERNAME} $APP_HOME
+RUN if [ "$(id -u $USERNAME)" = "0" ]; then \
+        deluser $USERNAME; \
+        addgroup --system --gid 33 $USERNAME; \
+        adduser --system --uid 33 --ingroup $USERNAME $USERNAME; \
+    fi && \
+    mkdir -p $APP_HOME/public /home/$USERNAME && \
+    chown -R $USERNAME:$USERNAME /home/$USERNAME $APP_HOME
 
 # put php config for Symfony
 COPY ./docker/$BUILD_ARGUMENT_ENV/www.conf /usr/local/etc/php-fpm.d/www.conf
