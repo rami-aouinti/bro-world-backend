@@ -1,0 +1,81 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/html
+    machine:
+        image: ubuntu-2204:2023.04.2
+    branches:
+        ignore:
+          - develop
+    steps:
+      - checkout
+
+      - run:
+          name: Prepare and start containers and verify it's working
+          command: |
+            chmod 777 var/elasticsearch-data
+            make start-test
+
+      - run:
+          name: Wait for DB container is running and initialize DB & messenger component / cron / elastic
+          command: |
+            make wait-for-db
+            make drop-migrate
+            make generate-jwt-keys
+            make create-roles-groups
+            make migrate-cron-jobs
+            make messenger-setup-transports
+            make wait-for-elastic
+            make elastic-create-or-update-template
+
+      - run:
+          name: Show framework version and additional info, php & composer version
+          command: |
+            make info
+
+      - run:
+          name: Run unit/application tests
+          command: |
+            make phpunit
+
+      - run:
+          name: Report code coverage
+          command: |
+            make report-code-coverage
+
+      - run:
+          name: Checks for security vulnerability advisories for installed packages
+          command: |
+            make composer-audit
+
+      - run:
+          name: Check coding standard & CodeSniffer
+          command: |
+            make ecs
+            make phpcs
+
+      - run:
+          name: Run PHPStan
+          command: |
+            make phpstan
+
+      - run:
+          name: Run PHPInsights
+          command: |
+            make phpinsights
+
+      - run:
+          name: Run PHP Mess Detector
+          command: |
+            make phpmd
+
+      - run:
+          name: Run PHP copy paste detector
+          command: |
+            make phpcpd
+
+      - store_artifacts:
+          path: reports
+
+      - store_test_results:
+          path: reports

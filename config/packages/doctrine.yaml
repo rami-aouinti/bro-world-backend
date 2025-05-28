@@ -1,0 +1,117 @@
+doctrine:
+    dbal:
+        # configure these for your database server
+        default_connection: default
+        connections:
+            default:
+                driver: 'pdo_mysql'
+                server_version: '%env(resolve:MYSQL_VERSION)%'
+                charset: utf8mb4
+                default_table_options:
+                    charset: utf8mb4
+                    collate: utf8mb4_unicode_ci
+                # https://symfony.com/doc/current/messenger.html#doctrine-transport
+                schema_filter: '~^(?!messenger_messages)~'
+                url: '%env(resolve:DATABASE_URL)%'
+                mapping_types:
+                    enum: string
+                profiling_collect_backtrace: '%kernel.debug%'
+                use_savepoints: true
+        types:
+            datetime: App\General\Domain\Doctrine\DBAL\Types\UTCDateTimeType
+            datetimetz: App\General\Domain\Doctrine\DBAL\Types\UTCDateTimeType
+            EnumLanguage: App\General\Domain\Doctrine\DBAL\Types\EnumLanguageType
+            EnumLocale: App\General\Domain\Doctrine\DBAL\Types\EnumLocaleType
+            EnumLogLogin: App\General\Domain\Doctrine\DBAL\Types\EnumLogLoginType
+
+    orm:
+        auto_generate_proxy_classes: true
+        enable_lazy_ghost_objects: true
+        default_entity_manager: default
+        controller_resolver:
+            auto_mapping: false
+        entity_managers:
+            default:
+                naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+                auto_mapping: true
+                report_fields_where_declared: true
+                validate_xml_mapping: true
+                connection: default
+                mappings:
+                    ApiKey:
+                        type: attribute
+                        is_bundle: false
+                        dir: '%kernel.project_dir%/src/ApiKey/Domain/Entity'
+                        prefix: 'App\ApiKey\Domain\Entity'
+                        alias: ApiKey
+                    DateDimension:
+                        type: attribute
+                        is_bundle: false
+                        dir: '%kernel.project_dir%/src/DateDimension/Domain/Entity'
+                        prefix: 'App\DateDimension\Domain\Entity'
+                        alias: DateDimension
+                    General:
+                        type: attribute
+                        is_bundle: false
+                        dir: '%kernel.project_dir%/src/General/Domain/Entity'
+                        prefix: 'App\General\Domain\Entity'
+                        alias: General
+                    Log:
+                        type: attribute
+                        is_bundle: false
+                        dir: '%kernel.project_dir%/src/Log/Domain/Entity'
+                        prefix: 'App\Log\Domain\Entity'
+                        alias: Log
+                    Role:
+                        type: attribute
+                        is_bundle: false
+                        dir: '%kernel.project_dir%/src/Role/Domain/Entity'
+                        prefix: 'App\Role\Domain\Entity'
+                        alias: Role
+                    Tool:
+                        type: attribute
+                        is_bundle: false
+                        dir: '%kernel.project_dir%/src/Tool/Domain/Entity'
+                        prefix: 'App\Tool\Domain\Entity'
+                        alias: Tool
+                    User:
+                        type: attribute
+                        is_bundle: false
+                        dir: '%kernel.project_dir%/src/User/Domain/Entity'
+                        prefix: 'App\User\Domain\Entity'
+                        alias: User
+                dql:
+                    datetime_functions:
+                        datesub: DoctrineExtensions\Query\Mysql\DateSub
+                        now: DoctrineExtensions\Query\Mysql\Now
+                    string_functions:
+                        uuid_o_t_to_bin: App\General\Infrastructure\DQL\UuidOTToBin
+                        bin_to_uuid_o_t: App\General\Infrastructure\DQL\BinToUuidOT
+
+when@prod: &not-dev
+    doctrine:
+        dbal:
+            logging: false
+        orm:
+            auto_generate_proxy_classes: false
+            proxy_dir: '%kernel.build_dir%/doctrine/orm/Proxies'
+            query_cache_driver:
+                type: pool
+                pool: doctrine.system_cache_pool
+            result_cache_driver:
+                type: pool
+                pool: doctrine.result_cache_pool
+    framework:
+        cache:
+            pools:
+                doctrine.result_cache_pool:
+                    adapter: cache.app
+                doctrine.system_cache_pool:
+                    adapter: cache.system
+
+when@staging: *not-dev
+
+when@test:
+    doctrine:
+        dbal:
+            logging: false

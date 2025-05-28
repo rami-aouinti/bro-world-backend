@@ -1,0 +1,78 @@
+image: docker:latest
+
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+  GITLAB_CI: 1
+
+services:
+  - docker:dind
+
+before_script:
+  - apk update
+  - apk upgrade
+  - apk add --no-cache make bash docker-compose && rm -rf /var/cache/apk/*
+
+stages:
+  - build
+  - deploy
+
+.general_scripts: &general_scripts
+  - make info
+
+build:
+  stage: build
+  script:
+    - chmod 777 var/elasticsearch-data
+    - make build-test
+    - make start-test
+    - docker ps -a
+    - make wait-for-db
+    - make drop-migrate
+    - make generate-jwt-keys
+    - make create-roles-groups
+    - make migrate-cron-jobs
+    - make messenger-setup-transports
+    - make wait-for-elastic
+    - make elastic-create-or-update-template
+    - *general_scripts
+    - make phpunit
+    - make composer-audit
+    - make ecs
+    - make phpcs
+    - make phpstan
+    - make phpinsights
+    - make phpmd
+    - make phpcpd
+    - make stop-test
+  artifacts:
+    paths:
+      - reports/
+  only:
+    - merge_requests
+    - tags
+    - master
+    - develop
+
+push_staging_images:
+  stage: deploy
+  script:
+    - make build-staging
+    # TODO: set necessary image name in compose-staging.yaml according to your registry and edit lines bellow
+    #- docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    #- docker compose -f compose-staging.yaml push
+  only:
+    - master
+    - develop
+    - /^release.*$/
+
+push_prod_images:
+  stage: deploy
+  script:
+    - make build-prod
+    # TODO: set necessary image name in compose-prod.yaml according to your registry and edit lines bellow
+    #- docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    #- docker compose -f compose-prod.yaml push
+  only:
+    - master
+    - /^release.*$/
