@@ -31,7 +31,7 @@
 		}
 	],
 	"require": {
-		"php": "^8.4.0",
+		"php": "^8.3.0",
 		"ext-amqp": "*",
 		"ext-ctype": "*",
 		"ext-iconv": "*",
@@ -126,7 +126,7 @@
 	"config": {
 		"allow-plugins": true,
 		"platform": {
-			"php": "8.4.0"
+			"php": "8.3.0"
 		},
 		"preferred-install": {
 			"*": "dist"
