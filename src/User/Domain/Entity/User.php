@@ -13,6 +13,11 @@ use App\General\Domain\Enum\Locale;
 use App\Tool\Domain\Service\Interfaces\LocalizationServiceInterface;
 use App\User\Domain\Entity\Interfaces\UserGroupAwareInterface;
 use App\User\Domain\Entity\Interfaces\UserInterface;
+use App\User\Domain\Entity\Socials\FacebookUser;
+use App\User\Domain\Entity\Socials\GithubUser;
+use App\User\Domain\Entity\Socials\GoogleUser;
+use App\User\Domain\Entity\Socials\InstagramUser;
+use App\User\Domain\Entity\Socials\LinkedInUser;
 use App\User\Domain\Entity\Traits\Blameable;
 use App\User\Domain\Entity\Traits\UserRelations;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -42,6 +47,16 @@ use Throwable;
 #[ORM\ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 #[AssertCollection\UniqueEntity('email')]
 #[AssertCollection\UniqueEntity('username')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'auth_provider', type: 'string')]
+#[ORM\DiscriminatorMap([
+    'local' => User::class,
+    'google' => GoogleUser::class,
+    'github' => GithubUser::class,
+    'facebook' => FacebookUser::class,
+    'instagram' => InstagramUser::class,
+    'linkedIn' => LinkedInUser::class,
+])]
 class User implements EntityInterface, UserInterface, UserGroupAwareInterface
 {
     use Blameable;
@@ -234,6 +249,9 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
      */
     private string $plainPassword = '';
 
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $verificationToken = null;
+
     /**
      * @throws Throwable
      */
@@ -255,6 +273,11 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
     public function getId(): string
     {
         return $this->id->toString();
+    }
+
+    public function setId(UuidInterface $id): void
+    {
+        $this->id = $id;
     }
 
     #[Override]
@@ -370,6 +393,18 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
         }
 
         return $this;
+    }
+
+    public function setVerificationToken(?string $verificationToken): self
+    {
+        $this->verificationToken = $verificationToken;
+
+        return $this;
+    }
+
+    public function getVerificationToken(): ?string
+    {
+        return $this->verificationToken;
     }
 
     /**

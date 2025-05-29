@@ -103,6 +103,21 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         return $cache[$username] instanceof Entity ? $cache[$username] : null;
     }
 
+    public function generateUsername(string $email): string
+    {
+        $baseUsername = strstr($email, '@', true);
+        $baseUsername = preg_replace('/[^a-zA-Z0-9]/', '_', $baseUsername);
+
+        $username = $baseUsername;
+        $counter = 1;
+        while (!$this->isUsernameAvailable($username)) {
+            $username = $baseUsername . '_' . $counter;
+            $counter++;
+        }
+
+        return $username;
+    }
+
     /**
      * @param string $column Column to check
      * @param string $value Value of specified column
