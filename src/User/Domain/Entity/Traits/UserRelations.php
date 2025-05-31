@@ -11,6 +11,7 @@ use App\User\Domain\Entity\Follow;
 use App\User\Domain\Entity\Story;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Entity\UserGroup;
+use App\User\Domain\Entity\UserProfile;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -21,26 +22,21 @@ use Symfony\Component\Serializer\Annotation\Groups;
  */
 trait UserRelations
 {
+    #[ORM\OneToOne(mappedBy: 'user', targetEntity: UserProfile::class, cascade: ['persist', 'remove'])]
+    #[Groups([
+        'User.profile',
 
-    #[ORM\OneToMany(
-        mappedBy: 'user',
-        targetEntity: Story::class,
-        cascade: ['persist', 'remove']
-    )]
+        User::SET_USER_PROFILE,
+    ])]
+    private ?UserProfile $profile = null;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Story::class)]
     private Collection $stories;
 
-    #[ORM\OneToMany(
-        mappedBy: 'follower',
-        targetEntity: Follow::class,
-        cascade: ['persist', 'remove']
-    )]
+    #[ORM\OneToMany(mappedBy: 'follower', targetEntity: Follow::class)]
     private Collection $followings;
 
-    #[ORM\OneToMany(
-        mappedBy: 'followed',
-        targetEntity: Follow::class,
-        cascade: ['persist', 'remove']
-    )]
+    #[ORM\OneToMany(mappedBy: 'followed', targetEntity: Follow::class)]
     private Collection $followers;
 
     /**

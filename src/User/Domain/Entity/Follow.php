@@ -32,12 +32,12 @@ class Follow implements EntityInterface
     #[ORM\GeneratedValue(strategy: 'NONE')]
     private UuidInterface $id;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(name: 'follower_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'followings')]
+    #[ORM\JoinColumn(nullable: false)]
     private User $follower;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(name: 'followed_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'followers')]
+    #[ORM\JoinColumn(nullable: false)]
     private User $followed;
 
     /**

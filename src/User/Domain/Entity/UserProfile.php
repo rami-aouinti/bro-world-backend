@@ -27,7 +27,7 @@ class UserProfile
     private UuidInterface $id;
 
     #[ORM\OneToOne(inversedBy: 'profile', targetEntity: User::class)]
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]

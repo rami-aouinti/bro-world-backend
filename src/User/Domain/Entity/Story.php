@@ -33,8 +33,8 @@ class Story implements EntityInterface
     #[Groups(['Story', 'Story.id'])]
     private UuidInterface $id;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'stories')]
+    #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
     #[ORM\Column(type: 'string', length: 255)]
