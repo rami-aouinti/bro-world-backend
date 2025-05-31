@@ -193,7 +193,7 @@ readonly class UserService
         } catch (FileException $e) {
             return new JsonResponse(['error' => $e->getMessage()], 500);
         }
-        $baseUrl = $request->getSchemeAndHttpHost(); // https://bro-world.org
+        $baseUrl = $request->getSchemeAndHttpHost();
         $relativePath = '/uploads/stories/' . $newFilename;
         $mediaPath = $baseUrl . $relativePath;
 
