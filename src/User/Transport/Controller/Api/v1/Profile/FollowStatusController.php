@@ -37,7 +37,7 @@ readonly class FollowStatusController
      * @return JsonResponse
      */
     #[Route(
-        path: '/v1/follow/status/{id}',
+        path: '/v1/follow/status/{user}',
         methods: [Request::METHOD_GET],
     )]
     #[IsGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY)]
