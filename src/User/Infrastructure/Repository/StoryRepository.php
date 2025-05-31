@@ -11,6 +11,7 @@ use App\User\Domain\Entity\User;
 use App\User\Domain\Repository\Interfaces\StoryRepositoryInterface;
 use DateTimeImmutable;
 use Doctrine\Persistence\ManagerRegistry;
+use Ramsey\Uuid\Doctrine\UuidBinaryOrderedTimeType;
 
 /**
  * @package App\Story
@@ -52,18 +53,33 @@ class StoryRepository extends BaseRepository implements StoryRepositoryInterface
             ->where('(f.follower = :user OR s.user = :user)')
             ->andWhere('s.expiresAt > :now')
             ->orderBy('s.createdAt', 'DESC')
-            ->setParameters([
-                'user' => $user,
-                'now' => new DateTimeImmutable(),
-            ]);
+            ->setParameter('user' , $user->getId(), UuidBinaryOrderedTimeType::NAME)
+            ->setParameter('now' , new DateTimeImmutable());
 
+        /** @var Entity[] $stories */
         $stories = $qb->getQuery()->getResult();
 
-        return array_map(fn(Entity $s) => [
-            'id' => $s->getId(),
-            'mediaPath' => $s->getMediaPath(),
-            'user' => $s->getUser()->getUsername(),
-            'expiresAt' => $s->getExpiresAt()->format('Y-m-d H:i:s'),
-        ], $stories);
+        $grouped = [];
+
+        foreach ($stories as $story) {
+            $user = $story->getUser();
+            $userId = $user->getId();
+
+            if (!isset($grouped[$userId])) {
+                $grouped[$userId] = [
+                    'userId' => $userId,
+                    'username' => $user->getUsername(),
+                    'stories' => [],
+                ];
+            }
+
+            $grouped[$userId]['stories'][] = [
+                'id' => $story->getId(),
+                'mediaPath' => $story->getMediaPath(),
+                'expiresAt' => $story->getExpiresAt()->format('Y-m-d H:i:s'),
+            ];
+        }
+
+        return array_values($grouped);
     }
 }

@@ -34,7 +34,7 @@ class Story implements EntityInterface
     private UuidInterface $id;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'stories')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
     private User $user;
 
     #[ORM\Column(type: 'string', length: 255)]
