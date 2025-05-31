@@ -193,11 +193,14 @@ readonly class UserService
         } catch (FileException $e) {
             return new JsonResponse(['error' => $e->getMessage()], 500);
         }
+        $baseUrl = $request->getSchemeAndHttpHost(); // https://bro-world.org
+        $relativePath = '/uploads/stories/' . $newFilename;
+        $mediaPath = $baseUrl . $relativePath;
 
-        $story = new Story($user, '/uploads/stories/' . $newFilename);
+        $story = new Story($user, $mediaPath);
 
         $this->storyRepository->save($story);
-        $this->mercureService->create($user->getUsername(), 'story');
+        //$this->mercureService->create($user->getUsername(), 'story');
 
         return $story;
     }
