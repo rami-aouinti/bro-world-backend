@@ -38,6 +38,7 @@ class Story implements EntityInterface
     private User $user;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['Story', 'Story.mediaPath'])]
     private string $mediaPath;
 
     #[ORM\Column(type: 'datetime_immutable')]

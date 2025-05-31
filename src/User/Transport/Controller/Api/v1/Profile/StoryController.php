@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\User\Transport\Controller\Api\v1\Profile;
 
+use App\General\Domain\Utils\JSON;
 use App\User\Application\Service\UserService;
 use App\User\Domain\Entity\User;
 use JsonException;
@@ -15,6 +16,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 use Throwable;
 
 /**
@@ -25,6 +27,7 @@ use Throwable;
 readonly class StoryController
 {
     public function __construct(
+        private SerializerInterface $serializer,
         private UserService $userService
     ) {
     }
@@ -47,6 +50,20 @@ readonly class StoryController
     #[IsGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY)]
     public function __invoke(User $loggedInUser, Request $request): JsonResponse
     {
-        return new JsonResponse($this->userService->uploadStory($loggedInUser, $request));
+        $story = $this->userService->uploadStory($loggedInUser, $request);
+
+        /** @var array<string, string|array<string, string>> $output */
+        $output = JSON::decode(
+            $this->serializer->serialize(
+                $story,
+                'json',
+                [
+                    'groups' => 'Story',
+                ]
+            ),
+            true,
+        );
+
+        return new JsonResponse($output);
     }
 }
