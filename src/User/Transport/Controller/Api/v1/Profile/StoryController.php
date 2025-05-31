@@ -57,9 +57,6 @@ readonly class StoryController
             $this->serializer->serialize(
                 $story,
                 'json',
-                [
-                    'groups' => User::SET_USER_PROFILE,
-                ]
             ),
             true,
         );
