@@ -46,17 +46,15 @@ class StoryRepository extends BaseRepository implements StoryRepositoryInterface
      */
     public function availableStories(User $user): array
     {
-        $qb = $this->createQueryBuilder();
+        $qb = $this->createQueryBuilder('s');
 
-        $qb->select('s')
-            ->from(Entity::class, 's')
-            ->join(Follow::class, 'f', 'WITH', 'f.followed = s.user')
+        $qb->join(Follow::class, 'f', 'WITH', 'f.followed = s.user')
             ->where('f.follower = :user')
             ->andWhere('s.expiresAt > :now')
             ->orderBy('s.createdAt', 'DESC')
             ->setParameters([
                 'user' => $user,
-                'now' => new DateTimeImmutable(),
+                'now' => new \DateTimeImmutable(),
             ]);
 
         $stories = $qb->getQuery()->getResult();
