@@ -57,6 +57,9 @@ readonly class UnfollowController
         $follow = $this->followRepository->findOneBy([
             'follower' => $loggedInUser,
             'followed' => $user,
+        ]) ?? $this->followRepository->findOneBy([
+            'follower' => $user,
+            'followed' => $loggedInUser,
         ]);
 
         if (!$follow) {
@@ -65,15 +68,6 @@ readonly class UnfollowController
 
         $this->followRepository->remove($follow);
 
-        /** @var array<string, string|array<string, string>> $output */
-        $output = JSON::decode(
-            $this->serializer->serialize(
-                'User unfollowed',
-                'json'
-            ),
-            true,
-        );
-
-        return new JsonResponse($output);
+        return new JsonResponse(true);
     }
 }
