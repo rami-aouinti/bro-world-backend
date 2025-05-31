@@ -191,7 +191,7 @@ readonly class UserService
                 $newFilename
             );
         } catch (FileException $e) {
-            return new JsonResponse(['error' => 'Failed to upload file.'], 500);
+            return new JsonResponse(['error' => $e->getMessage()], 500);
         }
 
         $story = new Story($user, '/uploads/stories/' . $newFilename);
