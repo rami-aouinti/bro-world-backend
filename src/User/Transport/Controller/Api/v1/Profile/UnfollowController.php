@@ -40,8 +40,6 @@ readonly class UnfollowController
      * @param User $loggedInUser
      * @param User $user
      *
-     * @throws ExceptionInterface
-     * @throws JsonException
      * @throws NotSupported
      * @throws ORMException
      * @throws OptimisticLockException
