@@ -54,7 +54,7 @@ class StoryRepository extends BaseRepository implements StoryRepositoryInterface
             ->orderBy('s.createdAt', 'DESC')
             ->setParameters([
                 'user' => $user,
-                'now' => new \DateTimeImmutable(),
+                'now' => new DateTimeImmutable(),
             ]);
 
         $stories = $qb->getQuery()->getResult();
