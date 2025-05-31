@@ -83,7 +83,7 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
         'LogLogin.user',
         'LogLoginFailure.user',
         'LogRequest.user',
-
+        'Story',
         'UserGroup.users',
 
         self::SET_USER_PROFILE,
