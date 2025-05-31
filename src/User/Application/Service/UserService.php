@@ -175,7 +175,7 @@ readonly class UserService
      */
     public function uploadStory(User $user, Request $request): Story|JsonResponse
     {
-        $file = $request->files->get('media');
+        $file = $request->files->get('file');
 
         if (!$file) {
             return new JsonResponse(['error' => 'No file uploaded.'], 400);
