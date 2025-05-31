@@ -49,7 +49,7 @@ readonly class FollowController
      * @return JsonResponse
      */
     #[Route(
-        path: '/v1/follow/{id}',
+        path: '/v1/follow/{user}',
         methods: [Request::METHOD_POST],
     )]
     #[IsGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY)]

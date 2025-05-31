@@ -50,7 +50,7 @@ readonly class UnfollowController
      * @return JsonResponse
      */
     #[Route(
-        path: '/v1/unfollow/{id}',
+        path: '/v1/unfollow/{user}',
         methods: [Request::METHOD_DELETE],
     )]
     #[IsGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY)]
