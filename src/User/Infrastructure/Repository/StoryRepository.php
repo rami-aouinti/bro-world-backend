@@ -49,12 +49,13 @@ class StoryRepository extends BaseRepository implements StoryRepositoryInterface
     {
         $qb = $this->createQueryBuilder('s');
 
-        $qb->leftJoin(Follow::class, 'f', 'WITH', 'f.followed = s.user')
+        $qb
+            ->leftJoin(Follow::class, 'f1', 'WITH', 'f1.followed = s.user AND f1.follower = :user')
             ->where('s.expiresAt > :now')
-            ->andWhere('(f.follower = :user OR s.user = :user)')
+            ->andWhere('f1.id IS NOT NULL OR s.user = :user')
             ->orderBy('s.createdAt', 'DESC')
             ->setParameter('user', $user->getId(), UuidBinaryOrderedTimeType::NAME)
-            ->setParameter('now', new \DateTimeImmutable());
+            ->setParameter('now', new DateTimeImmutable());
 
         /** @var Entity[] $stories */
         $stories = $qb->getQuery()->getResult();
@@ -62,13 +63,13 @@ class StoryRepository extends BaseRepository implements StoryRepositoryInterface
         $grouped = [];
 
         foreach ($stories as $story) {
-            $user = $story->getUser();
-            $userId = $user->getId();
+            $storyUser = $story->getUser();
+            $userId = $storyUser->getId();
 
             if (!isset($grouped[$userId])) {
                 $grouped[$userId] = [
                     'userId' => $userId,
-                    'username' => $user->getUsername(),
+                    'username' => $storyUser->getUsername(),
                     'stories' => [],
                 ];
             }
