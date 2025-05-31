@@ -50,11 +50,11 @@ class StoryRepository extends BaseRepository implements StoryRepositoryInterface
         $qb = $this->createQueryBuilder('s');
 
         $qb->leftJoin(Follow::class, 'f', 'WITH', 'f.followed = s.user')
-            ->where('(f.follower = :user OR s.user = :user)')
-            ->andWhere('s.expiresAt > :now')
+            ->where('s.expiresAt > :now')
+            ->andWhere('(f.follower = :user OR s.user = :user)')
             ->orderBy('s.createdAt', 'DESC')
-            ->setParameter('user' , $user->getId(), UuidBinaryOrderedTimeType::NAME)
-            ->setParameter('now' , new DateTimeImmutable());
+            ->setParameter('user', $user->getId(), UuidBinaryOrderedTimeType::NAME)
+            ->setParameter('now', new \DateTimeImmutable());
 
         /** @var Entity[] $stories */
         $stories = $qb->getQuery()->getResult();
