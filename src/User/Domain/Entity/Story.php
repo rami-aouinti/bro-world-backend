@@ -35,6 +35,7 @@ class Story implements EntityInterface
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'stories')]
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
+    #[Groups(['Story', 'Story.user'])]
     private User $user;
 
     #[ORM\Column(type: 'string', length: 255)]
