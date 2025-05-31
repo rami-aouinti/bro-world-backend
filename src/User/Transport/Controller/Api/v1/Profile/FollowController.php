@@ -8,7 +8,6 @@ use App\General\Domain\Utils\JSON;
 use App\User\Domain\Entity\Follow;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Repository\Interfaces\FollowRepositoryInterface;
-use App\User\Domain\Repository\Interfaces\UserRepositoryInterface;
 use Doctrine\ORM\Exception\NotSupported;
 use JsonException;
 use OpenApi\Attributes as OA;
@@ -31,7 +30,6 @@ readonly class FollowController
 {
     public function __construct(
         private SerializerInterface $serializer,
-        private UserRepositoryInterface $userRepository,
         private FollowRepositoryInterface $followRepository
     ) {
     }
@@ -55,7 +53,7 @@ readonly class FollowController
     #[IsGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY)]
     public function __invoke(User $loggedInUser, User $user): JsonResponse
     {
-        $existing = $this->userRepository->findOneBy([
+        $existing = $this->followRepository->findOneBy([
             'follower' => $loggedInUser,
             'followed' => $user,
         ]);

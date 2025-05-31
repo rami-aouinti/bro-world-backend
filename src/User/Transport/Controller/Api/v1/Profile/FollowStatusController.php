@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\User\Transport\Controller\Api\v1\Profile;
 
 use App\User\Domain\Entity\User;
-use App\User\Domain\Repository\Interfaces\UserRepositoryInterface;
+use App\User\Domain\Repository\Interfaces\FollowRepositoryInterface;
 use Doctrine\ORM\Exception\NotSupported;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,7 +23,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 readonly class FollowStatusController
 {
     public function __construct(
-        private UserRepositoryInterface $userRepository
+        private FollowRepositoryInterface $followRepository
     ) {
     }
 
@@ -43,10 +43,10 @@ readonly class FollowStatusController
     #[IsGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY)]
     public function __invoke(User $loggedInUser, User $user): JsonResponse
     {
-        return new JsonResponse((bool) $this->userRepository->findOneBy([
+        return new JsonResponse((bool) $this->followRepository->findOneBy([
             'follower' => $loggedInUser,
             'followed' => $user,
-        ]) ?? $this->userRepository->findOneBy([
+        ]) ?? $this->followRepository->findOneBy([
             'follower' => $user,
             'followed' => $loggedInUser,
         ]));

@@ -7,7 +7,6 @@ namespace App\User\Transport\Controller\Api\v1\Profile;
 use App\General\Domain\Utils\JSON;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Repository\Interfaces\FollowRepositoryInterface;
-use App\User\Domain\Repository\Interfaces\UserRepositoryInterface;
 use Doctrine\ORM\Exception\NotSupported;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
@@ -31,7 +30,6 @@ readonly class UnfollowController
 {
     public function __construct(
         private SerializerInterface $serializer,
-        private UserRepositoryInterface $userRepository,
         private FollowRepositoryInterface $followRepository
     ) {
     }
@@ -56,7 +54,7 @@ readonly class UnfollowController
     #[IsGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY)]
     public function __invoke(User $loggedInUser, User $user): JsonResponse
     {
-        $follow = $this->userRepository->findOneBy([
+        $follow = $this->followRepository->findOneBy([
             'follower' => $loggedInUser,
             'followed' => $user,
         ]);
