@@ -6,17 +6,23 @@ namespace App\User\Application\Service;
 
 use App\General\Domain\Enum\Language;
 use App\General\Domain\Enum\Locale;
+use App\General\Infrastructure\Service\MercureService;
 use App\User\Application\Resource\UserResource;
 use App\User\Application\Service\Interfaces\UserCacheServiceInterface;
+use App\User\Domain\Entity\Story;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Message\UserCreatedMessage;
 use App\User\Domain\Repository\Interfaces\UserRepositoryInterface;
+use App\User\Infrastructure\Repository\StoryRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use Throwable;
 
 /**
@@ -28,8 +34,12 @@ readonly class UserService
     public function __construct(
         private UserResource $userResource,
         private UserRepositoryInterface $userRepository,
+        private StoryRepository $storyRepository,
         private UserCacheServiceInterface $userCacheService,
-        private MessageBusInterface $bus
+        private SluggerInterface $slugger,
+        private MessageBusInterface $bus,
+        private MercureService $mercureService,
+        private string $storiesDirectory
     ) {
     }
 
@@ -154,5 +164,41 @@ readonly class UserService
         }
 
         return true;
+    }
+
+    /**
+     * @param User    $user
+     * @param Request $request
+     *
+     * @throws Throwable
+     * @return Story|JsonResponse
+     */
+    public function uploadStory(User $user, Request $request): Story|JsonResponse
+    {
+        $file = $request->files->get('media');
+
+        if (!$file) {
+            return new JsonResponse(['error' => 'No file uploaded.'], 400);
+        }
+
+        $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $safeFilename = $this->slugger->slug($originalFilename);
+        $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
+
+        try {
+            $file->move(
+                $this->storiesDirectory,
+                $newFilename
+            );
+        } catch (FileException $e) {
+            return new JsonResponse(['error' => 'Failed to upload file.'], 500);
+        }
+
+        $story = new Story($user, '/uploads/stories/' . $newFilename);
+
+        $this->storyRepository->save($story);
+        $this->mercureService->create($user->getUsername(), 'story');
+
+        return $story;
     }
 }

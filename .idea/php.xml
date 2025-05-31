@@ -438,6 +438,8 @@
       <path value="$PROJECT_DIR$/tools/10_phpcpd/vendor/sebastian/version" />
       <path value="$PROJECT_DIR$/tools/10_phpcpd/vendor/phpunit/php-timer" />
       <path value="$PROJECT_DIR$/vendor/symfony/mailjet-mailer" />
+      <path value="$PROJECT_DIR$/vendor/symfony/mercure-bundle" />
+      <path value="$PROJECT_DIR$/vendor/symfony/mercure" />
     </include_path>
   </component>
   <component name="PhpInterpreters">

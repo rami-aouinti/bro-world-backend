@@ -264,6 +264,9 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
         $this->logsRequest = new ArrayCollection();
         $this->logsLogin = new ArrayCollection();
         $this->logsLoginFailure = new ArrayCollection();
+        $this->stories = new ArrayCollection();
+        $this->followings = new ArrayCollection();
+        $this->followers = new ArrayCollection();
     }
 
     /**

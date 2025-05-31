@@ -7,6 +7,8 @@ namespace App\User\Domain\Entity\Traits;
 use App\Log\Domain\Entity\LogLogin;
 use App\Log\Domain\Entity\LogLoginFailure;
 use App\Log\Domain\Entity\LogRequest;
+use App\User\Domain\Entity\Follow;
+use App\User\Domain\Entity\Story;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Entity\UserGroup;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -19,6 +21,28 @@ use Symfony\Component\Serializer\Annotation\Groups;
  */
 trait UserRelations
 {
+
+    #[ORM\OneToMany(
+        mappedBy: 'user',
+        targetEntity: Story::class,
+        cascade: ['persist', 'remove']
+    )]
+    private Collection $stories;
+
+    #[ORM\OneToMany(
+        mappedBy: 'follower',
+        targetEntity: Follow::class,
+        cascade: ['persist', 'remove']
+    )]
+    private Collection $followings;
+
+    #[ORM\OneToMany(
+        mappedBy: 'followed',
+        targetEntity: Follow::class,
+        cascade: ['persist', 'remove']
+    )]
+    private Collection $followers;
+
     /**
      * @var Collection<int, UserGroup>|ArrayCollection<int, UserGroup>
      */
@@ -154,6 +178,30 @@ trait UserRelations
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Story>
+     */
+    public function getStories(): Collection
+    {
+        return $this->stories;
+    }
+
+    /**
+     * @return Collection<int, Follow>
+     */
+    public function getFollowings(): Collection
+    {
+        return $this->followings;
+    }
+
+    /**
+     * @return Collection<int, Follow>
+     */
+    public function getFollowers(): Collection
+    {
+        return $this->followers;
     }
 
     /**
