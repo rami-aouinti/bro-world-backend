@@ -50,7 +50,7 @@ class StoryRepository extends BaseRepository implements StoryRepositoryInterface
         $qb = $this->createQueryBuilder('s');
 
         $qb
-            ->leftJoin(Follow::class, 'f1', 'WITH', 'f1.followed = s.user AND f1.follower = :user')
+            ->leftJoin(Follow::class, 'f1', 'WITH', 'f1.followed = s.user OR f1.follower = :user')
             ->where('s.expiresAt > :now')
             ->andWhere('f1.id IS NOT NULL OR s.user = :user')
             ->orderBy('s.createdAt', 'DESC')
