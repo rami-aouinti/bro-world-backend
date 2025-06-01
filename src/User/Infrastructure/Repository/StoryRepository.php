@@ -47,36 +47,29 @@ class StoryRepository extends BaseRepository implements StoryRepositoryInterface
      */
     public function availableStories(User $user): array
     {
-        // Récupérer les IDs des utilisateurs suivis
-        $conn = $this->managerRegistry->getConnection();
-        $sql = 'SELECT followed_id FROM follow WHERE follower_id = :userId';
-        $stmt = $conn->prepare($sql);
-        $followedUserIds = array_column($stmt->executeQuery(['userId' => $user->getId()])->fetchAllAssociative(), 'followed_id');
-
-        // Ajouter l'utilisateur lui-même
-        $followedUserIds[] = $user->getId();
-
-        // Requête principale : les stories de tous les utilisateurs suivis + soi-même
         $qb = $this->createQueryBuilder('s');
-        $qb->where('s.expiresAt > :now')
-            ->andWhere('s.user IN (:users)')
+
+        $qb
+            ->leftJoin(Follow::class, 'f1', 'WITH', 'f1.followed = s.user AND f1.follower = :user')
+            ->where('s.expiresAt > :now')
+            ->andWhere('f1.id IS NOT NULL OR s.user = :user')
             ->orderBy('s.createdAt', 'DESC')
-            ->setParameter('now', new \DateTimeImmutable())
-            ->setParameter('users', $followedUserIds);
+            ->setParameter('user', $user->getId(), UuidBinaryOrderedTimeType::NAME)
+            ->setParameter('now', new DateTimeImmutable());
 
         /** @var Entity[] $stories */
         $stories = $qb->getQuery()->getResult();
 
-        // Regrouper par utilisateur
         $grouped = [];
+
         foreach ($stories as $story) {
-            $owner = $story->getUser();
-            $userId = $owner->getId();
+            $storyUser = $story->getUser();
+            $userId = $storyUser->getId();
 
             if (!isset($grouped[$userId])) {
                 $grouped[$userId] = [
                     'userId' => $userId,
-                    'username' => $owner->getUsername(),
+                    'username' => $storyUser->getUsername(),
                     'stories' => [],
                 ];
             }
