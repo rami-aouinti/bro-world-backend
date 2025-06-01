@@ -47,30 +47,15 @@ class StoryRepository extends BaseRepository implements StoryRepositoryInterface
      */
     public function availableStories(User $user): array
     {
-        $relatedUsers = [];
-
-        foreach ($user->getFollowers() as $follower) {
-            $relatedUsers[] = $follower->getFollower();
-        }
-
-        foreach ($user->getFollowings() as $following) {
-            $relatedUsers[] = $following->getFollowed();
-        }
-
-        $relatedUsers[] = $user;
-
-        $uniqueUserIds = array_unique(array_map(
-            fn(User $u) => $u->getId(),
-            $relatedUsers
-        ));
-
         $qb = $this->createQueryBuilder('s');
 
-        $qb->where('s.expiresAt > :now')
-            ->andWhere('s.user IN (:userIds)')
+        $qb
+            ->leftJoin(Follow::class, 'f1', 'WITH', 'f1.followed = s.user OR f1.follower = :user')
+            ->where('s.expiresAt > :now')
+            ->andWhere('f1.id IS NOT NULL OR s.user = :user')
             ->orderBy('s.createdAt', 'DESC')
-            ->setParameter('now', new \DateTimeImmutable())
-            ->setParameter('userIds', $uniqueUserIds, UuidBinaryOrderedTimeType::NAME);
+            ->setParameter('user', $user->getId(), UuidBinaryOrderedTimeType::NAME)
+            ->setParameter('now', new DateTimeImmutable());
 
         /** @var Entity[] $stories */
         $stories = $qb->getQuery()->getResult();
