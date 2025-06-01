@@ -70,7 +70,7 @@ class StoryRepository extends BaseRepository implements StoryRepositoryInterface
             ->andWhere('s.user IN (:userIds)')
             ->orderBy('s.createdAt', 'DESC')
             ->setParameter('now', new \DateTimeImmutable())
-            ->setParameter('userIds', $uniqueUserIds);
+            ->setParameter('userIds', $uniqueUserIds, UuidBinaryOrderedTimeType::NAME);
 
         /** @var Entity[] $stories */
         $stories = $qb->getQuery()->getResult();
