@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\User\Domain\Entity\Socials;
 
 use App\User\Domain\Entity\User;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -15,32 +16,53 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity]
 class GithubUser extends User
 {
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups([
-        'GithubUser',
-        'GithubUser.githubId',
-
-        self::SET_USER_PROFILE,
-    ])]
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $githubId = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups([
-        'GithubUser',
-        'GithubUser.avatarUrl',
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $login = null;
 
-        self::SET_USER_PROFILE,
-    ])]
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $nodeId = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $avatarUrl = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups([
-        'GithubUser',
-        'GithubUser.profileUrl',
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $gravatarId = null;
 
-        self::SET_USER_PROFILE,
-    ])]
-    private ?string $profileUrl = null;
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $htmlUrl = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $company = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $blog = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $location = null;
+
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private ?bool $hireable = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $bio = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $twitterUsername = null;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $publicRepos = null;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $publicGists = null;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?DateTimeInterface $githubCreatedAt = null;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?DateTimeInterface $githubUpdatedAt = null;
 
     public function getGithubId(): ?string
     {
@@ -50,6 +72,26 @@ class GithubUser extends User
     public function setGithubId(?string $githubId): void
     {
         $this->githubId = $githubId;
+    }
+
+    public function getLogin(): ?string
+    {
+        return $this->login;
+    }
+
+    public function setLogin(?string $login): void
+    {
+        $this->login = $login;
+    }
+
+    public function getNodeId(): ?string
+    {
+        return $this->nodeId;
+    }
+
+    public function setNodeId(?string $nodeId): void
+    {
+        $this->nodeId = $nodeId;
     }
 
     public function getAvatarUrl(): ?string
@@ -62,13 +104,123 @@ class GithubUser extends User
         $this->avatarUrl = $avatarUrl;
     }
 
-    public function getProfileUrl(): ?string
+    public function getGravatarId(): ?string
     {
-        return $this->profileUrl;
+        return $this->gravatarId;
     }
 
-    public function setProfileUrl(?string $profileUrl): void
+    public function setGravatarId(?string $gravatarId): void
     {
-        $this->profileUrl = $profileUrl;
+        $this->gravatarId = $gravatarId;
+    }
+
+    public function getHtmlUrl(): ?string
+    {
+        return $this->htmlUrl;
+    }
+
+    public function setHtmlUrl(?string $htmlUrl): void
+    {
+        $this->htmlUrl = $htmlUrl;
+    }
+
+    public function getCompany(): ?string
+    {
+        return $this->company;
+    }
+
+    public function setCompany(?string $company): void
+    {
+        $this->company = $company;
+    }
+
+    public function getBlog(): ?string
+    {
+        return $this->blog;
+    }
+
+    public function setBlog(?string $blog): void
+    {
+        $this->blog = $blog;
+    }
+
+    public function getLocation(): ?string
+    {
+        return $this->location;
+    }
+
+    public function setLocation(?string $location): void
+    {
+        $this->location = $location;
+    }
+
+    public function getHireable(): ?bool
+    {
+        return $this->hireable;
+    }
+
+    public function setHireable(?bool $hireable): void
+    {
+        $this->hireable = $hireable;
+    }
+
+    public function getBio(): ?string
+    {
+        return $this->bio;
+    }
+
+    public function setBio(?string $bio): void
+    {
+        $this->bio = $bio;
+    }
+
+    public function getTwitterUsername(): ?string
+    {
+        return $this->twitterUsername;
+    }
+
+    public function setTwitterUsername(?string $twitterUsername): void
+    {
+        $this->twitterUsername = $twitterUsername;
+    }
+
+    public function getPublicRepos(): ?int
+    {
+        return $this->publicRepos;
+    }
+
+    public function setPublicRepos(?int $publicRepos): void
+    {
+        $this->publicRepos = $publicRepos;
+    }
+
+    public function getPublicGists(): ?int
+    {
+        return $this->publicGists;
+    }
+
+    public function setPublicGists(?int $publicGists): void
+    {
+        $this->publicGists = $publicGists;
+    }
+
+    public function getGithubCreatedAt(): ?DateTimeInterface
+    {
+        return $this->githubCreatedAt;
+    }
+
+    public function setGithubCreatedAt(?DateTimeInterface $githubCreatedAt): void
+    {
+        $this->githubCreatedAt = $githubCreatedAt;
+    }
+
+    public function getGithubUpdatedAt(): ?DateTimeInterface
+    {
+        return $this->githubUpdatedAt;
+    }
+
+    public function setGithubUpdatedAt(?DateTimeInterface $githubUpdatedAt): void
+    {
+        $this->githubUpdatedAt = $githubUpdatedAt;
     }
 }

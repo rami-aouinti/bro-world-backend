@@ -6,12 +6,11 @@ namespace App\User\Transport\Controller\Api\v1\Auth;
 
 use App\General\Domain\Enum\Language;
 use App\General\Domain\Enum\Locale;
-use App\General\Domain\Utils\JSON;
+use App\User\Application\ApiProxy\UserProxy;
 use App\User\Application\Resource\UserResource;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Message\UserCreatedMessage;
 use App\User\Domain\Repository\Interfaces\UserRepositoryInterface;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\NotSupported;
 use Doctrine\ORM\NonUniqueResultException;
 use JsonException;
@@ -34,11 +33,10 @@ use Throwable;
 readonly class UserGithubExistController
 {
     public function __construct(
-        private SerializerInterface $serializer,
         private UserResource $userResource,
         private UserRepositoryInterface $userRepository,
         private MessageBusInterface $bus,
-        private EntityManagerInterface $entityManager
+        private UserProxy $userProxy
     )
     {
     }
@@ -65,9 +63,9 @@ readonly class UserGithubExistController
         $userRequest = $request->request->all();
         $user = $this->userRepository->findOneBy([
             'email' => $userRequest['email'],
-            'githubId' => $userRequest['githubId']
+            'githubId' => $userRequest['id']
         ]);
-
+        $result = [];
         if(!$user) {
             $user = $this->userRepository->findOneBy([
                 'email' => $userRequest['email']
@@ -75,33 +73,31 @@ readonly class UserGithubExistController
             if($user) {
                 $user->setGithubId($userRequest['githubId']);
                 $user->setAvatar($userRequest['avatar_url']);
-                $this->entityManager->persist($user);
-                $this->entityManager->flush();
+                $user = $this->userResource->save($user, true, true);
             } else {
                 $acceptLanguage = $request->headers->get('Accept-Language', 'en');
-                $entity = $this->generateUser($userRequest['email'], $userRequest['githubId'] . $this->userRepository->generateUsername($userRequest['email']), $acceptLanguage);
-                $entity->setGithubId($userRequest['githubId']);
-                $entity->setAvatar($userRequest['avatar']);
+                $entity = $this->generateUser($userRequest['email'], $userRequest['id'] . $this->userRepository->generateUsername($userRequest['email']), $acceptLanguage);
+                $entity->setGithubId($userRequest['id']);
+                $entity->setAvatar($userRequest['avatar_url']);
                 $user = $this->userResource->save($entity, true, true);
                 $this->bus->dispatch(new UserCreatedMessage(
                     $user->getId(),
                     $request->request->all(),
                     $request->headers->get('Accept-Language', 'en')));
             }
+        } else {
+            $user->setPlainPassword('github-' . $userRequest['id']);
+            $user = $this->userResource->save($user, true, true);
         }
-        /** @var array<string, string|array<string, string>> $output */
-        $output = JSON::decode(
-            $this->serializer->serialize(
-                $user,
-                'json',
-                [
-                    'groups' => User::SET_USER_PROFILE,
-                ]
-            ),
-            true,
-        );
 
-        return new JsonResponse($output);
+        $token = $this->userProxy->login(
+            $user->getEmail(),
+            'github-' . $userRequest['id']
+        );
+        $result['token'] = $token['token'];
+        $result['profile'] = $this->userProxy->profile($token['token']);
+
+        return new JsonResponse($result);
     }
 
     /**

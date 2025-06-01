@@ -6,12 +6,11 @@ namespace App\User\Transport\Controller\Api\v1\Auth;
 
 use App\General\Domain\Enum\Language;
 use App\General\Domain\Enum\Locale;
-use App\General\Domain\Utils\JSON;
+use App\User\Application\ApiProxy\UserProxy;
 use App\User\Application\Resource\UserResource;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Message\UserCreatedMessage;
 use App\User\Domain\Repository\Interfaces\UserRepositoryInterface;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\NotSupported;
 use Doctrine\ORM\NonUniqueResultException;
 use JsonException;
@@ -23,7 +22,6 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Serializer\SerializerInterface;
 use Throwable;
 
 /**
@@ -34,11 +32,10 @@ use Throwable;
 readonly class UserGoogleExistController
 {
     public function __construct(
-        private SerializerInterface $serializer,
         private UserResource $userResource,
         private UserRepositoryInterface $userRepository,
         private MessageBusInterface $bus,
-        private EntityManagerInterface $entityManager
+        private UserProxy $userProxy
     )
     {
     }
@@ -66,44 +63,42 @@ readonly class UserGoogleExistController
 
         $user = $this->userRepository->findOneBy([
             'email' => $userRequest['email'],
-            'googleId' => $userRequest['googleId']
+            'googleId' => $userRequest['id']
         ]);
+        $result = [];
 
         if(!$user) {
             $user = $this->userRepository->findOneBy([
                 'email' => $userRequest['email']
             ]);
             if($user) {
-                $user->setGoogleId($userRequest['googleId']);
-                $user->setAvatar($userRequest['avatar']);
-                $this->entityManager->persist($user);
-                $this->entityManager->flush();
+                $user->setGoogleId($userRequest['id']);
+                $user->setAvatar($userRequest['picture']);
+                $user = $this->userResource->save($user, true, true);
             } else {
                 $acceptLanguage = $request->headers->get('Accept-Language', 'en');
-                $entity = $this->generateUser($userRequest['email'], $userRequest['googleId'] . $this->userRepository->generateUsername($userRequest['email']), $acceptLanguage);
-                $entity->setGoogleId($userRequest['googleId']);
-                $entity->setAvatar($userRequest['avatar']);
+                $entity = $this->generateUser($userRequest['email'], $userRequest['id'] . $this->userRepository->generateUsername($userRequest['email']), $acceptLanguage);
+                $entity->setGoogleId($userRequest['id']);
+                $entity->setAvatar($userRequest['picture']);
                 $user = $this->userResource->save($entity, true, true);
                 $this->bus->dispatch(new UserCreatedMessage(
                     $user->getId(),
                     $request->request->all(),
                     $request->headers->get('Accept-Language', 'en')));
             }
+        } else {
+            $user->setPlainPassword('google-' . $userRequest['id']);
+            $user = $this->userResource->save($user, true, true);
         }
 
-        /** @var array<string, string|array<string, string>> $output */
-        $output = JSON::decode(
-            $this->serializer->serialize(
-                $user,
-                'json',
-                [
-                    'groups' => User::SET_USER_PROFILE,
-                ]
-            ),
-            true,
+        $token = $this->userProxy->login(
+            $user->getEmail(),
+            'google-' . $userRequest['id']
         );
+        $result['token'] = $token['token'];
+        $result['profile'] = $this->userProxy->profile($token['token']);
 
-        return new JsonResponse($output);
+        return new JsonResponse($result);
     }
 
     /**

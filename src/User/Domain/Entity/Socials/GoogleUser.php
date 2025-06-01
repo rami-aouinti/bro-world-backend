@@ -15,45 +15,94 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity]
 class GoogleUser extends User
 {
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups([
-        'GoogleUser',
-        'GoogleUser.googleId',
-
-        self::SET_USER_PROFILE,
-    ])]
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $googleId = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups([
-        'GoogleUser',
-        'GoogleUser.avatarUrl',
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private ?bool $verifiedEmail = null;
 
-        self::SET_USER_PROFILE,
-    ])]
-    private ?string $avatarUrl = null;
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $name = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $givenName = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $familyName = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $picture = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $hd = null;
 
     public function getGoogleId(): ?string
     {
         return $this->googleId;
     }
 
-    public function setGoogleId(?string $googleId): self
+    public function setGoogleId(?string $googleId): void
     {
         $this->googleId = $googleId;
-
-        return $this;
     }
 
-    public function getAvatarUrl(): ?string
+    public function getVerifiedEmail(): ?bool
     {
-        return $this->avatarUrl;
+        return $this->verifiedEmail;
     }
 
-    public function setAvatarUrl(?string $avatarUrl): self
+    public function setVerifiedEmail(?bool $verifiedEmail): void
     {
-        $this->avatarUrl = $avatarUrl;
+        $this->verifiedEmail = $verifiedEmail;
+    }
 
-        return $this;
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(?string $name): void
+    {
+        $this->name = $name;
+    }
+
+    public function getGivenName(): ?string
+    {
+        return $this->givenName;
+    }
+
+    public function setGivenName(?string $givenName): void
+    {
+        $this->givenName = $givenName;
+    }
+
+    public function getFamilyName(): ?string
+    {
+        return $this->familyName;
+    }
+
+    public function setFamilyName(?string $familyName): void
+    {
+        $this->familyName = $familyName;
+    }
+
+    public function getPicture(): ?string
+    {
+        return $this->picture;
+    }
+
+    public function setPicture(?string $picture): void
+    {
+        $this->picture = $picture;
+    }
+
+    public function getHd(): ?string
+    {
+        return $this->hd;
+    }
+
+    public function setHd(?string $hd): void
+    {
+        $this->hd = $hd;
     }
 }
