@@ -80,38 +80,38 @@ readonly class UpdateController
             $profile = new UserProfile($loggedInUser);
         }
 
-        if($file) {
+        if(isset($file)) {
             $mediaPath = $this->userService->uploadPhoto($file, $request);
             $profile->setPhoto($mediaPath);
         }
 
-        if($user['firstName']) {
+        if(isset($user['firstName'])) {
             $loggedInUser->setFirstName($user['firstName']);
         }
-        if($user['lastName']) {
+        if(isset($user['lastName'])) {
             $loggedInUser->setLastName($user['lastName']);
         }
 
-        if($user['title']) {
+        if(isset($user['title'])) {
             $profile->setTitle($user['title']);
         }
 
-        if($user['description']) {
+        if(isset($user['description'])) {
             $profile->setDescription($user['description']);
         }
 
-        if($user['gender']) {
+        if(isset($user['gender'])) {
             $profile->setGender($user['gender']);
         }
-        if($user['phone']) {
+        if(isset($user['phone'])) {
             $profile->setPhone($user['phone']);
         }
 
-        if($user['address']) {
+        if(isset($user['address'])) {
             $profile->setAddress($user['address']);
         }
 
-        if($user['birthday']) {
+        if(isset($user['birthday'])) {
             $profile->setBirthday($user['birthday']);
         }
 
