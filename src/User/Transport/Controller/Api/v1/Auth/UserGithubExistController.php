@@ -94,7 +94,7 @@ readonly class UserGithubExistController
                         $googleUserRepository = $this->entityManager->getRepository(GoogleUser::class);
                         $googleRepo = $googleUserRepository->findOneBy(['email' => $user->getEmail()]);
 
-                        $googleRepo->setAuthProvider('');
+                        $googleRepo->setAuthProvider('github');
                         $this->entityManager->persist($googleRepo);
                         $this->entityManager->flush();
 
@@ -103,11 +103,21 @@ readonly class UserGithubExistController
                     }
                     $githubRepo->setPlainPassword($githubId . $userRequest['email']);
                     $githubRepo->setGithubId($githubId);
+                    $githubRepo->setHtmlUrl($userRequest['html_url']);
+                    $githubRepo->setBio($userRequest['bio']);
+                    $githubRepo->setBlog($userRequest['blog']);
+                    $githubRepo->setCompany($userRequest['company']);
+                    $githubRepo->setPublicRepos($userRequest['repos_url']);
                     $githubRepo->setAvatarUrl($userRequest['avatar_url']);
                     $this->githubRepository->save($githubRepo);
                 } else {
                     $githubUser = new GithubUser();
                     $githubUser->setGithubId($githubId);
+                    $githubUser->setHtmlUrl($userRequest['html_url']);
+                    $githubUser->setBio($userRequest['bio']);
+                    $githubUser->setBlog($userRequest['blog']);
+                    $githubUser->setCompany($userRequest['company']);
+                    $githubUser->setPublicRepos($userRequest['repos_url']);
                     $githubUser->setAvatarUrl($userRequest['avatar_url']);
 
                     $acceptLanguage = $request->headers->get('Accept-Language', 'en');

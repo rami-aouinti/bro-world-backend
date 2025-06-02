@@ -98,7 +98,7 @@ readonly class UserGoogleExistController
                         $googleUserRepository = $this->entityManager->getRepository(GithubUser::class);
                         $googleRepo = $googleUserRepository->findOneBy(['email' => $user->getEmail()]);
 
-                        $googleRepo->setAuthProvider('');
+                        $googleRepo->setAuthProvider('google');
                         $this->entityManager->persist($googleRepo);
                         $this->entityManager->flush();
 
@@ -107,11 +107,13 @@ readonly class UserGoogleExistController
                     }
                     $githubRepo->setPlainPassword($googleId . $userRequest['email']);
                     $githubRepo->setGoogleId($googleId);
+                    $githubRepo->setVerifiedEmail(true);
                     $githubRepo->setPicture($userRequest['picture']);
                     $this->googleRepository->save($githubRepo);
                 } else {
                     $githubUser = new GoogleUser();
                     $githubUser->setGoogleId($googleId);
+                    $githubUser->setVerifiedEmail(true);
                     $githubUser->setPicture($userRequest['picture']);
 
                     $acceptLanguage = $request->headers->get('Accept-Language', 'en');
