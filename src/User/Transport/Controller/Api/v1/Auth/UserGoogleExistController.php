@@ -8,9 +8,14 @@ use App\General\Domain\Enum\Language;
 use App\General\Domain\Enum\Locale;
 use App\User\Application\ApiProxy\UserProxy;
 use App\User\Application\Resource\UserResource;
+use App\User\Application\Security\SecurityUser;
+use App\User\Domain\Entity\Socials\GoogleUser;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Message\UserCreatedMessage;
 use App\User\Domain\Repository\Interfaces\UserRepositoryInterface;
+use App\User\Infrastructure\Repository\GoogleRepository;
+use App\User\Infrastructure\Repository\UserGroupRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\NotSupported;
 use Doctrine\ORM\NonUniqueResultException;
 use JsonException;
@@ -21,6 +26,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Throwable;
 
@@ -34,8 +40,11 @@ readonly class UserGoogleExistController
     public function __construct(
         private UserResource $userResource,
         private UserRepositoryInterface $userRepository,
-        private MessageBusInterface $bus,
-        private UserProxy $userProxy
+        private UserProxy $userProxy,
+        private GoogleRepository $googleRepository,
+        private EntityManagerInterface $entityManager,
+        private UserGroupRepository $groupRepository,
+        private UserPasswordHasherInterface $userPasswordHasher
     )
     {
     }
@@ -59,60 +68,88 @@ readonly class UserGoogleExistController
     )]
     public function __invoke(Request $request): JsonResponse
     {
-        $userRequest = $request->request->all();
+        try {
+            $userRequest = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
-        $user = $this->userRepository->findOneBy([
-            'email' => $userRequest['email'],
-            'googleId' => $userRequest['id']
-        ]);
-        $result = [];
+            if (!isset($userRequest['id'], $userRequest['email'], $userRequest['picture'])) {
+                return new JsonResponse(['error' => 'Invalid request data'], 400);
+            }
 
-        if(!$user) {
-            $user = $this->userRepository->findOneBy([
-                'email' => $userRequest['email']
+            $googleId = (string)$userRequest['id'];
+
+            $user = $this->googleRepository->findOneBy([
+                'googleId' => $googleId
             ]);
-            if($user) {
-                $user->setGoogleId($userRequest['id']);
-                $user->setAvatar($userRequest['picture']);
+
+            if ($user) {
+                $user->setPlainPassword($googleId . $userRequest['email']);
                 $user = $this->userResource->save($user, true, true);
             } else {
-                $acceptLanguage = $request->headers->get('Accept-Language', 'en');
-                $entity = $this->generateUser($userRequest['email'], $userRequest['id'] . $this->userRepository->generateUsername($userRequest['email']), $acceptLanguage);
-                $entity->setGoogleId($userRequest['id']);
-                $entity->setAvatar($userRequest['picture']);
-                $user = $this->userResource->save($entity, true, true);
-                $this->bus->dispatch(new UserCreatedMessage(
-                    $user->getId(),
-                    $request->request->all(),
-                    $request->headers->get('Accept-Language', 'en')));
+                $user = $this->userRepository->findOneBy([
+                    'email' => $userRequest['email']
+                ]);
+
+                if ($user) {
+                    $githubUserRepository = $this->entityManager->getRepository(GoogleUser::class);
+                    $githubRepo = $githubUserRepository->findOneBy(['email' => $user->getEmail()]);
+
+                    if (!$githubRepo) {
+                        return new JsonResponse(['error' => 'GithubUser not found for existing user'], 500);
+                    }
+                    $githubRepo->setPlainPassword($googleId . $userRequest['email']);
+                    $githubRepo->setGoogleId($googleId);
+                    $githubRepo->setPicture($userRequest['picture']);
+                    $this->googleRepository->save($githubRepo);
+                } else {
+                    $githubUser = new GoogleUser();
+                    $githubUser->setGoogleId($googleId);
+                    $githubUser->setPicture($userRequest['picture']);
+
+                    $acceptLanguage = $request->headers->get('Accept-Language', 'en');
+                    $entity = $this->generateGoogleUser(
+                        $userRequest['email'],
+                        $googleId . $userRequest['email'],
+                        $acceptLanguage,
+                        $githubUser
+                    );
+
+                    $group = $this->groupRepository->findOneBy(['role' => 'ROLE_USER']);
+                    if ($group) {
+                        $entity->addUserGroup($group);
+                    }
+
+                    $user = $this->userResource->save($entity, true, true);
+                }
             }
-        } else {
-            $user->setPlainPassword('google-' . $userRequest['id']);
-            $user = $this->userResource->save($user, true, true);
+
+            $token = $this->userProxy->login($user->getUsername(), $googleId . $userRequest['email']);
+            $result['token'] = $token['token'];
+            $result['profile'] = $this->userProxy->profile($token['token']);
+
+            return new JsonResponse($result);
+        } catch (Throwable $e) {
+            return new JsonResponse([
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ], 500);
         }
-
-        $token = $this->userProxy->login(
-            $user->getEmail(),
-            'google-' . $userRequest['id']
-        );
-        $result['token'] = $token['token'];
-        $result['profile'] = $this->userProxy->profile($token['token']);
-
-        return new JsonResponse($result);
     }
 
     /**
      * @throws NonUniqueResultException
      */
-    private function generateUser($email, $password, $acceptLanguage): User
+    private function generateGoogleUser($email, $password, $acceptLanguage, $user): User
     {
         $parsedLocale = \Locale::acceptFromHttp($acceptLanguage);
         $language = Language::tryFrom(substr($parsedLocale, 0, 2)) ?? Language::EN;
         $locale = Locale::tryFrom($parsedLocale) ?? Locale::EN;
         $names = $this->generateNamesFromEmail($email);
         $verificationToken = Uuid::uuid1();
-
-        return (new User())
+        $callback = fn (string $plainPassword): string => $this->userPasswordHasher
+            ->hashPassword(new SecurityUser($user, []), $plainPassword);
+        // Set new password and encode it with user encoder
+        $user->setPassword($callback, $password);
+        return $user
             ->setUsername($this->userRepository->generateUsername($email))
             ->setFirstName($names['firstname'])
             ->setLastName($names['lastname'])

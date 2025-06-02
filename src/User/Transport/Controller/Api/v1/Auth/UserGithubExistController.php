@@ -41,7 +41,6 @@ readonly class UserGithubExistController
         private UserResource $userResource,
         private UserRepositoryInterface $userRepository,
         private GithubRepository $githubRepository,
-        private MessageBusInterface $bus,
         private UserProxy $userProxy,
         private EntityManagerInterface $entityManager,
         private UserGroupRepository $groupRepository,
