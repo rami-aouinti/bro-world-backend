@@ -77,12 +77,14 @@ readonly class UserGithubExistController
                 return new JsonResponse(['error' => 'Invalid request data'], 400);
             }
 
+            $githubId = (string)$userRequest['id'];
+
             $user = $this->githubRepository->findOneBy([
-                'githubId' => $userRequest['id']
+                'githubId' => $githubId
             ]);
 
             if ($user) {
-                $user->setPlainPassword($userRequest['id']);
+                $user->setPlainPassword($githubId);
                 $user = $this->userResource->save($user, true, true);
             } else {
                 $user = $this->userRepository->findOneBy([
@@ -97,18 +99,18 @@ readonly class UserGithubExistController
                         return new JsonResponse(['error' => 'GithubUser not found for existing user'], 500);
                     }
 
-                    $githubRepo->setGithubId($userRequest['id']);
+                    $githubRepo->setGithubId($githubId);
                     $githubRepo->setAvatarUrl($userRequest['avatar_url']);
                     $this->githubRepository->save($githubRepo);
                 } else {
                     $githubUser = new GithubUser();
-                    $githubUser->setGithubId($userRequest['id']);
+                    $githubUser->setGithubId($githubId);
                     $githubUser->setAvatarUrl($userRequest['avatar_url']);
 
                     $acceptLanguage = $request->headers->get('Accept-Language', 'en');
                     $entity = $this->generateGithubUser(
                         $userRequest['email'],
-                        $userRequest['id'],
+                        $githubId,
                         $acceptLanguage,
                         $githubUser
                     );
@@ -122,12 +124,12 @@ readonly class UserGithubExistController
                 }
             }
 
-            $token = $this->userProxy->login($user->getUsername(), $userRequest['id']);
+            $token = $this->userProxy->login($user->getUsername(), $githubId);
             $result['token'] = $token['token'];
             $result['profile'] = $this->userProxy->profile($token['token']);
 
             return new JsonResponse($result);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return new JsonResponse([
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
