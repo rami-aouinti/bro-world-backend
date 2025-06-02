@@ -16,6 +16,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity]
 class GithubUser extends User
 {
+    #[Groups(['entity:read', 'entity:write'])]
+    public ?string $auth_provider = 'github';
+
     #[ORM\Column(type: 'string', nullable: true)]
     private ?string $githubId = null;
 
@@ -58,11 +61,16 @@ class GithubUser extends User
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $publicGists = null;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?DateTimeInterface $githubCreatedAt = null;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?DateTimeInterface $githubUpdatedAt = null;
+    public function getAuthProvider(): ?string
+    {
+        return $this->auth_provider;
+    }
+
+    public function setAuthProvider(?string $auth_provider): void
+    {
+        $this->auth_provider = $auth_provider;
+    }
 
     public function getGithubId(): ?string
     {
@@ -202,25 +210,5 @@ class GithubUser extends User
     public function setPublicGists(?int $publicGists): void
     {
         $this->publicGists = $publicGists;
-    }
-
-    public function getGithubCreatedAt(): ?DateTimeInterface
-    {
-        return $this->githubCreatedAt;
-    }
-
-    public function setGithubCreatedAt(?DateTimeInterface $githubCreatedAt): void
-    {
-        $this->githubCreatedAt = $githubCreatedAt;
-    }
-
-    public function getGithubUpdatedAt(): ?DateTimeInterface
-    {
-        return $this->githubUpdatedAt;
-    }
-
-    public function setGithubUpdatedAt(?DateTimeInterface $githubUpdatedAt): void
-    {
-        $this->githubUpdatedAt = $githubUpdatedAt;
     }
 }

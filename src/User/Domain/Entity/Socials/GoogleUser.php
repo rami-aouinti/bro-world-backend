@@ -15,6 +15,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity]
 class GoogleUser extends User
 {
+    #[Groups(['entity:read', 'entity:write'])]
+    public ?string $auth_provider = 'google';
+
     #[ORM\Column(type: 'string', nullable: true)]
     private ?string $googleId = null;
 
@@ -35,6 +38,16 @@ class GoogleUser extends User
 
     #[ORM\Column(type: 'string', nullable: true)]
     private ?string $hd = null;
+
+    public function getAuthProvider(): ?string
+    {
+        return $this->auth_provider;
+    }
+
+    public function setAuthProvider(?string $auth_provider): void
+    {
+        $this->auth_provider = $auth_provider;
+    }
 
     public function getGoogleId(): ?string
     {

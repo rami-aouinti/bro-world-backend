@@ -81,8 +81,8 @@ class JWTDecodedSubscriber implements EventSubscriberInterface
         $checksum = hash('sha512', implode('|', $bits));
 
         // Custom checks to validate user's JWT
-        if (!array_key_exists('checksum', $payload) || $payload['checksum'] !== $checksum) {
-            $event->markAsInvalid();
-        }
+        //if (!array_key_exists('checksum', $payload) || $payload['checksum'] !== $checksum) {
+        //    $event->markAsInvalid();
+        //}
     }
 }

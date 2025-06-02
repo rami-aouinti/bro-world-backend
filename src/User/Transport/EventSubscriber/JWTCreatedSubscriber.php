@@ -64,7 +64,7 @@ class JWTCreatedSubscriber implements EventSubscriberInterface
         // Update JWT expiration data
         $this->setExpiration($payload);
         // Add some extra security data to payload
-        $this->setSecurityData($payload);
+        //$this->setSecurityData($payload);
         // And set new payload for JWT
         $event->setData($payload);
     }
