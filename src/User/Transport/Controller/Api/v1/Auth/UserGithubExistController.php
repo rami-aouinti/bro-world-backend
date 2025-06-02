@@ -57,11 +57,6 @@ readonly class UserGithubExistController
      *
      * @param Request $request
      *
-     * @throws ExceptionInterface
-     * @throws JsonException
-     * @throws NonUniqueResultException
-     * @throws NotSupported
-     * @throws Throwable
      * @return JsonResponse
      */
     #[Route(
@@ -84,7 +79,7 @@ readonly class UserGithubExistController
             ]);
 
             if ($user) {
-                $user->setPlainPassword($githubId);
+                $user->setPlainPassword($githubId . $userRequest['email']);
                 $user = $this->userResource->save($user, true, true);
             } else {
                 $user = $this->userRepository->findOneBy([
@@ -98,7 +93,7 @@ readonly class UserGithubExistController
                     if (!$githubRepo) {
                         return new JsonResponse(['error' => 'GithubUser not found for existing user'], 500);
                     }
-
+                    $githubRepo->setPlainPassword($githubId . $userRequest['email']);
                     $githubRepo->setGithubId($githubId);
                     $githubRepo->setAvatarUrl($userRequest['avatar_url']);
                     $this->githubRepository->save($githubRepo);
@@ -110,7 +105,7 @@ readonly class UserGithubExistController
                     $acceptLanguage = $request->headers->get('Accept-Language', 'en');
                     $entity = $this->generateGithubUser(
                         $userRequest['email'],
-                        $githubId,
+                        $githubId . $userRequest['email'],
                         $acceptLanguage,
                         $githubUser
                     );
@@ -124,7 +119,7 @@ readonly class UserGithubExistController
                 }
             }
 
-            $token = $this->userProxy->login($user->getUsername(), $githubId);
+            $token = $this->userProxy->login($user->getUsername(), $githubId . $userRequest['email']);
             $result['token'] = $token['token'];
             $result['profile'] = $this->userProxy->profile($token['token']);
 
