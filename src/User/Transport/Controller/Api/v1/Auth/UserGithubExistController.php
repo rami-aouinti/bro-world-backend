@@ -71,7 +71,8 @@ readonly class UserGithubExistController
     public function __invoke(Request $request): JsonResponse
     {
         $result = [];
-        $userRequest = $request->request->all();
+        $userRequest = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+
         $user = $this->githubRepository->findOneBy([
             'githubId' => $userRequest['id']
         ]);
