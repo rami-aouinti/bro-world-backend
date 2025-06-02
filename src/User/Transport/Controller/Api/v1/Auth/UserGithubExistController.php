@@ -93,19 +93,14 @@ readonly class UserGithubExistController
                     if (!$githubRepo) {
                         $googleUserRepository = $this->entityManager->getRepository(GoogleUser::class);
                         $googleRepo = $googleUserRepository->findOneBy(['email' => $user->getEmail()]);
-
-                        $googleRepo->setAuthProvider('github');
-                        $this->entityManager->persist($googleRepo);
-                        $this->entityManager->flush();
-
-                        $githubUserRepository = $this->entityManager->getRepository(GithubUser::class);
-                        $githubRepo = $githubUserRepository->findOneBy(['email' => $user->getEmail()]);
+                        $githubId = $googleRepo->getGoogleId();
+                    } else {
+                        $githubRepo->setPlainPassword($githubId . $userRequest['email']);
+                        $githubRepo->setGithubId($githubId);
+                        $githubRepo->setHtmlUrl($userRequest['html_url']);
+                        $githubRepo->setAvatarUrl($userRequest['avatar_url']);
+                        $this->githubRepository->save($githubRepo);
                     }
-                    $githubRepo->setPlainPassword($githubId . $userRequest['email']);
-                    $githubRepo->setGithubId($githubId);
-                    $githubRepo->setHtmlUrl($userRequest['html_url']);
-                    $githubRepo->setAvatarUrl($userRequest['avatar_url']);
-                    $this->githubRepository->save($githubRepo);
                 } else {
                     $githubUser = new GithubUser();
                     $githubUser->setGithubId($githubId);
