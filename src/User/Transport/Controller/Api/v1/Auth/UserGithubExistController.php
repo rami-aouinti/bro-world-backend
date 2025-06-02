@@ -10,6 +10,7 @@ use App\User\Application\ApiProxy\UserProxy;
 use App\User\Application\Resource\UserResource;
 use App\User\Application\Security\SecurityUser;
 use App\User\Domain\Entity\Socials\GithubUser;
+use App\User\Domain\Entity\Socials\GoogleUser;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Message\UserCreatedMessage;
 use App\User\Domain\Repository\Interfaces\UserRepositoryInterface;
@@ -90,7 +91,15 @@ readonly class UserGithubExistController
                     $githubRepo = $githubUserRepository->findOneBy(['email' => $user->getEmail()]);
 
                     if (!$githubRepo) {
-                        return new JsonResponse(['error' => 'GithubUser not found for existing user'], 500);
+                        $googleUserRepository = $this->entityManager->getRepository(GoogleUser::class);
+                        $googleRepo = $googleUserRepository->findOneBy(['email' => $user->getEmail()]);
+
+                        $googleRepo->setAuthProvider('');
+                        $this->entityManager->persist($googleRepo);
+                        $this->entityManager->flush();
+
+                        $githubUserRepository = $this->entityManager->getRepository(GithubUser::class);
+                        $githubRepo = $githubUserRepository->findOneBy(['email' => $user->getEmail()]);
                     }
                     $githubRepo->setPlainPassword($githubId . $userRequest['email']);
                     $githubRepo->setGithubId($githubId);

@@ -9,6 +9,7 @@ use App\General\Domain\Enum\Locale;
 use App\User\Application\ApiProxy\UserProxy;
 use App\User\Application\Resource\UserResource;
 use App\User\Application\Security\SecurityUser;
+use App\User\Domain\Entity\Socials\GithubUser;
 use App\User\Domain\Entity\Socials\GoogleUser;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Message\UserCreatedMessage;
@@ -71,11 +72,11 @@ readonly class UserGoogleExistController
         try {
             $userRequest = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
-            if (!isset($userRequest['id'], $userRequest['email'], $userRequest['picture'])) {
+            if (!isset($userRequest['sub'], $userRequest['email'], $userRequest['picture'])) {
                 return new JsonResponse(['error' => 'Invalid request data'], 400);
             }
 
-            $googleId = (string)$userRequest['id'];
+            $googleId = (string)$userRequest['sub'];
 
             $user = $this->googleRepository->findOneBy([
                 'googleId' => $googleId
@@ -94,7 +95,15 @@ readonly class UserGoogleExistController
                     $githubRepo = $githubUserRepository->findOneBy(['email' => $user->getEmail()]);
 
                     if (!$githubRepo) {
-                        return new JsonResponse(['error' => 'GithubUser not found for existing user'], 500);
+                        $googleUserRepository = $this->entityManager->getRepository(GithubUser::class);
+                        $googleRepo = $googleUserRepository->findOneBy(['email' => $user->getEmail()]);
+
+                        $googleRepo->setAuthProvider('');
+                        $this->entityManager->persist($googleRepo);
+                        $this->entityManager->flush();
+
+                        $githubUserRepository = $this->entityManager->getRepository(GoogleUser::class);
+                        $githubRepo = $githubUserRepository->findOneBy(['email' => $user->getEmail()]);
                     }
                     $githubRepo->setPlainPassword($googleId . $userRequest['email']);
                     $githubRepo->setGoogleId($googleId);
