@@ -34,6 +34,7 @@ class GoogleUser extends User
     private ?string $familyName = null;
 
     #[ORM\Column(type: 'string', nullable: true)]
+    #[Groups([self::SET_USER_PROFILE])]
     private ?string $picture = null;
 
     #[ORM\Column(type: 'string', nullable: true)]

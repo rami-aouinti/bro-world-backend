@@ -29,6 +29,7 @@ class GithubUser extends User
     private ?string $nodeId = null;
 
     #[ORM\Column(type: 'string', nullable: true)]
+    #[Groups([self::SET_USER_PROFILE])]
     private ?string $avatarUrl = null;
 
     #[ORM\Column(type: 'string', nullable: true)]
