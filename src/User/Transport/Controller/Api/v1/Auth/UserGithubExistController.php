@@ -70,65 +70,69 @@ readonly class UserGithubExistController
     )]
     public function __invoke(Request $request): JsonResponse
     {
-        $result = [];
-        $userRequest = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        try {
+            $userRequest = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
-        $user = $this->githubRepository->findOneBy([
-            'githubId' => $userRequest['id']
-        ]);
+            if (!isset($userRequest['id'], $userRequest['email'], $userRequest['avatar_url'])) {
+                return new JsonResponse(['error' => 'Invalid request data'], 400);
+            }
 
-        if ($user) {
-            $user->setPlainPassword($userRequest['id']);
-            $user = $this->userResource->save($user, true, true);
-        } else {
-            $user = $this->userRepository->findOneBy([
-                'email' => $userRequest['email']
+            $user = $this->githubRepository->findOneBy([
+                'githubId' => $userRequest['id']
             ]);
 
-            if($user) {
-                $githubUserRepository = $this->entityManager->getRepository(GithubUser::class);
-                $githubRepo = $githubUserRepository->findOneBy(
-                    [
-                        'email' => $user->getEmail()
-                    ]
-                );
-                $githubRepo->setGithubId($userRequest['id']);
-                $githubRepo->setAvatarUrl($userRequest['avatar_url']);
-                $this->githubRepository->save($githubRepo);
+            if ($user) {
+                $user->setPlainPassword($userRequest['id']);
+                $user = $this->userResource->save($user, true, true);
             } else {
+                $user = $this->userRepository->findOneBy([
+                    'email' => $userRequest['email']
+                ]);
 
-                $githubUser = new GithubUser();
-                $githubUser->setGithubId($userRequest['id']);
-                $githubUser->setAvatarUrl($userRequest['avatar_url']);
+                if ($user) {
+                    $githubUserRepository = $this->entityManager->getRepository(GithubUser::class);
+                    $githubRepo = $githubUserRepository->findOneBy(['email' => $user->getEmail()]);
 
-                $acceptLanguage = $request->headers->get('Accept-Language', 'en');
-                $entity = $this->generateGithubUser(
-                    $userRequest['email'],
-                    $userRequest['id'],
-                    $acceptLanguage,
-                    $githubUser
-                );
+                    if (!$githubRepo) {
+                        return new JsonResponse(['error' => 'GithubUser not found for existing user'], 500);
+                    }
 
-                $group = $this->groupRepository->findOneBy(
-                    [
-                        'role' => 'ROLE_USER'
-                    ]
-                );
-                $entity->addUserGroup($group);
-                $user = $this->userResource->save($entity, true, true);
+                    $githubRepo->setGithubId($userRequest['id']);
+                    $githubRepo->setAvatarUrl($userRequest['avatar_url']);
+                    $this->githubRepository->save($githubRepo);
+                } else {
+                    $githubUser = new GithubUser();
+                    $githubUser->setGithubId($userRequest['id']);
+                    $githubUser->setAvatarUrl($userRequest['avatar_url']);
 
+                    $acceptLanguage = $request->headers->get('Accept-Language', 'en');
+                    $entity = $this->generateGithubUser(
+                        $userRequest['email'],
+                        $userRequest['id'],
+                        $acceptLanguage,
+                        $githubUser
+                    );
 
+                    $group = $this->groupRepository->findOneBy(['role' => 'ROLE_USER']);
+                    if ($group) {
+                        $entity->addUserGroup($group);
+                    }
+
+                    $user = $this->userResource->save($entity, true, true);
+                }
             }
+
+            $token = $this->userProxy->login($user->getUsername(), $userRequest['id']);
+            $result['token'] = $token['token'];
+            $result['profile'] = $this->userProxy->profile($token['token']);
+
+            return new JsonResponse($result);
+        } catch (\Throwable $e) {
+            return new JsonResponse([
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ], 500);
         }
-
-        $token = $this->userProxy->login(
-            $user->getUsername(),
-            $userRequest['id']
-        );
-        $result['token'] = $token['token'];
-        $result['profile'] = $this->userProxy->profile($token['token']);
-
-        return new JsonResponse($result);
     }
 
     /**
