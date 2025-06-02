@@ -24,6 +24,11 @@ class UserProfile
 
     #[ORM\Id]
     #[ORM\Column(type: UuidBinaryOrderedTimeType::NAME, unique: true)]
+    #[Groups([
+        'User.profile',
+
+        User::SET_USER_PROFILE,
+    ])]
     private UuidInterface $id;
 
     #[ORM\OneToOne(inversedBy: 'profile', targetEntity: User::class)]
@@ -32,8 +37,8 @@ class UserProfile
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Groups([
-        'UserProfile',
-        'UserProfile.title',
+        'User.profile',
+        'Profile.title',
 
         User::SET_USER_PROFILE,
     ])]
@@ -41,8 +46,8 @@ class UserProfile
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Groups([
-        'UserProfile',
-        'UserProfile.description',
+        'User.profile',
+        'Profile.description',
 
         User::SET_USER_PROFILE,
     ])]
@@ -50,8 +55,8 @@ class UserProfile
 
     #[ORM\Column(type: 'string', length: 50, nullable: true)]
     #[Groups([
-        'UserProfile',
-        'UserProfile.gender',
+        'User.profile',
+        'Profile.gender',
 
         User::SET_USER_PROFILE,
     ])]
@@ -59,8 +64,8 @@ class UserProfile
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Groups([
-        'UserProfile',
-        'UserProfile.photo',
+        'User.profile',
+        'Profile.photo',
 
         User::SET_USER_PROFILE,
     ])]
@@ -68,8 +73,8 @@ class UserProfile
 
     #[ORM\Column(type: 'date', nullable: true)]
     #[Groups([
-        'UserProfile',
-        'UserProfile.birthday',
+        'User.profile',
+        'Profile.birthday',
 
         User::SET_USER_PROFILE,
     ])]
@@ -77,8 +82,8 @@ class UserProfile
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Groups([
-        'UserProfile',
-        'UserProfile.address',
+        'User.profile',
+        'Profile.address',
 
         User::SET_USER_PROFILE,
     ])]
@@ -86,8 +91,8 @@ class UserProfile
 
     #[ORM\Column(type: 'string', length: 20, nullable: true)]
     #[Groups([
-        'UserProfile',
-        'UserProfile.phone',
+        'User.profile',
+        'Profile.phone',
 
         User::SET_USER_PROFILE,
     ])]

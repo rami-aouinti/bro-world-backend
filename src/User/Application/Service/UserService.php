@@ -39,7 +39,8 @@ readonly class UserService
         private SluggerInterface $slugger,
         private MessageBusInterface $bus,
         private MercureService $mercureService,
-        private string $storiesDirectory
+        private string $storiesDirectory,
+        private string $avatarDirectory
     ) {
     }
 
@@ -203,5 +204,35 @@ readonly class UserService
         //$this->mercureService->create($user->getUsername(), 'story');
 
         return $story;
+    }
+
+    /**
+     * @param         $file
+     * @param Request $request
+     *
+     * @return string|JsonResponse
+     */
+    public function uploadPhoto($file, Request $request): string|JsonResponse
+    {
+        if (!$file) {
+            return new JsonResponse(['error' => 'No file uploaded.'], 400);
+        }
+
+        $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $safeFilename = $this->slugger->slug($originalFilename);
+        $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
+
+        try {
+            $file->move(
+                $this->avatarDirectory,
+                $newFilename
+            );
+        } catch (FileException $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 500);
+        }
+        $baseUrl = $request->getSchemeAndHttpHost();
+        $relativePath = '/uploads/avatar/' . $newFilename;
+
+        return $baseUrl . $relativePath;
     }
 }

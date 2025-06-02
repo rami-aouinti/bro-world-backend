@@ -200,6 +200,16 @@ trait UserRelations
         return $this->followers;
     }
 
+    public function getProfile(): ?UserProfile
+    {
+        return $this->profile;
+    }
+
+    public function setProfile(?UserProfile $profile): void
+    {
+        $this->profile = $profile;
+    }
+
     /**
      * Method to remove all many-to-many user group relations from current user.
      */
