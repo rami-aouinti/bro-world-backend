@@ -60,8 +60,9 @@ readonly class AvatarController
         $profile = $loggedInUser->getProfile();
         if (!$profile) {
             $profile = new UserProfile($loggedInUser);
-            $profile->setPhoto($avatar);
+
         }
+        $profile->setPhoto($avatar);
         $this->entityManager->persist($profile);
         $this->entityManager->flush();
         $this->userResource->save($loggedInUser);
