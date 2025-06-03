@@ -252,6 +252,22 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
     #[ORM\Column(type: 'string', nullable: true)]
     private ?string $verificationToken = null;
 
+    #[ORM\Column(
+        name: 'enabled',
+        type: Types::BOOLEAN,
+        options: [
+            'default' => false,
+        ],
+    )]
+    #[Groups([
+        'User',
+        'User.enabled',
+
+        self::SET_USER_PROFILE,
+        self::SET_USER_BASIC,
+    ])]
+    private bool $enabled = false;
+
     /**
      * @throws Throwable
      */
@@ -408,6 +424,16 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
     public function getVerificationToken(): ?string
     {
         return $this->verificationToken;
+    }
+
+    public function isEnabled(): bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled(bool $enabled): void
+    {
+        $this->enabled = $enabled;
     }
 
     /**

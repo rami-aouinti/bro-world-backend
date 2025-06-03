@@ -58,6 +58,7 @@ readonly class UserVerificationController
         }
 
         $user->setVerificationToken(null);
+        $user->setEnabled(true);
 
         try {
             $this->userRepository->save($user);

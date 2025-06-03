@@ -159,7 +159,8 @@ readonly class UserGithubExistController
             ->setLanguage($language)
             ->setLocale($locale)
             ->setPlainPassword($password)
-            ->setVerificationToken($verificationToken->toString());
+            ->setVerificationToken(null)
+            ->setEnabled(true);
     }
 
     private function generateNamesFromEmail(string $email): array
