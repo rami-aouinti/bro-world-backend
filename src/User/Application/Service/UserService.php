@@ -207,13 +207,15 @@ readonly class UserService
     }
 
     /**
-     * @param         $file
+     * @param User    $user
      * @param Request $request
      *
      * @return string|JsonResponse
      */
-    public function uploadPhoto($file, Request $request): string|JsonResponse
+    public function uploadPhoto(User $user, Request $request): string|JsonResponse
     {
+        $file = $request->files->get('file');
+
         if (!$file) {
             return new JsonResponse(['error' => 'No file uploaded.'], 400);
         }
