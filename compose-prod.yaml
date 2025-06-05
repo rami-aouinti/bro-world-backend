@@ -57,7 +57,6 @@ services:
             dockerfile: ./kibana/Dockerfile
         container_name: ${COMPOSE_PROJECT_NAME}-kibana
         ports:
-            - "${KIBANA_PORT}:5601"
             - "5601:5601"
         volumes:
             - ./docker/prod/kibana.yml:/usr/share/kibana/config/kibana.yml:ro
@@ -83,7 +82,7 @@ services:
         image: dunglas/mercure
         restart: unless-stopped
         ports:
-            - "80"
+            - "9000:9000"
         environment:
             # Uncomment the following line to disable HTTPS,
             #SERVER_NAME: ':80'
@@ -91,11 +90,11 @@ services:
             MERCURE_SUBSCRIBER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
             # Set the URL of your Symfony project (without trailing slash!) as value of the cors_origins directive
             MERCURE_EXTRA_DIRECTIVES: |
-                cors_origins http://127.0.0.1:8000
+                cors_origins https://bro-world-space.com
         # Comment the following line to disable the development mode
         command: /usr/bin/caddy run --config /etc/caddy/dev.Caddyfile
         healthcheck:
-            test: ["CMD", "curl", "-f", "https://localhost/healthz"]
+            test: ["CMD", "curl", "-f", "https://bro-world-space.com/healthz"]
             timeout: 5s
             retries: 5
             start_period: 60s
