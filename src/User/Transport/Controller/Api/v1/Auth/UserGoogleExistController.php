@@ -94,16 +94,18 @@ readonly class UserGoogleExistController
                     $githubUserRepository = $this->entityManager->getRepository(GoogleUser::class);
                     $githubRepo = $githubUserRepository->findOneBy(['email' => $user->getEmail()]);
 
-                    if (!$githubRepo) {
-                        $googleUserRepository = $this->entityManager->getRepository(GithubUser::class);
-                        $googleRepo = $googleUserRepository->findOneBy(['email' => $user->getEmail()]);
-                        $googleId = $googleRepo->getGithubId();
-                    } else {
+                    if ($githubRepo) {
                         $githubRepo->setPlainPassword($googleId . $userRequest['email']);
                         $githubRepo->setGoogleId($googleId);
                         $githubRepo->setVerifiedEmail(true);
                         $githubRepo->setPicture($userRequest['picture']);
                         $this->googleRepository->save($githubRepo);
+                    } else {
+                        $googleUserRepository = $this->entityManager->getRepository(GithubUser::class);
+                        $googleRepo = $googleUserRepository->findOneBy(['email' => $user->getEmail()]);
+                        if($googleRepo) {
+                            $googleId = $googleRepo->getGithubId();
+                        }
                     }
                 } else {
                     $githubUser = new GoogleUser();
@@ -155,7 +157,7 @@ readonly class UserGoogleExistController
             ->hashPassword(new SecurityUser($user, []), $plainPassword);
         // Set new password and encode it with user encoder
         $user->setPassword($callback, $password);
-        return $user
+        $user
             ->setUsername($this->userRepository->generateUsername($email))
             ->setFirstName($names['firstname'])
             ->setLastName($names['lastname'])
@@ -164,6 +166,8 @@ readonly class UserGoogleExistController
             ->setLocale($locale)
             ->setVerificationToken(null)
             ->setEnabled(true);
+
+        return $user;
     }
 
     private function generateNamesFromEmail(string $email): array
