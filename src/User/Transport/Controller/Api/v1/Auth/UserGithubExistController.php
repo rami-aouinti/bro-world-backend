@@ -156,12 +156,11 @@ readonly class UserGithubExistController
         $language = Language::tryFrom(substr($parsedLocale, 0, 2)) ?? Language::EN;
         $locale = Locale::tryFrom($parsedLocale) ?? Locale::EN;
         $names = $this->generateNamesFromEmail($email);
-        $verificationToken = Uuid::uuid1();
         $callback = fn (string $plainPassword): string => $this->userPasswordHasher
             ->hashPassword(new SecurityUser($user, []), $plainPassword);
         // Set new password and encode it with user encoder
         $user->setPassword($callback, $password);
-        return $user
+        $user
             ->setUsername($this->userRepository->generateUsername($email))
             ->setFirstName($names['firstname'])
             ->setLastName($names['lastname'])
@@ -171,6 +170,7 @@ readonly class UserGithubExistController
             ->setPlainPassword($password)
             ->setVerificationToken(null)
             ->setEnabled(true);
+        return $user;
     }
 
     private function generateNamesFromEmail(string $email): array
