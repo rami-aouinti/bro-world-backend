@@ -51,4 +51,26 @@ class UserRegistrationMailer implements UserRegistrationMailerInterface
 
         $this->mailer->send($email);
     }
+
+    /**
+     * @throws SyntaxError
+     * @throws TransportExceptionInterface
+     * @throws RuntimeError
+     * @throws LoaderError
+     */
+    public function sendVerificationPassword(User $user, string $verificationUrl): void
+    {
+        $email = (new Email())
+            ->from('admin@bro-world.de')
+            ->to($user->getEmail())
+            ->subject('Email Verification')
+            ->html(
+                $this->twig->render('Emails/password_verification.html.twig', [
+                    'user' => $user,
+                    'verification_url' => $verificationUrl,
+                ])
+            );
+
+        $this->mailer->send($email);
+    }
 }

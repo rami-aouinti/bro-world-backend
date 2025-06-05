@@ -25,6 +25,8 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Throwable;
 
+use function sprintf;
+
 /**
  * @package App\User\User\Application\Service
  * @author Rami Aouinti <rami.aouinti@tkdeutschland.de>
@@ -184,7 +186,7 @@ readonly class UserService
 
         $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $safeFilename = $this->slugger->slug($originalFilename);
-        $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
+        $newFilename = $safeFilename.'-'.uniqid('', true).'.'.$file->guessExtension();
 
         try {
             $file->move(
@@ -222,7 +224,7 @@ readonly class UserService
 
         $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $safeFilename = $this->slugger->slug($originalFilename);
-        $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
+        $newFilename = $safeFilename.'-'.uniqid('', true).'.'.$file->guessExtension();
 
         try {
             $file->move(
