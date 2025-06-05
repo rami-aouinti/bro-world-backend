@@ -59,6 +59,7 @@ class JWTCreatedSubscriber implements EventSubscriberInterface
     {
         // Get current original payload
         $payload = $event->getData();
+        $this->setDefaultData($payload, $event->getUser());
         // Set localization data
         $this->setLocalizationData($payload, $event->getUser());
         // Update JWT expiration data
@@ -67,6 +68,17 @@ class JWTCreatedSubscriber implements EventSubscriberInterface
         //$this->setSecurityData($payload);
         // And set new payload for JWT
         $event->setData($payload);
+    }
+
+    /**
+     * @param array<string, string> $payload
+     */
+    private function setDefaultData(array &$payload, UserInterface $user): void
+    {
+        $payload['id'] = $user->getUserIdentifier();
+        $payload['firstName'] = $user->getFirstName();
+        $payload['lastName'] = $user->getLastName();
+        $payload['avatar'] = $user->getAvatar();
     }
 
     /**

@@ -20,6 +20,10 @@ class SecurityUser implements UserInterface, PasswordAuthenticatedUserInterface
      * @var non-empty-string
      */
     private readonly string $identifier;
+    private readonly string $username;
+    private readonly string $firstName;
+    private readonly string $lastName;
+    private readonly string $avatar;
     private readonly string $password;
     private readonly Language $language;
     private readonly Locale $locale;
@@ -33,6 +37,10 @@ class SecurityUser implements UserInterface, PasswordAuthenticatedUserInterface
         private readonly array $roles = [],
     ) {
         $this->identifier = $user->getId();
+        $this->username = $user->getUsername();
+        $this->firstName = $user->getFirstName();
+        $this->lastName = $user->getLastName();
+        $this->avatar = '';
         $this->password = $user->getPassword();
         $this->language = $user->getLanguage();
         $this->locale = $user->getLocale();
@@ -88,6 +96,26 @@ class SecurityUser implements UserInterface, PasswordAuthenticatedUserInterface
     public function getUserIdentifier(): string
     {
         return $this->identifier;
+    }
+
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
+
+    public function getFirstName(): string
+    {
+        return $this->firstName;
+    }
+
+    public function getLastName(): string
+    {
+        return $this->lastName;
+    }
+
+    public function getAvatar(): string
+    {
+        return $this->avatar;
     }
 
     public function getLanguage(): Language
