@@ -82,7 +82,7 @@ services:
         image: dunglas/mercure
         restart: unless-stopped
         ports:
-            - "9000:9000"
+            - "3000:3000"
         environment:
             # Uncomment the following line to disable HTTPS,
             #SERVER_NAME: ':80'
