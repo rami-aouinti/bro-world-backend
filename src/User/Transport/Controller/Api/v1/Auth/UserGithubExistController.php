@@ -93,8 +93,12 @@ readonly class UserGithubExistController
                     if ($githubRepo) {
                         $githubRepo->setPlainPassword($githubId . $userRequest['email']);
                         $githubRepo->setGithubId($githubId);
-                        $githubRepo->setHtmlUrl($userRequest['html_url']);
-                        $githubRepo->setAvatarUrl($userRequest['avatar_url']);
+                        if(isset($userRequest['html_url'])) {
+                            $githubRepo->setHtmlUrl($userRequest['html_url']);
+                        }
+                        if(isset($userRequest['avatar_url'])) {
+                            $githubRepo->setAvatarUrl($userRequest['avatar_url']);
+                        }
                         $this->githubRepository->save($githubRepo);
                     } else {
                         $googleUserRepository = $this->entityManager->getRepository(GoogleUser::class);
@@ -106,8 +110,12 @@ readonly class UserGithubExistController
                 } else {
                     $githubUser = new GithubUser();
                     $githubUser->setGithubId($githubId);
-                    $githubUser->setHtmlUrl($userRequest['html_url']);
-                    $githubUser->setAvatarUrl($userRequest['avatar_url']);
+                    if(isset($userRequest['html_url'])) {
+                        $githubUser->setHtmlUrl($userRequest['html_url']);
+                    }
+                    if(isset($userRequest['avatar_url'])) {
+                        $githubUser->setAvatarUrl($userRequest['avatar_url']);
+                    }
 
                     $acceptLanguage = $request->headers->get('Accept-Language', 'en');
                     $entity = $this->generateGithubUser(
