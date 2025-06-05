@@ -13,6 +13,7 @@ services:
             RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
             RABBITMQ_DEFAULT_VHOST: /
         ports:
+            - "${RABBITMQ_MANAGEMENT_PORT}:15672"
             - "5672:5672"
         volumes:
             - ./var/rabbitmq:/var/lib/rabbitmq:delegated
