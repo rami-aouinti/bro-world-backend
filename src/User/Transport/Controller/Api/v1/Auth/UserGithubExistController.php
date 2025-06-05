@@ -68,7 +68,7 @@ readonly class UserGithubExistController
         try {
             $userRequest = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
-            if (!isset($userRequest['id'], $userRequest['email'], $userRequest['avatar_url'])) {
+            if (!isset($userRequest['id'], $userRequest['email'])) {
                 return new JsonResponse(['error' => 'Invalid request data'], 400);
             }
 
@@ -90,16 +90,18 @@ readonly class UserGithubExistController
                     $githubUserRepository = $this->entityManager->getRepository(GithubUser::class);
                     $githubRepo = $githubUserRepository->findOneBy(['email' => $user->getEmail()]);
 
-                    if (!$githubRepo) {
-                        $googleUserRepository = $this->entityManager->getRepository(GoogleUser::class);
-                        $googleRepo = $googleUserRepository->findOneBy(['email' => $user->getEmail()]);
-                        $githubId = $googleRepo->getGoogleId();
-                    } else {
+                    if ($githubRepo) {
                         $githubRepo->setPlainPassword($githubId . $userRequest['email']);
                         $githubRepo->setGithubId($githubId);
                         $githubRepo->setHtmlUrl($userRequest['html_url']);
                         $githubRepo->setAvatarUrl($userRequest['avatar_url']);
                         $this->githubRepository->save($githubRepo);
+                    } else {
+                        $googleUserRepository = $this->entityManager->getRepository(GoogleUser::class);
+                        $googleRepo = $googleUserRepository->findOneBy(['email' => $user->getEmail()]);
+                        if($googleRepo) {
+                            $githubId = $googleRepo->getGoogleId();
+                        }
                     }
                 } else {
                     $githubUser = new GithubUser();

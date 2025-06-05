@@ -72,7 +72,7 @@ readonly class UserGoogleExistController
         try {
             $userRequest = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
-            if (!isset($userRequest['sub'], $userRequest['email'], $userRequest['picture'])) {
+            if (!isset($userRequest['sub'], $userRequest['email'])) {
                 return new JsonResponse(['error' => 'Invalid request data'], 400);
             }
 
