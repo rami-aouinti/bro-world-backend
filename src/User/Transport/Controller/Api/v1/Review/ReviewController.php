@@ -30,10 +30,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[OA\Tag(name: 'Review Management')]
 class ReviewController extends Controller
 {
-    use Actions\Logged\CountAction;
-    use Actions\Logged\FindAction;
-    use Actions\Logged\FindOneAction;
-    use Actions\Logged\IdsAction;
+    use Actions\Logged\CreateAction;
 
     /**
      * @var array<string, string>
