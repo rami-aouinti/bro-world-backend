@@ -7,6 +7,7 @@ namespace App\User\Transport\Controller\Api\v1\Review;
 use App\General\Transport\Rest\Controller;
 use App\General\Transport\Rest\ResponseHandler;
 use App\General\Transport\Rest\Traits\Actions;
+use App\User\Application\DTO\Review\ReviewCreate;
 use App\User\Application\DTO\Review\ReviewUpdate;
 use App\User\Application\Resource\ReviewResource;
 use OpenApi\Attributes as OA;
@@ -41,7 +42,7 @@ class ReviewController extends Controller
      * @var array<string, string>
      */
     protected static array $dtoClasses = [
-        Controller::METHOD_UPDATE => ReviewUpdate::class,
+        Controller::METHOD_CREATE => ReviewCreate::class,
     ];
 
     public function __construct(
