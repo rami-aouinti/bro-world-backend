@@ -22,8 +22,6 @@ class Review extends RestDto
 
     protected float $rating = 0;
 
-    protected ?string $comment = '';
-
 
     public function getRating(): float
     {
@@ -34,19 +32,6 @@ class Review extends RestDto
     {
         $this->setVisited('rating');
         $this->rating = $rating;
-
-        return $this;
-    }
-
-    public function getComment(): ?string
-    {
-        return $this->comment;
-    }
-
-    public function setComment(string $comment): self
-    {
-        $this->setVisited('comment');
-        $this->comment = $comment;
 
         return $this;
     }
@@ -62,7 +47,6 @@ class Review extends RestDto
         if ($entity instanceof Entity) {
             $this->id = $entity->getId();
             $this->rating = $entity->getRating();
-            $this->comment = $entity->getComment();
         }
 
         return $this;
