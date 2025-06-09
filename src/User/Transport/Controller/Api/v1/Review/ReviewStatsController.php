@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\User\Transport\Controller\Api\v1\Review;
 
-use App\Tool\Domain\Entity\Review;
+use App\User\Domain\Entity\Review;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tool\Transport\AutoMapper\Review;
+namespace App\User\Transport\AutoMapper\Review;
 
 use App\General\Transport\AutoMapper\RestAutoMapperConfiguration;
-use App\Tool\Application\DTO\Review\ReviewCreate;
-use App\Tool\Application\DTO\Review\ReviewPatch;
-use App\Tool\Application\DTO\Review\ReviewUpdate;
+use App\User\Application\DTO\Review\ReviewCreate;
+use App\User\Application\DTO\Review\ReviewPatch;
+use App\User\Application\DTO\Review\ReviewUpdate;
 
 /**
  * @package App\Review

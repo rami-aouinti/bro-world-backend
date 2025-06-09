@@ -6,14 +6,14 @@ namespace App\User\Transport\Controller\Api\v1\Review;
 
 use App\General\Transport\Rest\Controller;
 use App\General\Transport\Rest\ResponseHandler;
-use App\Tool\Application\DTO\Review\ReviewUpdate;
-use App\Tool\Application\Resource\ReviewResource;
+use App\General\Transport\Rest\Traits\Actions;
+use App\User\Application\DTO\Review\ReviewUpdate;
+use App\User\Application\Resource\ReviewResource;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use App\General\Transport\Rest\Traits\Actions;
 
 /**
  * @package App\Review

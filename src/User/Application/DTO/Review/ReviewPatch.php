@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tool\Application\DTO\Review;
+namespace App\User\Application\DTO\Review;
 
 /**
  * @package App\Review

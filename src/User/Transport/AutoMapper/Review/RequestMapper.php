@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tool\Transport\AutoMapper\Review;
+namespace App\User\Transport\AutoMapper\Review;
 
 use App\General\Transport\AutoMapper\RestRequestMapper;
 

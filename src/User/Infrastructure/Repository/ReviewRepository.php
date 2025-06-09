@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tool\Infrastructure\Repository;
+namespace App\User\Infrastructure\Repository;
 
 use App\General\Infrastructure\Repository\BaseRepository;
-use App\Tool\Domain\Entity\Review as Entity;
-use App\Tool\Domain\Repository\Interfaces\ReviewRepositoryInterface;
+use App\User\Domain\Entity\Review as Entity;
+use App\User\Domain\Repository\Interfaces\ReviewRepositoryInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**

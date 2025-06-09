@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tool\Application\Resource;
+namespace App\User\Application\Resource;
 
 use App\General\Application\DTO\Interfaces\RestDtoInterface;
 use App\General\Application\Rest\RestResource;
 use App\General\Domain\Entity\Interfaces\EntityInterface;
-use App\Tool\Domain\Entity\Review as Entity;
-use App\Tool\Domain\Repository\Interfaces\ReviewRepositoryInterface as Repository;
-use App\Tool\Infrastructure\Repository\ReviewRepository;
+use App\User\Domain\Entity\Review as Entity;
+use App\User\Domain\Repository\Interfaces\ReviewRepositoryInterface as Repository;
+use App\User\Infrastructure\Repository\ReviewRepository;
 
 /**
  * @package App\Review

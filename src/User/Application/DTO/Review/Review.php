@@ -2,14 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tool\Application\DTO\Review;
+namespace App\User\Application\DTO\Review;
 
 use App\General\Application\DTO\Interfaces\RestDtoInterface;
 use App\General\Application\DTO\RestDto;
 use App\General\Domain\Entity\Interfaces\EntityInterface;
-use App\Tool\Domain\Entity\Review as Entity;
+use App\User\Domain\Entity\Review as Entity;
 use Override;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @package App\Review
@@ -23,7 +22,7 @@ class Review extends RestDto
 
     protected float $rating = 0;
 
-    protected string $comment = '';
+    protected ?string $comment = '';
 
 
     public function getRating(): float
@@ -39,7 +38,7 @@ class Review extends RestDto
         return $this;
     }
 
-    public function getComment(): string
+    public function getComment(): ?string
     {
         return $this->comment;
     }
