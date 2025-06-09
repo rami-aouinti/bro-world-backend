@@ -18,7 +18,7 @@ use App\User\Infrastructure\Repository\ReviewRepository;
  * @codingStandardsIgnoreStart
  *
  * @method Entity getReference(string $id, ?string $entityManagerName = null)
- * @method ReviewRepository getRepository()
+ * @method \App\User\Infrastructure\Repository\ReviewRepository getRepository()
  * @method Entity[] find(?array $criteria = null, ?array $orderBy = null, ?int $limit = null, ?int $offset = null, ?array $search = null, ?string $entityManagerName = null)
  * @method Entity|null findOne(string $id, ?bool $throwExceptionIfNotFound = null, ?string $entityManagerName = null)
  * @method Entity|null findOneBy(array $criteria, ?array $orderBy = null, ?bool $throwExceptionIfNotFound = null, ?string $entityManagerName = null)
@@ -33,7 +33,7 @@ use App\User\Infrastructure\Repository\ReviewRepository;
 class ReviewResource extends RestResource
 {
     /**
-     * @param ReviewRepository $repository
+     * @param \App\User\Infrastructure\Repository\ReviewRepository $repository
      */
     public function __construct(
         Repository $repository,
