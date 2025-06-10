@@ -24,6 +24,7 @@ trait UserRelations
 {
     #[ORM\OneToOne(mappedBy: 'user', targetEntity: UserProfile::class, cascade: ['persist', 'remove'])]
     #[Groups([
+        'User',
         'User.profile',
 
         User::SET_USER_PROFILE,
