@@ -27,6 +27,7 @@ trait UserRelations
         'User.profile',
 
         User::SET_USER_PROFILE,
+        User::SET_USER_BASIC,
     ])]
     private ?UserProfile $profile = null;
 
