@@ -26,8 +26,10 @@ class UserProfile
     #[ORM\Column(type: UuidBinaryOrderedTimeType::NAME, unique: true)]
     #[Groups([
         'User.profile',
+        'User',
 
         User::SET_USER_PROFILE,
+        User::SET_USER_BASIC,
     ])]
     private UuidInterface $id;
 
@@ -38,45 +40,54 @@ class UserProfile
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Groups([
         'User.profile',
-        'Profile.title',
+        'User.title',
+        'User',
 
         User::SET_USER_PROFILE,
+        User::SET_USER_BASIC,
     ])]
     private ?string $title = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Groups([
-        'User.profile',
         'Profile.description',
+        'User',
+        'User.description',
 
         User::SET_USER_PROFILE,
+        User::SET_USER_BASIC,
     ])]
     private ?string $description = null;
 
     #[ORM\Column(type: 'string', length: 50, nullable: true)]
     #[Groups([
-        'User.profile',
-        'Profile.gender',
+        'User',
+        'User.gender',
 
         User::SET_USER_PROFILE,
+        User::SET_USER_BASIC,
+        'Profile.gender'
     ])]
     private ?string $gender = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Groups([
-        'User.profile',
-        'Profile.photo',
+        'Profile.photo','User',
+        'User.photo',
 
         User::SET_USER_PROFILE,
+        User::SET_USER_BASIC,
     ])]
     private ?string $photo = null;
 
     #[ORM\Column(type: 'date', nullable: true)]
     #[Groups([
-        'User.profile',
         'Profile.birthday',
+        'User',
+        'User.birthday',
 
         User::SET_USER_PROFILE,
+        User::SET_USER_BASIC,
     ])]
     private ?DateTimeInterface $birthday = null;
 
@@ -84,8 +95,11 @@ class UserProfile
     #[Groups([
         'User.profile',
         'Profile.address',
+        'User',
+        'User.address',
 
         User::SET_USER_PROFILE,
+        User::SET_USER_BASIC,
     ])]
     private ?string $address = null;
 
@@ -93,8 +107,11 @@ class UserProfile
     #[Groups([
         'User.profile',
         'Profile.phone',
+        'User',
+        'User.phone',
 
         User::SET_USER_PROFILE,
+        User::SET_USER_BASIC,
     ])]
     private ?string $phone = null;
 
