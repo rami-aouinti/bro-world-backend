@@ -27,6 +27,7 @@ class RequestMapper extends RestRequestMapper
         'firstName',
         'lastName',
         'email',
+        'profile',
         'language',
         'locale',
         'timezone',

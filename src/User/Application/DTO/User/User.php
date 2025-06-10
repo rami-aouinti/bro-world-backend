@@ -16,6 +16,7 @@ use App\User\Application\Validator\Constraints as UserAppAssert;
 use App\User\Domain\Entity\Interfaces\UserGroupAwareInterface;
 use App\User\Domain\Entity\User as Entity;
 use App\User\Domain\Entity\UserGroup as UserGroupEntity;
+use App\User\Domain\Entity\UserProfile;
 use Override;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -59,6 +60,8 @@ class User extends RestDto
     #[Assert\NotNull]
     #[Assert\Email]
     protected string $email = '';
+
+    protected ?UserProfile $profile = null;
 
     #[Assert\NotBlank]
     #[Assert\NotNull]
@@ -183,6 +186,20 @@ class User extends RestDto
         return $this;
     }
 
+    public function getProfile(): ?UserProfile
+    {
+        return $this->profile;
+    }
+
+    public function setProfile(?UserProfile $profile): self
+    {
+        $this->setVisited('profile');
+
+        $this->profile = $profile;
+
+        return $this;
+    }
+
     /**
      * @return array<int, UserGroupEntity>
      */
@@ -233,6 +250,7 @@ class User extends RestDto
             $this->email = $entity->getEmail();
             $this->language = $entity->getLanguage();
             $this->locale = $entity->getLocale();
+            $this->profile = $entity->getProfile();
             $this->timezone = $entity->getTimezone();
             /** @var array<int, UserGroupEntity> $groups */
             $groups = $entity->getUserGroups()->toArray();
