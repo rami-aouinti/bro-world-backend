@@ -76,8 +76,8 @@ class Contact implements EntityInterface
         type: Types::DATETIME_IMMUTABLE,
     )]
     #[Groups([
-        'Health',
-        'Health.timestamp',
+        'Contact',
+        'Contact.timestamp',
     ])]
     private DateTimeImmutable $timestamp;
 

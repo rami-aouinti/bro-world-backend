@@ -47,7 +47,7 @@ class ContactController
             format: ResponseHandlerInterface::FORMAT_JSON,
             context: [
                 'groups' => [
-                    'Contact',
+                    'Contact.subject',
                 ],
             ],
         );
