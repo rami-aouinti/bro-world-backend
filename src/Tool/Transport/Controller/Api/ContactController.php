@@ -8,6 +8,7 @@ use App\General\Transport\Rest\Interfaces\ResponseHandlerInterface;
 use App\General\Transport\Rest\ResponseHandler;
 use App\Tool\Application\Service\Interfaces\ContactServiceInterface;
 use OpenApi\Attributes as OA;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -39,17 +40,9 @@ class ContactController
         path: '/contact',
         methods: [Request::METHOD_POST],
     )]
-    public function __invoke(Request $request): Response
+    public function __invoke(Request $request): JsonResponse
     {
-        return $this->responseHandler->createResponse(
-            $request,
-            $this->contactService->send($request->request->get('email', ''), $request->request->get('subject', '')),
-            format: ResponseHandlerInterface::FORMAT_JSON,
-            context: [
-                'groups' => [
-                    'Contact.subject',
-                ],
-            ],
-        );
+        $this->contactService->send($request->request->get('email', ''), $request->request->get('subject', '')),
+        return new JsonResponse('success');
     }
 }
