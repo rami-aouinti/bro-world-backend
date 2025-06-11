@@ -1,0 +1,55 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tool\Transport\Controller\Api;
+
+use App\General\Transport\Rest\Interfaces\ResponseHandlerInterface;
+use App\General\Transport\Rest\ResponseHandler;
+use App\Tool\Application\Service\Interfaces\ContactServiceInterface;
+use OpenApi\Attributes as OA;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\AsController;
+use Symfony\Component\Routing\Attribute\Route;
+use Throwable;
+
+/**
+ * @package App\Tool
+ */
+#[AsController]
+#[OA\Tag(name: 'Tools')]
+class ContactController
+{
+    public function __construct(
+        private readonly ResponseHandler $responseHandler,
+        private readonly ContactServiceInterface $contactService,
+    ) {
+    }
+
+    /**
+     * Route for application health check. This action will make some simple tasks to ensure that application is up
+     * and running like expected.
+     *
+     * @see https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/
+     *
+     * @throws Throwable
+     */
+    #[Route(
+        path: '/contact',
+        methods: [Request::METHOD_POST],
+    )]
+    public function __invoke(Request $request): Response
+    {
+        return $this->responseHandler->createResponse(
+            $request,
+            $this->contactService->send($request->request->get('email', ''), $request->request->get('subject', '')),
+            format: ResponseHandlerInterface::FORMAT_JSON,
+            context: [
+                'groups' => [
+                    'Contact',
+                ],
+            ],
+        );
+    }
+}
