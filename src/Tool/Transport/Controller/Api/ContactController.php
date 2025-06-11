@@ -42,7 +42,7 @@ class ContactController
     )]
     public function __invoke(Request $request): JsonResponse
     {
-        $this->contactService->send($request->request->get('email', ''), $request->request->get('subject', '')),
+        $this->contactService->send($request->request->get('email', ''), $request->request->get('subject', ''));
         return new JsonResponse('success');
     }
 }
