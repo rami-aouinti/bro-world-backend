@@ -27,17 +27,21 @@ readonly class ContactService implements ContactServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function send(string $email, string $subject): ?Contact
+    public function send(string $name, string $email, string $subject, string $message): ?Contact
     {
         $this->bus->dispatch(
             new ContactMessage(
+                $name,
                 $email,
-                $subject
+                $subject,
+                $message
             )
         );
         $contact = new Contact();
+        $contact->setName($email);
         $contact->setEmail($email);
         $contact->setSubject($subject);
+        $contact->setMessage($subject);
         $this->repository->save($contact);
 
         return $contact;

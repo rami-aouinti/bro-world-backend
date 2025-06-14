@@ -41,11 +41,12 @@ class ContactHandler
         $email = (new Email())
             ->from('admin@bro-world.de')
             ->to('rami.aouinti@gmail.com')
-            ->subject('Email from Contact')
+            ->subject($message->getSubject())
             ->html(
                 $this->twig->render('Emails/contact.html.twig', [
                     'email' => $message->getEmail(),
-                    'subject' => $message->getSubject(),
+                    'name' => $message->getName(),
+                    'message' => $message->getMessage(),
                 ])
             );
 

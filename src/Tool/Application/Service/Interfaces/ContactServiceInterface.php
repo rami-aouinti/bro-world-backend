@@ -22,5 +22,5 @@ interface ContactServiceInterface
      *
      * @throws Throwable
      */
-    public function send(string $email, string $subject): ?Contact;
+    public function send(string $name, string $email, string $subject, string $message): ?Contact;
 }

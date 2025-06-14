@@ -57,10 +57,24 @@ class Contact implements EntityInterface
     private string $email = '';
 
     #[ORM\Column(
-        name: 'subject',
+        name: 'name',
         type: Types::STRING,
         length: 255,
         nullable: false,
+    )]
+    #[Groups([
+        'Contact',
+        'Contact.name'
+    ])]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    private string $name = '';
+
+    #[ORM\Column(
+        name: 'subject',
+        type: Types::STRING,
+        length: 255,
+        nullable: true,
     )]
     #[Groups([
         'Contact',
@@ -68,8 +82,21 @@ class Contact implements EntityInterface
     ])]
     #[Assert\NotBlank]
     #[Assert\NotNull]
-    #[Assert\Email]
     private string $subject = '';
+
+    #[ORM\Column(
+        name: 'message',
+        type: Types::STRING,
+        length: 255,
+        nullable: false,
+    )]
+    #[Groups([
+        'Contact',
+        'Contact.message',
+    ])]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    private string $message = '';
 
     #[ORM\Column(
         name: 'timestamp',
@@ -106,6 +133,16 @@ class Contact implements EntityInterface
         $this->email = $email;
     }
 
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
+
     public function getSubject(): string
     {
         return $this->subject;
@@ -114,6 +151,16 @@ class Contact implements EntityInterface
     public function setSubject(string $subject): void
     {
         $this->subject = $subject;
+    }
+
+    public function getMessage(): string
+    {
+        return $this->message;
+    }
+
+    public function setMessage(string $message): void
+    {
+        $this->message = $message;
     }
 
     public function getTimestamp(): DateTimeImmutable
