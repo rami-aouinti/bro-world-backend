@@ -8,6 +8,7 @@ use App\Tool\Application\Service\Interfaces\ContactServiceInterface;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 use Throwable;
@@ -44,6 +45,9 @@ class ContactController
             $request->request->get('subject', ''),
             $request->request->get('message', '')
         );
-        return new JsonResponse('success');
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Message sent successfully.',
+        ], Response::HTTP_OK);
     }
 }
