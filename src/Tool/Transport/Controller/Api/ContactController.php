@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tool\Transport\Controller\Api;
 
-use App\General\Transport\Rest\Interfaces\ResponseHandlerInterface;
-use App\General\Transport\Rest\ResponseHandler;
 use App\Tool\Application\Service\Interfaces\ContactServiceInterface;
 use OpenApi\Attributes as OA;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 use Throwable;
@@ -22,7 +20,6 @@ use Throwable;
 class ContactController
 {
     public function __construct(
-        private readonly ResponseHandler $responseHandler,
         private readonly ContactServiceInterface $contactService,
     ) {
     }
@@ -39,22 +36,14 @@ class ContactController
         path: '/contact',
         methods: [Request::METHOD_POST],
     )]
-    public function __invoke(Request $request): Response
+    public function __invoke(Request $request): JsonResponse
     {
-        return $this->responseHandler->createResponse(
-            $request,
-            $this->contactService->send(
-                $request->request->get('name', ''),
-                $request->request->get('email', ''),
-                $request->request->get('subject', ''),
-                $request->request->get('message', '')
-            ),
-            format: ResponseHandlerInterface::FORMAT_JSON,
-            context: [
-                'groups' => [
-                    'Contact.timestamp',
-                ],
-            ],
+        $this->contactService->send(
+            $request->request->get('name', ''),
+            $request->request->get('email', ''),
+            $request->request->get('subject', ''),
+            $request->request->get('message', '')
         );
+        return new JsonResponse('success');
     }
 }
