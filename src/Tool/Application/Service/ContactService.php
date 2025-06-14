@@ -7,7 +7,7 @@ namespace App\Tool\Application\Service;
 use App\Tool\Application\Service\Interfaces\ContactServiceInterface;
 use App\Tool\Domain\Entity\Contact;
 use App\Tool\Domain\Message\ContactMessage;
-use App\Tool\Domain\Repository\Interfaces\ContactRepositoryInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
@@ -16,10 +16,11 @@ use Symfony\Component\Messenger\MessageBusInterface;
 readonly class ContactService implements ContactServiceInterface
 {
     /**
-     * @param \App\Tool\Infrastructure\Repository\ContactRepository $repository
+     * @param EntityManagerInterface $entityManager
+     * @param MessageBusInterface    $bus
      */
     public function __construct(
-        private ContactRepositoryInterface $repository,
+        private EntityManagerInterface $entityManager,
         private MessageBusInterface $bus,
     ) {
     }
@@ -27,7 +28,7 @@ readonly class ContactService implements ContactServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function send(string $name, string $email, string $subject, string $message): ?Contact
+    public function send(string $name, string $email, string $subject, string $message): void
     {
         $this->bus->dispatch(
             new ContactMessage(
@@ -38,12 +39,11 @@ readonly class ContactService implements ContactServiceInterface
             )
         );
         $contact = new Contact();
-        $contact->setName($email);
+        $contact->setName($name);
         $contact->setEmail($email);
         $contact->setSubject($subject);
         $contact->setMessage($message);
-        $this->repository->save($contact);
-
-        return $contact;
+        $this->entityManager->persist($contact);
+        $this->entityManager->flush();
     }
 }
