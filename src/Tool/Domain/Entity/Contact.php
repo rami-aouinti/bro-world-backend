@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tool\Domain\Entity;
 
 use App\General\Domain\Entity\Interfaces\EntityInterface;
+use App\General\Domain\Entity\Traits\Timestampable;
 use App\General\Domain\Entity\Traits\Uuid;
 use DateTimeImmutable;
 use DateTimeZone;
@@ -27,6 +28,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Contact implements EntityInterface
 {
     use Uuid;
+    use Timestampable;
 
     #[ORM\Id]
     #[ORM\Column(
@@ -98,23 +100,12 @@ class Contact implements EntityInterface
     #[Assert\NotNull]
     private string $message = '';
 
-    #[ORM\Column(
-        name: 'timestamp',
-        type: Types::DATETIME_IMMUTABLE,
-    )]
-    #[Groups([
-        'Contact',
-        'Contact.timestamp',
-    ])]
-    private DateTimeImmutable $timestamp;
-
     /**
      * @throws Throwable
      */
     public function __construct()
     {
         $this->id = $this->createUuid();
-        $this->timestamp = new DateTimeImmutable(timezone: new DateTimeZone('UTC'));
     }
 
     #[Override]
@@ -161,23 +152,5 @@ class Contact implements EntityInterface
     public function setMessage(string $message): void
     {
         $this->message = $message;
-    }
-
-    public function getTimestamp(): DateTimeImmutable
-    {
-        return $this->getCreatedAt();
-    }
-
-    public function setTimestamp(DateTimeImmutable $timestamp): self
-    {
-        $this->timestamp = $timestamp;
-
-        return $this;
-    }
-
-    #[Override]
-    public function getCreatedAt(): DateTimeImmutable
-    {
-        return $this->timestamp;
     }
 }

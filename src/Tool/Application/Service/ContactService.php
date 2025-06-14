@@ -41,7 +41,7 @@ readonly class ContactService implements ContactServiceInterface
         $contact->setName($email);
         $contact->setEmail($email);
         $contact->setSubject($subject);
-        $contact->setMessage($subject);
+        $contact->setMessage($message);
         $this->repository->save($contact);
 
         return $contact;
