@@ -29,8 +29,12 @@ readonly class UserVerificationController
     /**
      * Get user Json Web Token (JWT) for authentication.
      *
+     * @param Request $request
+     *
      * @throws NotSupported
      * @throws ORMException
+     * @throws \JsonException
+     * @return JsonResponse
      */
     #[Route(
         path: '/v1/auth/verification_email',
@@ -38,7 +42,7 @@ readonly class UserVerificationController
     )]
     public function __invoke(Request $request): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
+        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $token = $data['token'] ?? null;
 
         if (!$token) {
@@ -53,7 +57,7 @@ readonly class UserVerificationController
 
         if (!$user) {
             return new JsonResponse([
-                'message' => 'Token not valid or expired.',
+                'message' => 'User not found or token is invalid',
             ], 400);
         }
 
@@ -62,7 +66,7 @@ readonly class UserVerificationController
 
         try {
             $this->userRepository->save($user);
-        } catch (OptimisticLockException $e) {
+        } catch (OptimisticLockException) {
         } catch (ORMException $e) {
             throw new ORMException($e->getMessage());
         }
