@@ -68,6 +68,7 @@ class ReviewStatsController extends AbstractController
         }
 
         return new JsonResponse([
+            'ratings' => $ratings,
             'total_reviews' => $count,
             'average_rating' => $average,
             'distribution' => $buckets,
