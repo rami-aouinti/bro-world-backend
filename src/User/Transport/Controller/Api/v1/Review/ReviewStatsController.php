@@ -54,13 +54,13 @@ class ReviewStatsController extends AbstractController
 
         foreach ($ratings as $item) {
             $rating = $item['rating'];
-            if ($rating < 1) {
+            if ($rating <= 1) {
                 $buckets['0-1']++;
-            } elseif ($rating < 2) {
+            } elseif ($rating <= 2) {
                 $buckets['1-2']++;
-            } elseif ($rating < 3) {
+            } elseif ($rating <= 3) {
                 $buckets['2-3']++;
-            } elseif ($rating < 4) {
+            } elseif ($rating <= 4) {
                 $buckets['3-4']++;
             } else {
                 $buckets['4-5']++;
@@ -68,7 +68,6 @@ class ReviewStatsController extends AbstractController
         }
 
         return new JsonResponse([
-            'ratings' => $ratings,
             'total_reviews' => $count,
             'average_rating' => $average,
             'distribution' => $buckets,
