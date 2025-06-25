@@ -49,11 +49,10 @@ readonly class PluginController
         $result = [];
         foreach ($plugins as $plugin) {
             foreach ($userPlugins as $key => $userPlugin) {
+                $result[$key][] = $plugin;
                 if ($plugin->getId() === $userPlugin->getPlugin()->getId()) {
-                    $result[$key][] = $plugin;
                     $result[$key]['active'] = true;
                 } else {
-                    $result[$key][] = $plugin;
                     $result[$key]['active'] = false;
                 }
             }
