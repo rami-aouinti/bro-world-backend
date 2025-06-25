@@ -6,8 +6,10 @@ namespace App\Tool\Transport\Controller\Api;
 
 use App\User\Domain\Entity\Plugin;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use OpenApi\Attributes as OA;
 
 /**
  * Class PluginController
@@ -15,11 +17,13 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  * @package App\Tool\Infrastructure\Controller
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
-class PluginController
+#[AsController]
+#[OA\Tag(name: 'Tools')]
+readonly class PluginController
 {
 
     public function __construct(
-        private readonly EntityManagerInterface $em
+        private EntityManagerInterface $em
     )
     {
     }
