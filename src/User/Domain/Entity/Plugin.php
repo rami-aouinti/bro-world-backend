@@ -32,7 +32,7 @@ class Plugin implements EntityInterface
     #[Groups(['Plugin', 'Plugin.id'])]
     private UuidInterface $id;
 
-    #[ORM\Column(type: 'string', length: 50, unique: true)]
+    #[ORM\Column(name: 'plugin_key', type: 'string', length: 50, unique: true)]
     #[Groups(['Plugin', 'Plugin.key'])]
     private string $key;
 
@@ -86,8 +86,6 @@ class Plugin implements EntityInterface
         $this->action = $action;
         $this->installed = $installed;
         $this->description = $description;
-        $this->createdAt = new DateTimeImmutable();
-        $this->updatedAt = new DateTimeImmutable();
     }
 
     public function getId(): string
