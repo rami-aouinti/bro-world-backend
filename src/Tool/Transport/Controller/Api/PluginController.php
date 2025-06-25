@@ -28,7 +28,7 @@ readonly class PluginController
 {
 
     public function __construct(
-        private readonly SerializerInterface $serializer,
+        private SerializerInterface $serializer,
         private EntityManagerInterface $em
     )
     {
