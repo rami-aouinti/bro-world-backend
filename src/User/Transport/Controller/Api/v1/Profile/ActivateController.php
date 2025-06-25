@@ -9,10 +9,7 @@ use App\Role\Application\Security\Interfaces\RolesServiceInterface;
 use App\User\Application\Resource\UserResource;
 use App\User\Domain\Entity\User;
 use JsonException;
-use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
-use OpenApi\Attributes\JsonContent;
-use OpenApi\Attributes\Property;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -27,12 +24,12 @@ use Throwable;
  */
 #[AsController]
 #[OA\Tag(name: 'Profile')]
-class ActivateController
+readonly class ActivateController
 {
     public function __construct(
-        private readonly SerializerInterface $serializer,
-        private readonly RolesServiceInterface $rolesService,
-        private readonly UserResource $userResource
+        private SerializerInterface $serializer,
+        private RolesServiceInterface $rolesService,
+        private UserResource $userResource
     ) {
     }
 

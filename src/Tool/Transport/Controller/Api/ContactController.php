@@ -18,10 +18,10 @@ use Throwable;
  */
 #[AsController]
 #[OA\Tag(name: 'Tools')]
-class ContactController
+readonly class ContactController
 {
     public function __construct(
-        private readonly ContactServiceInterface $contactService,
+        private ContactServiceInterface $contactService,
     ) {
     }
 
