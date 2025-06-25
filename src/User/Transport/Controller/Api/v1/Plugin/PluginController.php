@@ -52,6 +52,9 @@ readonly class PluginController
                 if ($plugin->getId() === $userPlugin->getPlugin()->getId()) {
                     $result[$key][] = $plugin;
                     $result[$key]['active'] = true;
+                } else {
+                    $result[$key][] = $plugin;
+                    $result[$key]['active'] = false;
                 }
             }
         }
