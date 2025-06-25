@@ -47,13 +47,13 @@ readonly class PluginController
         $userPlugins = $this->em->getRepository(UserPlugin::class)->findBy(['user' => $loggedInUser]);
 
         $result = [];
-        foreach ($plugins as $plugin) {
-            foreach ($userPlugins as $key => $userPlugin) {
-                $result[$key][] = $plugin;
+        foreach ($plugins as $key => $plugin) {
+            foreach ($userPlugins as $userPlugin) {
+                $result[$plugin->getId()][] = $plugin;
                 if ($plugin->getId() === $userPlugin->getPlugin()->getId()) {
-                    $result[$key]['active'] = true;
+                    $result[$plugin->getId()]['active'] = true;
                 } else {
-                    $result[$key]['active'] = false;
+                    $result[$plugin->getId()]['active'] = false;
                 }
             }
         }
