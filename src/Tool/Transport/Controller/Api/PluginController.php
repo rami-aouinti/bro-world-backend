@@ -47,7 +47,7 @@ readonly class PluginController
                 $plugins,
                 'json',
                 [
-                    'groups' => User::SET_USER_PROFILE,
+                    'groups' => 'Plugin',
                 ]
             ),
             true,
