@@ -17,10 +17,17 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  */
 class PluginController
 {
-    #[Route('/plugins', name: 'api_plugins_list', methods: ['GET'])]
-    public function list(EntityManagerInterface $em): JsonResponse
+
+    public function __construct(
+        private readonly EntityManagerInterface $em
+    )
     {
-        $plugins = $em->getRepository(Plugin::class)->findAll();
+    }
+
+    #[Route('/plugins', name: 'api_plugins_list', methods: ['GET'])]
+    public function __invoke(): JsonResponse
+    {
+        $plugins = $this->em->getRepository(Plugin::class)->findAll();
 
         return new JsonResponse($plugins);
     }
