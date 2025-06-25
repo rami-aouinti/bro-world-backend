@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\User\Transport\Controller\Api\v1\Plugin;
 
 use App\General\Domain\Utils\JSON;
+use App\User\Domain\Entity\Plugin;
 use OpenApi\Attributes as OA;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Entity\UserPlugin;
@@ -29,6 +30,7 @@ readonly class PluginController
 {
     public function __construct(
         private SerializerInterface $serializer,
+        private EntityManagerInterface $em
     )
     {
     }
@@ -39,17 +41,27 @@ readonly class PluginController
     #[IsGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY)]
     #[Route('/v1/profile/plugins', name: 'api_profile_plugins', methods: ['GET'])]
     public function __invoke(
-        User $loggedInUser,
-        EntityManagerInterface $em
+        User $loggedInUser
     ): JsonResponse {
-        $userPlugins = $em->getRepository(UserPlugin::class)->findBy(['user' => $loggedInUser]);
+        $plugins = $this->em->getRepository(Plugin::class)->findAll();
+        $userPlugins = $this->em->getRepository(UserPlugin::class)->findBy(['user' => $loggedInUser]);
+
+        $result = [];
+        foreach ($plugins as $plugin) {
+            foreach ($userPlugins as $key => $userPlugin) {
+                if ($plugin->getId() === $userPlugin->getPlugin()->getId()) {
+                    $result[$key][] = $plugin;
+                    $result[$key]['active'] = true;
+                }
+            }
+        }
 
         $output = JSON::decode(
             $this->serializer->serialize(
-                $userPlugins,
+                $result,
                 'json',
                 [
-                    'groups' => 'UserPlugin',
+                    'groups' => 'Plugin',
                 ]
             ),
             true,
