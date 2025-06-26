@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\User\Transport\Controller\Api\v1\Profile;
 
-use App\General\Domain\Utils\JSON;
-use App\Role\Application\Security\Interfaces\RolesServiceInterface;
 use App\User\Application\Resource\UserResource;
 use App\User\Domain\Entity\User;
 use JsonException;
@@ -16,7 +14,6 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\Serializer\SerializerInterface;
 use Throwable;
 
 /**
@@ -27,8 +24,6 @@ use Throwable;
 readonly class ActivateController
 {
     public function __construct(
-        private SerializerInterface $serializer,
-        private RolesServiceInterface $rolesService,
         private UserResource $userResource
     ) {
     }
@@ -41,28 +36,18 @@ readonly class ActivateController
      */
     #[Route(
         path: '/v1/profile/activate',
-        methods: [Request::METHOD_GET],
+        methods: [Request::METHOD_POST],
     )]
     #[IsGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY)]
-    public function __invoke(User $loggedInUser): JsonResponse
+    public function __invoke(User $loggedInUser, Request $request): JsonResponse
     {
-        $loggedInUser->setEnabled(true);
-        $this->userResource->save($loggedInUser);
-        /** @var array<string, string|array<string, string>> $output */
-        $output = JSON::decode(
-            $this->serializer->serialize(
-                $loggedInUser,
-                'json',
-                [
-                    'groups' => User::SET_USER_PROFILE,
-                ]
-            ),
-            true,
-        );
-        /** @var array<int, string> $roles */
-        $roles = $output['roles'];
-        $output['roles'] = $this->rolesService->getInheritedRoles($roles);
+        $data = $request->request->all();
+        if ($data['code'] === $loggedInUser->getVerificationToken())
+        {
+            $loggedInUser->setEnabled(true);
+        }
 
-        return new JsonResponse($output);
+        $this->userResource->save($loggedInUser);
+        return new JsonResponse($loggedInUser->isEnabled());
     }
 }

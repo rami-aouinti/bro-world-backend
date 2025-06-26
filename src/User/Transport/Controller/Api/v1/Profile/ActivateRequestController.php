@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace App\User\Transport\Controller\Api\v1\Profile;
 
 use App\General\Domain\Utils\JSON;
-use App\Role\Application\Security\Interfaces\RolesServiceInterface;
-use App\User\Application\Resource\UserResource;
 use App\User\Application\Service\UserVerificationMailer;
 use App\User\Domain\Entity\User;
+use App\User\Domain\Repository\Interfaces\UserRepositoryInterface;
 use JsonException;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -29,6 +28,7 @@ readonly class ActivateRequestController
 {
     public function __construct(
         private SerializerInterface $serializer,
+        private UserRepositoryInterface $userRepository,
         private UserVerificationMailer $userVerificationMailer
     ) {
     }
@@ -47,6 +47,9 @@ readonly class ActivateRequestController
     public function __invoke(User $loggedInUser): JsonResponse
     {
         $randomNumber = random_int(100000, 999999);
+        $loggedInUser->setVerificationToken((string)$randomNumber);
+
+        $this->userRepository->save($loggedInUser);
         $this->userVerificationMailer->sendVerificationEmail($loggedInUser, (string)$randomNumber);
         /** @var array<string, string|array<string, string>> $output */
         $output = JSON::decode(
