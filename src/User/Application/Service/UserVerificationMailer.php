@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\User\Application\Service;
 
-use App\User\Application\Service\Interfaces\UserRegistrationMailerInterface;
+use App\User\Application\Service\Interfaces\UserVerificationMailerInterface;
 use App\User\Domain\Entity\User;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
@@ -19,7 +19,7 @@ use Twig\Error\SyntaxError;
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 
-class UserVerificationMailer implements UserRegistrationMailerInterface
+class UserVerificationMailer implements UserVerificationMailerInterface
 {
     private MailerInterface $mailer;
     private Environment $twig;
