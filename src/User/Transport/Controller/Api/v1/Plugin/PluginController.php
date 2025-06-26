@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\User\Transport\Controller\Api\v1\Plugin;
 
-use App\General\Domain\Utils\JSON;
 use App\User\Domain\Entity\Plugin;
-use OpenApi\Attributes as OA;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Entity\UserPlugin;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,11 +13,11 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\Serializer\SerializerInterface;
 use Throwable;
+use OpenApi\Attributes as OA;
 
 /**
- * Class ActivatePluginController
+ * Class PluginController
  *
  * @package App\User\Transport\Controller\Api\v1\Plugin
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
@@ -29,45 +27,46 @@ use Throwable;
 readonly class PluginController
 {
     public function __construct(
-        private SerializerInterface $serializer,
         private EntityManagerInterface $em
-    )
-    {
-    }
+    ) {}
 
     /**
      * @throws Throwable
      */
     #[IsGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY)]
     #[Route('/v1/profile/plugins', name: 'api_profile_plugins', methods: ['GET'])]
-    public function __invoke(
-        User $loggedInUser
-    ): JsonResponse {
-        $plugins = $this->em->getRepository(Plugin::class)->findAll();
-        $userPlugins = $this->em->getRepository(UserPlugin::class)->findBy(['user' => $loggedInUser]);
+    public function __invoke(User $loggedInUser): JsonResponse
+    {
+        $pluginRepo = $this->em->getRepository(Plugin::class);
+        $userPluginRepo = $this->em->getRepository(UserPlugin::class);
 
-        $result = [];
-        foreach ($plugins as $key => $plugin) {
-            foreach ($userPlugins as $userPlugin) {
-                $result[$plugin->getId()][] = $plugin;
-                if ($plugin->getId() === $userPlugin->getPlugin()->getId()) {
-                    $result[$plugin->getId()]['active'] = true;
-                } else {
-                    $result[$plugin->getId()]['active'] = false;
-                }
-            }
+        $plugins = $pluginRepo->findAll();
+        $userPlugins = $userPluginRepo->findBy(['user' => $loggedInUser]);
+
+        $activePluginMap = [];
+        foreach ($userPlugins as $userPlugin) {
+            $activePluginMap[$userPlugin->getPlugin()->getId()] = $userPlugin->isEnabled();
         }
 
-        $output = JSON::decode(
-            $this->serializer->serialize(
-                $result,
-                'json',
-                [
-                    'groups' => 'Plugin',
-                ]
-            ),
-            true,
-        );
-        return new JsonResponse($output);
+        $result = [];
+
+        foreach ($plugins as $plugin) {
+            $pluginId = $plugin->getId();
+
+            $result[] = [
+                'id' => $pluginId,
+                'key' => $plugin->getKey(),
+                'name' => $plugin->getName(),
+                'description' => $plugin->getDescription(),
+                'icon' => $plugin->getIcon(),
+                'installed' => $plugin->isInstalled(),
+                'link' => $plugin->getLink(),
+                'pricing' => $plugin->getPricing(),
+                'action' => $plugin->getAction(),
+                'active' => $activePluginMap[$pluginId] ?? false,
+            ];
+        }
+
+        return new JsonResponse($result);
     }
 }
