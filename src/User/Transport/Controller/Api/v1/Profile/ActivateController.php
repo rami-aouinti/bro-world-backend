@@ -35,14 +35,13 @@ readonly class ActivateController
      * @throws Throwable
      */
     #[Route(
-        path: '/v1/profile/activate',
-        methods: [Request::METHOD_POST],
+        path: '/v1/profile/{code}/activate',
+        methods: [Request::METHOD_GET],
     )]
     #[IsGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY)]
-    public function __invoke(User $loggedInUser, Request $request): JsonResponse
+    public function __invoke(User $loggedInUser, string $code): JsonResponse
     {
-        $data = $request->request->all();
-        if ($data['code'] === $loggedInUser->getVerificationToken())
+        if ($code === $loggedInUser->getVerificationToken())
         {
             $loggedInUser->setEnabled(true);
         }
