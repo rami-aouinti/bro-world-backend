@@ -7,6 +7,7 @@ namespace App\User\Transport\Controller\Api\v1\Profile;
 use App\General\Domain\Utils\JSON;
 use App\Role\Application\Security\Interfaces\RolesServiceInterface;
 use App\User\Application\Resource\UserResource;
+use App\User\Application\Service\UserVerificationMailer;
 use App\User\Domain\Entity\User;
 use JsonException;
 use OpenApi\Attributes as OA;
@@ -24,12 +25,11 @@ use Throwable;
  */
 #[AsController]
 #[OA\Tag(name: 'Profile')]
-class DeactivateController
+readonly class ActivateRequestController
 {
     public function __construct(
-        private readonly SerializerInterface $serializer,
-        private readonly RolesServiceInterface $rolesService,
-        private readonly UserResource $userResource
+        private SerializerInterface $serializer,
+        private UserVerificationMailer $userVerificationMailer
     ) {
     }
 
@@ -40,18 +40,18 @@ class DeactivateController
      * @throws Throwable
      */
     #[Route(
-        path: '/v1/profile/deactivate',
+        path: '/v1/profile/request-verification',
         methods: [Request::METHOD_GET],
     )]
     #[IsGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY)]
     public function __invoke(User $loggedInUser): JsonResponse
     {
-        $loggedInUser->setEnabled(false);
-        $this->userResource->save($loggedInUser);
+        $randomNumber = random_int(100000, 999999);
+        $this->userVerificationMailer->sendVerificationEmail($loggedInUser, (string)$randomNumber);
         /** @var array<string, string|array<string, string>> $output */
         $output = JSON::decode(
             $this->serializer->serialize(
-                $loggedInUser,
+                'success',
                 'json',
                 [
                     'groups' => User::SET_USER_PROFILE,
@@ -59,10 +59,6 @@ class DeactivateController
             ),
             true,
         );
-        /** @var array<int, string> $roles */
-        $roles = $output['roles'];
-        $output['roles'] = $this->rolesService->getInheritedRoles($roles);
-
         return new JsonResponse($output);
     }
 }

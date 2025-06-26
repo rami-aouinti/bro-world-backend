@@ -40,7 +40,6 @@ readonly class UserService
         private UserCacheServiceInterface $userCacheService,
         private SluggerInterface $slugger,
         private MessageBusInterface $bus,
-        private MercureService $mercureService,
         private string $storiesDirectory,
         private string $avatarDirectory
     ) {
