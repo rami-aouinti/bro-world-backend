@@ -1,3 +1,9 @@
+mercure_ignore:
+    path: /\.well-known/mercure
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        path: /
+
 api-key-controllers:
     resource:
         path: ../src/ApiKey/Transport/Controller/Api/
@@ -33,9 +39,3 @@ user-controllers:
     prefix: /api
     defaults:
         _format: json
-
-mercure_ignore:
-    path: /\.well-known/mercure
-    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
-    defaults:
-        path: /does-not-exist
