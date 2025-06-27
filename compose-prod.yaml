@@ -85,7 +85,7 @@ services:
             - "3000:3000"
         environment:
             # Uncomment the following line to disable HTTPS,
-            #SERVER_NAME: ':80'
+            SERVER_NAME: bro-world.org
             MERCURE_PUBLISHER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
             MERCURE_SUBSCRIBER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
             # Set the URL of your Symfony project (without trailing slash!) as value of the cors_origins directive
