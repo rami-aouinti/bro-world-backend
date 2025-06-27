@@ -45,7 +45,7 @@ class UserVerificationMailer implements UserVerificationMailerInterface
             ->html(
                 $this->twig->render('Emails/email_activation_verification.html.twig', [
                     'user' => $user,
-                    'verification_url' => $verificationUrl,
+                    'verification_code' => $verificationUrl,
                 ])
             );
 
