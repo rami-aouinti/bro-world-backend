@@ -33,3 +33,9 @@ user-controllers:
     prefix: /api
     defaults:
         _format: json
+
+mercure_ignore:
+    path: /\.well-known/mercure
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        path: /does-not-exist
