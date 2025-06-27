@@ -82,8 +82,6 @@ class User extends RestDto
     #[GeneralAppAssert\EntityReferenceExists(entityClass: UserGroupEntity::class)]
     protected array $userGroups = [];
 
-    #[Assert\NotBlank]
-    #[Assert\Length(min: Entity::PASSWORD_MIN_LENGTH, max: 255)]
     protected string $password = '';
 
     public function __construct()
