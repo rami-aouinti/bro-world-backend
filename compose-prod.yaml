@@ -81,16 +81,16 @@ services:
     mercure:
         image: dunglas/mercure
         restart: unless-stopped
-        ports:
-            - "3000:3000"
         environment:
             # Uncomment the following line to disable HTTPS,
-            SERVER_NAME: bro-world.org
+            SERVER_NAME: ":3000"
             MERCURE_PUBLISHER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
             MERCURE_SUBSCRIBER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
             # Set the URL of your Symfony project (without trailing slash!) as value of the cors_origins directive
             MERCURE_EXTRA_DIRECTIVES: |
+                publish_origins http://localhost https://bro-world.org https://bro-world-space.com
                 cors_origins https://bro-world-space.com http://localhost:3000
+                path /.well-known/mercure
         # Comment the following line to disable the development mode
         command: /usr/bin/caddy run --config /etc/caddy/dev.Caddyfile
         healthcheck:
@@ -98,6 +98,8 @@ services:
             timeout: 5s
             retries: 5
             start_period: 60s
+        expose:
+            - "3000"
         volumes:
             - mercure_data:/data
             - mercure_config:/config
