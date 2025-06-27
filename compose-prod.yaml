@@ -101,6 +101,8 @@ services:
         volumes:
             - mercure_data:/data
             - mercure_config:/config
+        networks:
+            - symfony
 ###< symfony/mercure-bundle ###
 networks:
     symfony:
