@@ -91,11 +91,8 @@ services:
                 path /.well-known/mercure
         command: /usr/bin/caddy run --config /etc/caddy/dev.Caddyfile
         healthcheck:
+            disable: true
             test: [ "CMD", "wget", "--spider", "-q", "http://localhost:3000/.well-known/mercure" ]
-            interval: 10s
-            timeout: 5s
-            retries: 5
-            start_period: 30s
         expose:
             - "3000"
         volumes:
@@ -103,6 +100,7 @@ services:
             - mercure_config:/config
         networks:
             - symfony
+
 ###< symfony/mercure-bundle ###
 networks:
     symfony:
