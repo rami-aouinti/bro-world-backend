@@ -44,13 +44,6 @@
           </mappings>
         </serverdata>
       </paths>
-      <paths name="Media-User">
-        <serverdata>
-          <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
       <paths name="Notification">
         <serverdata>
           <mappings>
@@ -101,6 +94,13 @@
         </serverdata>
       </paths>
       <paths name="Root">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="Server">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
