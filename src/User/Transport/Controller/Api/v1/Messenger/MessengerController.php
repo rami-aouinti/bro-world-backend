@@ -52,6 +52,7 @@ readonly class MessengerController
 
         $conversations = $this->conversationRepository->findByParticipantId($user);
 
+        dd($conversations);
         return new JsonResponse(array_map(static fn(Conversation $conv) => [
             'id' => $conv->getId(),
             'title' => $conv->getTitle(),
