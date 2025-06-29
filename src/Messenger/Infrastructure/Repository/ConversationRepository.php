@@ -39,11 +39,12 @@ class ConversationRepository extends BaseRepository
 
     public function findByParticipantId(User $user): array
     {
-        return $this->createQueryBuilder('c')
-            ->innerJoin('c.participants', 'p')
-            ->where('p = :user')
+        return $this->getEntityManager()
+            ->createQuery('
+            SELECT c FROM App\Messenger\Domain\Entity\Conversation c
+            WHERE :user MEMBER OF c.participants
+        ')
             ->setParameter('user', $user)
-            ->getQuery()
             ->getResult();
     }
 }
