@@ -63,8 +63,9 @@ class MessengerController extends AbstractController
         $messages = $this->json($em->getRepository(Message::class)->findBy([
             'conversation' => $conversation
         ]));
-        foreach ($messages as $message) {
-            $result[] = [
+        $result = [];
+        foreach ($messages as $key => $message) {
+            $result[$key] = [
                 'id' => $message->getId(),
                 'conversation' => $message->getConversation()->getId(),
                 'sender' => [
