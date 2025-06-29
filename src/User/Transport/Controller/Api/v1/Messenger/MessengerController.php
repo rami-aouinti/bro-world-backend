@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\User\Transport\Controller\Api\v1\Messenger;
 
+use App\General\Domain\Utils\JSON;
 use App\Messenger\Domain\Entity\Conversation;
 use App\Messenger\Domain\Entity\Message;
 use App\Messenger\Domain\Entity\Reaction;
@@ -18,6 +19,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 use OpenApi\Attributes as OA;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * Class MessengerController
@@ -27,8 +30,14 @@ use OpenApi\Attributes as OA;
  */
 #[AsController]
 #[OA\Tag(name: 'Messenger')]
-class MessengerController extends AbstractController
+class MessengerController
 {
+    public function __construct(
+        private readonly SerializerInterface $serializer
+    )
+    {
+    }
+
 
     /**
      * @throws JsonException
@@ -38,7 +47,7 @@ class MessengerController extends AbstractController
     {
         $conversations = $em->getRepository(Conversation::class)->findAll();
 
-        return $this->json(array_map(static fn ($conv) => [
+        return new JsonResponse(array_map(static fn ($conv) => [
             'id' => $conv->getId(),
             'title' => $conv->getTitle(),
             'isGroup' => $conv->isGroup(),
@@ -55,16 +64,28 @@ class MessengerController extends AbstractController
      * @param Conversation           $conversation
      * @param EntityManagerInterface $em
      *
+     * @throws JsonException
+     * @throws ExceptionInterface
      * @return JsonResponse
      */
     #[Route('/v1/messenger/conversations/{conversation}/messages', methods: ['GET'])]
     public function fetchMessages(Conversation $conversation, EntityManagerInterface $em): JsonResponse
     {
-        $messages = $this->json($em->getRepository(Message::class)->findBy([
+        $messages = new JsonResponse($em->getRepository(Message::class)->findBy([
             'conversation' => $conversation
         ]));
+        $output = JSON::decode(
+            $this->serializer->serialize(
+                $messages,
+                'json',
+                [
+                    'groups' => 'Message',
+                ]
+            ),
+            true,
+        );
         $result = [];
-        foreach ($messages as $key => $message) {
+        foreach ($output as $key => $message) {
             $result[$key] = [
                 'id' => $message->getId(),
                 'conversation' => $message->getConversation()->getId(),
@@ -77,7 +98,7 @@ class MessengerController extends AbstractController
                 'text' => $message->getText()
             ];
         }
-        return $this->json($result);
+        return new JsonResponse($result);
     }
 
 
@@ -102,7 +123,7 @@ class MessengerController extends AbstractController
         $em->persist($conversation);
         $em->flush();
 
-        return $this->json(['id' => $conversation->getId()]);
+        return new JsonResponse(['id' => $conversation->getId()]);
     }
 
     /**
@@ -120,12 +141,12 @@ class MessengerController extends AbstractController
         $conversation = $em->getRepository(Conversation::class)->find($id);
 
         if (!$conversation) {
-            return $this->json(['error' => 'Conversation not found'], 404);
+            return new JsonResponse(['error' => 'Conversation not found'], 404);
         }
 
         $sender = $em->getRepository(User::class)->find($data['sender']);
         if (!$sender) {
-            return $this->json(['error' => 'Sender not found'], 404);
+            return new JsonResponse(['error' => 'Sender not found'], 404);
         }
 
         $message = new Message();
@@ -159,7 +180,7 @@ class MessengerController extends AbstractController
 
         $em->flush();
 
-        return $this->json(['id' => $message->getId()]);
+        return new JsonResponse(['id' => $message->getId()]);
     }
 
     /**
@@ -176,12 +197,12 @@ class MessengerController extends AbstractController
         $message = $em->getRepository(Message::class)->find($id);
 
         if (!$message) {
-            return $this->json(['error' => 'Message not found'], 404);
+            return new JsonResponse(['error' => 'Message not found'], 404);
         }
 
         $user = $em->getRepository(User::class)->find($data['user']);
         if (!$user) {
-            return $this->json(['error' => 'User not found'], 404);
+            return new JsonResponse(['error' => 'User not found'], 404);
         }
 
         $reaction = new Reaction();
@@ -192,7 +213,7 @@ class MessengerController extends AbstractController
         $em->persist($reaction);
         $em->flush();
 
-        return $this->json(['id' => $reaction->getId()]);
+        return new JsonResponse(['id' => $reaction->getId()]);
     }
 
     /**
@@ -209,12 +230,12 @@ class MessengerController extends AbstractController
         $message = $em->getRepository(Message::class)->find($id);
 
         if (!$message) {
-            return $this->json(['error' => 'Message not found'], 404);
+            return new JsonResponse(['error' => 'Message not found'], 404);
         }
 
         $user = $em->getRepository(User::class)->find($data['user']);
         if (!$user) {
-            return $this->json(['error' => 'User not found'], 404);
+            return new JsonResponse(['error' => 'User not found'], 404);
         }
 
         $status = $em->getRepository(MessageStatus::class)->findOneBy([
@@ -223,12 +244,12 @@ class MessengerController extends AbstractController
         ]);
 
         if (!$status) {
-            return $this->json(['error' => 'Status not found'], 404);
+            return new JsonResponse(['error' => 'Status not found'], 404);
         }
 
         $status->setStatus(MessageStatusType::READ);
         $em->flush();
 
-        return $this->json(['status' => 'updated']);
+        return new JsonResponse(['status' => 'updated']);
     }
 }
