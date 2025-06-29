@@ -52,14 +52,31 @@ class MessengerController extends AbstractController
     }
 
     /**
-     * @throws JsonException
+     * @param Conversation           $conversation
+     * @param EntityManagerInterface $em
+     *
+     * @return JsonResponse
      */
     #[Route('/v1/messenger/conversations/{conversation}/messages', methods: ['GET'])]
     public function fetchMessages(Conversation $conversation, EntityManagerInterface $em): JsonResponse
     {
-        return $this->json($em->getRepository(Message::class)->findBy([
+        $messages = $this->json($em->getRepository(Message::class)->findBy([
             'conversation' => $conversation
         ]));
+        foreach ($messages as $message) {
+            $result[] = [
+                'id' => $message->getId(),
+                'conversation' => $message->getConversation()->getId(),
+                'sender' => [
+                    'id' => $message->getSender()->getId(),
+                    'firstName' => $message->getSender()->getFirstName(),
+                    'lastName' => $message->getSender()->getLastName(),
+                    'avatar' => $message->getSender()->getProfile()?->getPhoto() ?? '/img/person.png',
+                ],
+                'text' => $message->getText()
+            ];
+        }
+        return $this->json($result);
     }
 
 

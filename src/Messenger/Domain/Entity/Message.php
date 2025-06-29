@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Override;
 use Ramsey\Uuid\Doctrine\UuidBinaryOrderedTimeType;
 use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Throwable;
 
 /**
@@ -33,31 +34,40 @@ class Message implements EntityInterface
         unique: true,
         nullable: false,
     )]
+    #[Groups(['Message', 'Message.id'])]
     private UuidInterface $id;
 
     #[ORM\ManyToOne(targetEntity: Conversation::class, inversedBy: 'messages')]
+    #[Groups(['Message', 'Message.conversation'])]
     private Conversation $conversation;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
+    #[Groups(['Message', 'Message.sender'])]
     private User $sender;
 
     #[ORM\Column(type: 'text', nullable: true)]
+    #[Groups(['Message', 'Message.text'])]
     private ?string $text = null;
 
     #[ORM\Column(type: 'string', nullable: true)]
+    #[Groups(['Message', 'Message.mediaUrl'])]
     private ?string $mediaUrl = null;
 
     #[ORM\Column(type: 'string', nullable: true)]
+    #[Groups(['Message', 'Message.mediaType'])]
     private ?string $mediaType = null;
 
     #[ORM\Column(type: 'string', nullable: true)]
+    #[Groups(['Message', 'Message.attachmentUrl'])]
     private ?string $attachmentUrl = null;
 
     #[ORM\Column(type: 'string', nullable: true)]
+    #[Groups(['Message', 'Message.attachmentType'])]
     private ?string $attachmentType = null;
 
     #[ORM\ManyToOne(targetEntity: self::class)]
     #[ORM\JoinColumn(name: 'reply_to_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    #[Groups(['Message', 'Message.replyTo'])]
     private ?self $replyTo = null;
 
     /**
