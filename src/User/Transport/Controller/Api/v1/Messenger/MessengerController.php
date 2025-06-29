@@ -74,18 +74,22 @@ class MessengerController
             'conversation' => $conversation
         ]));
 
-        return new JsonResponse(array_map(static fn(Message $m) => [
-            'id' => $m->getId(),
-            'text' => $m->getText(),
-            'sender' => [
-                'id' => $m->getSender()->getId(),
-                'username' => $m->getSender()->getUsername(), // ou autre
-            ],
-            'mediaUrl' => $m->getMediaUrl(),
-            'mediaType' => $m->getMediaType(),
-            'replyTo' => $m->getReplyTo()?->getId(),
-            'createdAt' => $m->getCreatedAt()?->format(DATE_ATOM),
-        ], (array)$messages));
+        $result = [];
+        foreach ($messages as $key => $message) {
+
+            $result[$key]['id'] = $message->getId();
+            $result[$key]['text'] = $message->getText();
+            $result[$key]['sender'] = [
+                 'id' => $message->getSender()->getId(),
+                 'username' => $message->getSender()->getUsername()
+             ];
+            $result[$key]['mediaUrl'] = $message->getMediaUrl();
+               $result[$key]['mediaType'] = $message->getMediaType();
+              $result[$key]['replyTo'] = $message->getReplyTo()?->getId();
+             $result[$key]['createdAt'] = $message->getCreatedAt()?->format(DATE_ATOM);
+        }
+
+        return new JsonResponse($result);
     }
 
 
