@@ -12,6 +12,7 @@ use App\Messenger\Domain\Enum\MessageStatusType;
 use App\Messenger\Infrastructure\Repository\ConversationRepository;
 use App\User\Domain\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\NotSupported;
 use JsonException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -40,19 +41,22 @@ readonly class MessengerController
      * @param EntityManagerInterface $em
      * @param User                   $loggedInUser
      *
+     * @throws NotSupported
      * @return JsonResponse
      */
     #[Route('/v1/messenger/conversations', methods: ['GET'])]
     public function __invoke(EntityManagerInterface $em, User $loggedInUser): JsonResponse
     {
-        $user = $em->getRepository(User::class)->find($loggedInUser->getId());
-        if (!$user) {
-            return new JsonResponse(['error' => 'User not found'], 404);
+        $conversations = $this->conversationRepository->findAll();
+
+        $conversationArray = [];
+        foreach ($conversations as $key => $conversation) {
+            foreach ($conversation->getParticipants() as $participant) {
+                if(($participant->getId() === $loggedInUser->getId())) {
+                    $conversationArray[$key] = $conversation;
+                }
+            }
         }
-
-        $conversations = $this->conversationRepository->findByParticipantId($user);
-
-        dd($conversations);
         return new JsonResponse(array_map(static fn(Conversation $conv) => [
             'id' => $conv->getId(),
             'title' => $conv->getTitle(),
@@ -64,7 +68,7 @@ readonly class MessengerController
                 'lastName' => $u->getLastName(),
                 'avatar' => $u->getProfile()?->getPhoto() ?? '/img/person.png',
             ])->toArray(),
-        ], $conversations));
+        ], $conversationArray));
     }
 
     /**
