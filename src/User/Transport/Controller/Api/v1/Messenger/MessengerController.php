@@ -70,9 +70,9 @@ class MessengerController
     #[Route('/v1/messenger/conversations/{conversation}/messages', methods: ['GET'])]
     public function fetchMessages(Conversation $conversation, EntityManagerInterface $em): JsonResponse
     {
-        $messages = new JsonResponse($em->getRepository(Message::class)->findBy([
+        $messages = $em->getRepository(Message::class)->findBy([
             'conversation' => $conversation
-        ]));
+        ]);
 
         $result = [];
         foreach ($messages as $key => $message) {
