@@ -80,6 +80,12 @@ doctrine:
                         dir: '%kernel.project_dir%/src/User/Domain/Entity'
                         prefix: 'App\User\Domain\Entity'
                         alias: User
+                    Messenger:
+                        type: attribute
+                        is_bundle: false
+                        dir: '%kernel.project_dir%/src/Messenger/Domain/Entity'
+                        prefix: 'App\Messenger\Domain\Entity'
+                        alias: Messenger
                 dql:
                     datetime_functions:
                         datesub: DoctrineExtensions\Query\Mysql\DateSub
