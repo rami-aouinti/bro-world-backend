@@ -4,24 +4,20 @@ declare(strict_types=1);
 
 namespace App\User\Transport\Controller\Api\v1\Messenger;
 
-use App\General\Domain\Utils\JSON;
 use App\Messenger\Domain\Entity\Conversation;
 use App\Messenger\Domain\Entity\Message;
 use App\Messenger\Domain\Entity\Reaction;
 use App\Messenger\Domain\Entity\MessageStatus;
 use App\Messenger\Domain\Enum\MessageStatusType;
+use App\Messenger\Infrastructure\Repository\ConversationRepository;
 use App\User\Domain\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use JsonException;
-use Ramsey\Uuid\Uuid;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 use OpenApi\Attributes as OA;
-use Symfony\Component\Serializer\Exception\ExceptionInterface;
-use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * Class MessengerController
@@ -31,8 +27,15 @@ use Symfony\Component\Serializer\SerializerInterface;
  */
 #[AsController]
 #[OA\Tag(name: 'Messenger')]
-class MessengerController
+readonly class MessengerController
 {
+    public function __construct(
+        private ConversationRepository $conversationRepository
+    )
+    {
+    }
+
+
     /**
      * @param EntityManagerInterface $em
      * @param User                   $loggedInUser
@@ -42,20 +45,19 @@ class MessengerController
     #[Route('/v1/messenger/conversations', methods: ['GET'])]
     public function __invoke(EntityManagerInterface $em, User $loggedInUser): JsonResponse
     {
-        $conversations = $em->getRepository(Conversation::class)->findBy([
-            'sender' => $loggedInUser
-        ]);
+        $conversations = $this->conversationRepository->findByParticipantId($loggedInUser->getId());
 
-        return new JsonResponse(array_map(static fn ($conv) => [
+        return new JsonResponse(array_map(static fn(Conversation $conv) => [
             'id' => $conv->getId(),
             'title' => $conv->getTitle(),
             'isGroup' => $conv->isGroup(),
-            'participants' => array_map(static fn ($user) => [
-                'id' => $user->getId(),
-                'firstName' => $user->getFirstName(),
-                'lastName' => $user->getLastName(),
-                'avatar' => $user->getProfile()?->getPhoto() ?? '/img/person.png',
-            ], $conv->getParticipants()->toArray()),
+            'participants' => $conv->getParticipants()->map(fn(User $u) => [
+                'id' => $u->getId(),
+                'username' => $u->getUsername(),
+                'firstName' => $u->getFirstName(),
+                'lastName' => $u->getLastName(),
+                'avatar' => $u->getProfile()?->getPhoto() ?? '/img/person.png',
+            ])->toArray(),
         ], $conversations));
     }
 
