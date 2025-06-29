@@ -33,20 +33,18 @@ use Symfony\Component\Serializer\SerializerInterface;
 #[OA\Tag(name: 'Messenger')]
 class MessengerController
 {
-    public function __construct(
-        private readonly SerializerInterface $serializer
-    )
-    {
-    }
-
-
     /**
-     * @throws JsonException
+     * @param EntityManagerInterface $em
+     * @param User                   $loggedInUser
+     *
+     * @return JsonResponse
      */
     #[Route('/v1/messenger/conversations', methods: ['GET'])]
-    public function fetchConversation(EntityManagerInterface $em): JsonResponse
+    public function __invoke(EntityManagerInterface $em, User $loggedInUser): JsonResponse
     {
-        $conversations = $em->getRepository(Conversation::class)->findAll();
+        $conversations = $em->getRepository(Conversation::class)->findBy([
+            'sender' => $loggedInUser
+        ]);
 
         return new JsonResponse(array_map(static fn ($conv) => [
             'id' => $conv->getId(),
@@ -80,8 +78,10 @@ class MessengerController
             $result[$key]['id'] = $message->getId();
             $result[$key]['text'] = $message->getText();
             $result[$key]['sender'] = [
-                 'id' => $message->getSender()->getId(),
-                 'username' => $message->getSender()->getUsername()
+                'id' => $message->getSender()?->getId(),
+                'firstName' => $message->getSender()?->getFirstName(),
+                'lastName' => $message->getSender()?->getLastName(),
+                'avatar' => $message?->getSender()?->getProfile()?->getPhoto() ?? '/img/person.png',
              ];
             $result[$key]['mediaUrl'] = $message->getMediaUrl();
                $result[$key]['mediaType'] = $message->getMediaType();
