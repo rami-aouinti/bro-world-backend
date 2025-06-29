@@ -134,63 +134,6 @@ readonly class MessengerController
      * @param Request                $request
      * @param EntityManagerInterface $em
      *
-     * @throws JsonException
-     * @return JsonResponse
-     */
-    #[Route('/v1/messenger/conversations/{id}/messages', methods: ['POST'])]
-    public function sendMessage(string $id, Request $request, EntityManagerInterface $em): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        $conversation = $em->getRepository(Conversation::class)->find($id);
-
-        if (!$conversation) {
-            return new JsonResponse(['error' => 'Conversation not found'], 404);
-        }
-
-        $sender = $em->getRepository(User::class)->find($data['sender']);
-        if (!$sender) {
-            return new JsonResponse(['error' => 'Sender not found'], 404);
-        }
-
-        $message = new Message();
-        $message->setConversation($conversation);
-        $message->setSender($sender);
-        $message->setText($data['text'] ?? null);
-        $message->setMediaUrl($data['mediaUrl'] ?? null);
-        $message->setMediaType($data['mediaType'] ?? null);
-        $message->setAttachmentUrl($data['attachmentUrl'] ?? null);
-        $message->setAttachmentType($data['attachmentType'] ?? null);
-
-        if (isset($data['replyTo'])) {
-            $replyTo = $em->getRepository(Message::class)->find($data['replyTo']);
-            if ($replyTo) {
-                $message->setReplyTo($replyTo);
-            }
-        }
-
-        $em->persist($message);
-
-        // Initial status for all participants
-        foreach ($conversation->getParticipants() as $participant) {
-            $status = new MessageStatus();
-            $status->setMessage($message);
-            $status->setUser($participant);
-            $status->setStatus(
-                $participant === $sender ? MessageStatusType::READ : MessageStatusType::DELIVERED
-            );
-            $em->persist($status);
-        }
-
-        $em->flush();
-
-        return new JsonResponse(['id' => $message->getId()]);
-    }
-
-    /**
-     * @param string                 $id
-     * @param Request                $request
-     * @param EntityManagerInterface $em
-     *
      * @return JsonResponse
      */
     #[Route('/v1/messenger/messages/{id}/reactions', methods: ['POST'])]

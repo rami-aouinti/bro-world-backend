@@ -7,6 +7,8 @@ parameters:
     locale: 'en'
     stories_directory: '%kernel.project_dir%/public/uploads/stories'
     avatar_directory: '%kernel.project_dir%/public/uploads/avatar'
+    api_media_base_url: '%env(API_MEDIA_BASE_URL)%'
+    api_notification_base_url: '%env(API_NOTIFICATION_BASE_URL)%'
 
 services:
     # default configuration for services in *this* file
@@ -134,6 +136,10 @@ services:
         arguments:
             $storiesDirectory: '%stories_directory%'
             $avatarDirectory: '%avatar_directory%'
+    App\General\Infrastructure\Service\ApiProxyService:
+        arguments:
+            $apiMediaBaseUrl: '%api_media_base_url%'
+            $apiNotificationBaseUrl: '%api_notification_base_url%'
 when@dev:
     services:
         _defaults:
