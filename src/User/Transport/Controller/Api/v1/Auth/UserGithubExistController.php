@@ -12,6 +12,7 @@ use App\User\Application\Security\SecurityUser;
 use App\User\Domain\Entity\Socials\GithubUser;
 use App\User\Domain\Entity\Socials\GoogleUser;
 use App\User\Domain\Entity\User;
+use App\User\Domain\Entity\UserProfile;
 use App\User\Domain\Repository\Interfaces\UserRepositoryInterface;
 use App\User\Infrastructure\Repository\GithubRepository;
 use App\User\Infrastructure\Repository\UserGroupRepository;
@@ -125,6 +126,10 @@ readonly class UserGithubExistController
                     }
 
                     $user = $this->userResource->save($entity, true, true);
+                    $profile = new UserProfile($user);
+                    $profile->setPhoto($userRequest['avatar_url']);
+                    $this->entityManager->persist($profile);
+                    $this->entityManager->flush();
                 }
             }
 
