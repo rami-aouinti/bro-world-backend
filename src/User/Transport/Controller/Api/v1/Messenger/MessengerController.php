@@ -41,10 +41,11 @@ class MessengerController extends AbstractController
         return $this->json(array_map(static fn ($conv) => [
             'id' => $conv->getId(),
             'title' => $conv->getTitle(),
-            'isGroup' => $conv->getIsGroup(),
+            'isGroup' => $conv->isGroup(),
             'participants' => array_map(static fn ($user) => [
                 'id' => $user->getId(),
-                'name' => $user->getName(),
+                'firstName' => $user->getFirstName(),
+                'lastName' => $user->getLastName(),
                 'avatar' => $user->getProfile()?->getPhoto() ?? '/img/person.png',
             ], $conv->getParticipants()->toArray()),
         ], $conversations));
