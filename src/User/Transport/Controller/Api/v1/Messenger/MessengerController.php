@@ -29,6 +29,28 @@ use OpenApi\Attributes as OA;
 #[OA\Tag(name: 'Messenger')]
 class MessengerController extends AbstractController
 {
+
+    /**
+     * @throws JsonException
+     */
+    #[Route('/v1/messenger/conversations', methods: ['GET'])]
+    public function fetchConversation(EntityManagerInterface $em): JsonResponse
+    {
+        $conversations = $em->getRepository(Conversation::class)->findAll();
+
+        return $this->json(array_map(static fn ($conv) => [
+            'id' => $conv->getId(),
+            'title' => $conv->getTitle(),
+            'isGroup' => $conv->getIsGroup(),
+            'participants' => array_map(static fn ($user) => [
+                'id' => $user->getId(),
+                'name' => $user->getName(),
+                'avatar' => $user->getProfile()?->getPhoto() ?? '/img/person.png',
+            ], $conv->getParticipants()->toArray()),
+        ], $conversations));
+    }
+
+
     /**
      * @throws JsonException
      */
