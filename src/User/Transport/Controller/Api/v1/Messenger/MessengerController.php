@@ -13,6 +13,7 @@ use App\Messenger\Domain\Enum\MessageStatusType;
 use App\User\Domain\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use JsonException;
+use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -72,7 +73,7 @@ class MessengerController
     public function fetchMessages(Conversation $conversation, EntityManagerInterface $em): JsonResponse
     {
         $messages = new JsonResponse($em->getRepository(Message::class)->findBy([
-            'conversation' => $conversation
+            'conversation' => Uuid::fromString($conversation->getId())
         ]));
         $output = JSON::decode(
             $this->serializer->serialize(
@@ -84,21 +85,7 @@ class MessengerController
             ),
             true,
         );
-        $result = [];
-        foreach ($output as $key => $message) {
-            $result[$key] = [
-                'id' => $message->getId(),
-                'conversation' => $message->getConversation()->getId(),
-                'sender' => [
-                    'id' => $message->getSender()->getId(),
-                    'firstName' => $message->getSender()->getFirstName(),
-                    'lastName' => $message->getSender()->getLastName(),
-                    'avatar' => $message->getSender()->getProfile()?->getPhoto() ?? '/img/person.png',
-                ],
-                'text' => $message->getText()
-            ];
-        }
-        return new JsonResponse($result);
+        return new JsonResponse($output);
     }
 
 
