@@ -6,6 +6,7 @@ namespace App\Messenger\Infrastructure\Repository;
 
 use App\General\Infrastructure\Repository\BaseRepository;
 use App\Messenger\Domain\Entity\Conversation as Entity;
+use App\User\Domain\Entity\User;
 use Doctrine\Persistence\ManagerRegistry;
 use Ramsey\Uuid\Uuid;
 
@@ -36,12 +37,12 @@ class ConversationRepository extends BaseRepository
     ) {
     }
 
-    public function findByParticipantId(string $userId): array
+    public function findByParticipantId(User $user): array
     {
         return $this->createQueryBuilder('c')
             ->innerJoin('c.participants', 'p')
-            ->where('p = :userId')
-            ->setParameter('userId', Uuid::fromString($userId))
+            ->where('p = :user')
+            ->setParameter('user', $user)
             ->getQuery()
             ->getResult();
     }

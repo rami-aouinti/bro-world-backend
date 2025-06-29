@@ -45,7 +45,7 @@ readonly class MessengerController
     #[Route('/v1/messenger/conversations', methods: ['GET'])]
     public function __invoke(EntityManagerInterface $em, User $loggedInUser): JsonResponse
     {
-        $conversations = $this->conversationRepository->findByParticipantId($loggedInUser->getId());
+        $conversations = $this->conversationRepository->findByParticipantId($loggedInUser);
 
         return new JsonResponse(array_map(static fn(Conversation $conv) => [
             'id' => $conv->getId(),
