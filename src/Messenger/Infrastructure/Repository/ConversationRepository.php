@@ -40,7 +40,7 @@ class ConversationRepository extends BaseRepository
     {
         return $this->createQueryBuilder('c')
             ->innerJoin('c.participants', 'p')
-            ->where('p.userId = :userId')
+            ->where('p = :userId')
             ->setParameter('userId', Uuid::fromString($userId))
             ->getQuery()
             ->getResult();
