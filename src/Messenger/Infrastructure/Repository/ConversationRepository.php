@@ -7,6 +7,7 @@ namespace App\Messenger\Infrastructure\Repository;
 use App\General\Infrastructure\Repository\BaseRepository;
 use App\Messenger\Domain\Entity\Conversation as Entity;
 use Doctrine\Persistence\ManagerRegistry;
+use Ramsey\Uuid\Uuid;
 
 /**
  * @package App\Event
@@ -39,8 +40,8 @@ class ConversationRepository extends BaseRepository
     {
         return $this->createQueryBuilder('c')
             ->innerJoin('c.participants', 'p')
-            ->where('p = :userId')
-            ->setParameter('userId', $userId)
+            ->where('p.userId = :userId')
+            ->setParameter('userId', Uuid::fromString($userId))
             ->getQuery()
             ->getResult();
     }
