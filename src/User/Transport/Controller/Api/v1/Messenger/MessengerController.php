@@ -46,6 +46,9 @@ readonly class MessengerController
     public function __invoke(EntityManagerInterface $em, User $loggedInUser): JsonResponse
     {
         $user = $em->getRepository(User::class)->find($loggedInUser->getId());
+        if (!$user) {
+            return new JsonResponse(['error' => 'User not found'], 404);
+        }
 
         $conversations = $this->conversationRepository->findByParticipantId($user);
 
