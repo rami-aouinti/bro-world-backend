@@ -65,27 +65,27 @@ class MessengerController
      * @param Conversation           $conversation
      * @param EntityManagerInterface $em
      *
-     * @throws JsonException
-     * @throws ExceptionInterface
      * @return JsonResponse
      */
     #[Route('/v1/messenger/conversations/{conversation}/messages', methods: ['GET'])]
     public function fetchMessages(Conversation $conversation, EntityManagerInterface $em): JsonResponse
     {
         $messages = new JsonResponse($em->getRepository(Message::class)->findBy([
-            'conversation' => Uuid::fromString($conversation->getId())
+            'conversation' => $conversation
         ]));
-        $output = JSON::decode(
-            $this->serializer->serialize(
-                $messages,
-                'json',
-                [
-                    'groups' => 'Message',
-                ]
-            ),
-            true,
-        );
-        return new JsonResponse($output);
+
+        return new JsonResponse(array_map(static fn(Message $m) => [
+            'id' => $m->getId(),
+            'text' => $m->getText(),
+            'sender' => [
+                'id' => $m->getSender()->getId(),
+                'username' => $m->getSender()->getUsername(), // ou autre
+            ],
+            'mediaUrl' => $m->getMediaUrl(),
+            'mediaType' => $m->getMediaType(),
+            'replyTo' => $m->getReplyTo()?->getId(),
+            'createdAt' => $m->getCreatedAt()?->format(DATE_ATOM),
+        ], (array)$messages));
     }
 
 
