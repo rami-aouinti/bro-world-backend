@@ -6,19 +6,19 @@ namespace App\User\Transport\Controller\Api\v1\Messenger;
 
 use App\Messenger\Domain\Entity\Conversation;
 use App\Messenger\Domain\Entity\Message;
-use App\Messenger\Domain\Entity\Reaction;
 use App\Messenger\Domain\Entity\MessageStatus;
+use App\Messenger\Domain\Entity\Reaction;
 use App\Messenger\Domain\Enum\MessageStatusType;
 use App\Messenger\Infrastructure\Repository\ConversationRepository;
 use App\User\Domain\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\NotSupported;
 use JsonException;
+use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
-use OpenApi\Attributes as OA;
 
 /**
  * Class MessengerController

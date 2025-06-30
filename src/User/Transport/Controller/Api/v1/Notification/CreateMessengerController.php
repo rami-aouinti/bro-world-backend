@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\User\Transport\Controller\Api\v1\Messenger;
+namespace App\User\Transport\Controller\Api\v1\Notification;
 
 use App\Messenger\Domain\Entity\Conversation;
 use App\Messenger\Domain\Entity\Message;
@@ -12,11 +12,11 @@ use App\User\Application\Service\NotificationService;
 use App\User\Domain\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use JsonException;
+use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
-use OpenApi\Attributes as OA;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
@@ -37,7 +37,7 @@ readonly class CreateMessengerController
 
     /**
      * @param User                   $loggedInUser
-     * @param string                 $id
+     * @param Conversation           $conversation
      * @param Request                $request
      * @param EntityManagerInterface $em
      *
@@ -45,15 +45,10 @@ readonly class CreateMessengerController
      * @throws TransportExceptionInterface
      * @return JsonResponse
      */
-    #[Route('/v1/messenger/conversations/{id}/messages', methods: ['POST'])]
-    public function __invoke(User $loggedInUser, string $id, Request $request, EntityManagerInterface $em): JsonResponse
+    #[Route('/v1/messenger/conversations/{conversation}/messages', methods: ['POST'])]
+    public function __invoke(User $loggedInUser, Conversation $conversation, Request $request, EntityManagerInterface $em): JsonResponse
     {
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        $conversation = $em->getRepository(Conversation::class)->find($id);
-
-        if (!$conversation) {
-            return new JsonResponse(['error' => 'Conversation not found'], 404);
-        }
 
         $sender = $em->getRepository(User::class)->find($data['sender']);
         if (!$sender) {
