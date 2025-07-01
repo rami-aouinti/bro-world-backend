@@ -64,7 +64,13 @@ readonly class UserCacheService implements UserCacheServiceInterface
                 true,
             );
 
-            return $data;
+            return $this->serializer->serialize(
+                $this->userRepository->findAll(),
+                'json',
+                [
+                    'groups' => User::SET_USER_PROFILE,
+                ]
+            );
         });
     }
 }
