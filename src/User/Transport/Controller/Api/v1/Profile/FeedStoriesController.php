@@ -54,7 +54,7 @@ readonly class FeedStoriesController
     public function __invoke(User $loggedInUser): JsonResponse
     {
         $cacheKey = 'stories_users_' . $loggedInUser->getId();
-        $stories = $this->userCache->get($cacheKey, $this->storyRepository->availableStories($loggedInUser));
+        $stories = $this->userCache->get($cacheKey, fn (ItemInterface $item) => $this->getClosure($loggedInUser)($item));
 
         $data = JSON::decode(
             $this->serializer->serialize(
@@ -67,5 +67,20 @@ readonly class FeedStoriesController
             true,
         );
         return new JsonResponse($data);
+    }
+
+    /**
+     *
+     * @param User $loggedInUser
+     *
+     * @return Closure
+     */
+    private function getClosure(User $loggedInUser): Closure
+    {
+        return function (ItemInterface $item) use ($loggedInUser): array {
+            $item->expiresAfter(31536000);
+
+            return $this->storyRepository->availableStories($loggedInUser);
+        };
     }
 }
