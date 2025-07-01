@@ -49,6 +49,18 @@ class ElasticsearchService implements ElasticsearchServiceInterface
     /**
      * {@inheritdoc}
      */
+    public function update(string $index, string $documentId, array $body): mixed
+    {
+        return $this->client->update([
+            'index' => $index,
+            'id' => $documentId,
+            'body' => $body,
+        ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function info(array $params = []): mixed
     {
         return $this->client->info($params);

@@ -28,6 +28,15 @@ interface ElasticsearchServiceInterface
     public function index(string $index, string $documentId, array $body): mixed;
 
     /**
+     * Index a document
+     *
+     * @param array<int|string, mixed> $body
+     *
+     * @return callable|array<int|string, mixed>
+     */
+    public function update(string $index, string $documentId, array $body): mixed;
+
+    /**
      * Get info about elastic
      *
      * @param array<int|string, mixed> $params

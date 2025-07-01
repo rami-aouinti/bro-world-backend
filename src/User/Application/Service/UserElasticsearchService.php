@@ -43,6 +43,28 @@ readonly class UserElasticsearchService implements UserElasticsearchServiceInter
         );
     }
 
+    /**
+     * @param User $user
+     */
+    public function updateUserInElasticsearch(User $user): void
+    {
+        $document = [
+            'id' => $user->getId(),
+            'firstName' => $user->getFirstName(),
+            'lastName' => $user->getLastName(),
+            'username' => $user->getUsername(),
+            'email' => $user->getEmail(),
+            'enabled' => $user->isEnabled(),
+            'photo' => $user->getProfile()?->getPhoto() ?? 'https://bro-world-space.com/img/person.png',
+        ];
+
+        $this->elasticsearchService->update(
+            'users',
+            $user->getId(),
+            $document
+        );
+    }
+
     public function searchUsers(string $query): array
     {
         $response = $this->elasticsearchService->search(

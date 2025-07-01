@@ -5,9 +5,13 @@ declare(strict_types=1);
 namespace App\User\Transport\EventListener;
 
 use App\User\Application\Security\SecurityUser;
+use App\User\Application\Service\Interfaces\UserElasticsearchServiceInterface;
+use App\User\Application\Service\UserCacheService;
 use App\User\Domain\Entity\User;
+use App\User\Domain\Entity\UserProfile;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use LengthException;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 use function strlen;
@@ -19,6 +23,8 @@ class UserEntityEventListener
 {
     public function __construct(
         private readonly UserPasswordHasherInterface $userPasswordHasher,
+        private readonly UserCacheService $userCacheService,
+        private readonly UserElasticsearchServiceInterface $userElasticsearchService,
     ) {
     }
 
@@ -37,6 +43,23 @@ class UserEntityEventListener
     {
         $this->process($event);
     }
+
+    /**
+     * @throws InvalidArgumentException
+     */
+    public function postUpdate(LifecycleEventArgs $args): void
+    {
+        $this->handleInvalidation($args->getObject());
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     */
+    public function postRemove(LifecycleEventArgs $args): void
+    {
+        $this->handleInvalidation($args->getObject());
+    }
+
 
     /**
      * @throws LengthException
@@ -77,6 +100,26 @@ class UserEntityEventListener
             $user->setPassword($callback, $plainPassword);
             // And clean up plain password from entity
             $user->eraseCredentials();
+        }
+    }
+
+    /**
+     *
+     * @param object $entity
+     *
+     * @throws InvalidArgumentException
+     */
+    private function handleInvalidation(object $entity): void
+    {
+        $user = match (true) {
+            $entity instanceof User => $entity,
+            $entity instanceof UserProfile => $entity->getUser(),
+            default => null,
+        };
+
+        if ($user instanceof User) {
+            $this->userCacheService->clear();
+            $this->userElasticsearchService->updateUserInElasticsearch($user);
         }
     }
 }
