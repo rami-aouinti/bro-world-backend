@@ -96,7 +96,7 @@ class IndexController
     {
         $cacheKey = 'user_profile_' . $loggedInUser->getId();
         $output = $this->userCache->get($cacheKey, function (ItemInterface $item) use ($loggedInUser) {
-            $item->expiresAfter(3600);
+            $item->expiresAfter(31536000);
 
             $profile = JSON::decode(
                 $this->serializer->serialize(

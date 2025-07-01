@@ -47,7 +47,7 @@ readonly class FeedStoriesController
     {
         $cacheKey = 'stories_users_' . $loggedInUser->getId();
         return $this->userCache->get($cacheKey, function (ItemInterface $item) use ($loggedInUser) {
-            $item->expiresAfter(600);
+            $item->expiresAfter(31536000);
 
             return new JsonResponse($this->storyRepository->availableStories($loggedInUser));
         });

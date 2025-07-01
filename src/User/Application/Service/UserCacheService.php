@@ -32,7 +32,7 @@ readonly class UserCacheService implements UserCacheServiceInterface
         $cacheKey = 'search_users_' . md5($query);
 
         return $this->userCache->get($cacheKey, function (ItemInterface $item) use ($query) {
-            $item->expiresAfter(600);
+            $item->expiresAfter(31536000);
 
             return $this->userElasticsearchService->searchUsers($query);
         });
@@ -46,7 +46,7 @@ readonly class UserCacheService implements UserCacheServiceInterface
         $this->userCache->delete('users_list');
 
         $this->userCache->get('users_list', function (ItemInterface $item) {
-            $item->expiresAfter(3600);
+            $item->expiresAfter(31536000);
 
             return $this->userRepository->findAll();
         });
