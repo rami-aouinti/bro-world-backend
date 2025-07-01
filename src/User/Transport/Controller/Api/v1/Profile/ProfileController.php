@@ -112,6 +112,7 @@ readonly class ProfileController
             /** @var array<int, string> $roles */
             $roles = $profile['roles'];
             $profile['roles'] = $this->rolesService->getInheritedRoles($roles);
+            return $profile;
         });
 
         return new JsonResponse($output);
