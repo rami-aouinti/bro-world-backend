@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\User\Transport\Controller\Api\v1\Profile;
 
+use App\General\Domain\Utils\JSON;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Repository\Interfaces\StoryRepositoryInterface;
 use OpenApi\Attributes as OA;
@@ -14,6 +15,7 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
@@ -26,7 +28,8 @@ readonly class FeedStoriesController
 {
     public function __construct(
         private StoryRepositoryInterface $storyRepository,
-        private CacheInterface $userCache
+        private CacheInterface $userCache,
+        private SerializerInterface $serializer
     ) {
     }
 
@@ -49,7 +52,16 @@ readonly class FeedStoriesController
         return $this->userCache->get($cacheKey, function (ItemInterface $item) use ($loggedInUser) {
             $item->expiresAfter(31536000);
 
-            return new JsonResponse($this->storyRepository->availableStories($loggedInUser));
+            return JSON::decode(
+                $this->serializer->serialize(
+                    $this->storyRepository->availableStories($loggedInUser),
+                    'json',
+                    [
+                        'groups' => 'Story',
+                    ]
+                ),
+                true,
+            );
         });
     }
 }
