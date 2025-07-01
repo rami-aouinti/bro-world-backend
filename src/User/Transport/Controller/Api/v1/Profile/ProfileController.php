@@ -7,7 +7,13 @@ namespace App\User\Transport\Controller\Api\v1\Profile;
 use App\General\Domain\Utils\JSON;
 use App\Role\Application\Security\Interfaces\RolesServiceInterface;
 use App\User\Domain\Entity\User;
+use App\User\Domain\Repository\Interfaces\FollowRepositoryInterface;
 use App\User\Domain\Repository\Interfaces\UserRepositoryInterface;
+use App\User\Infrastructure\Repository\UserRepository;
+use Closure;
+use Doctrine\ORM\Exception\NotSupported;
+use Doctrine\ORM\NonUniqueResultException;
+use JsonException;
 use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use OpenApi\Attributes\JsonContent;
@@ -19,6 +25,7 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -33,7 +40,8 @@ readonly class ProfileController
     public function __construct(
         private SerializerInterface $serializer,
         private RolesServiceInterface $rolesService,
-        private UserRepositoryInterface $userRepository,
+        private UserRepository $userRepository,
+        private FollowRepositoryInterface $followRepository,
         private CacheInterface $userCache
     ) {
     }
@@ -45,6 +53,9 @@ readonly class ProfileController
      * @param string $username
      *
      * @throws InvalidArgumentException
+     * @throws NonUniqueResultException
+     * @throws JsonException
+     * @throws ExceptionInterface
      * @return JsonResponse
      */
     #[Route(
@@ -96,25 +107,100 @@ readonly class ProfileController
     public function __invoke(User $loggedInUser, string $username): JsonResponse
     {
         $cacheKey = 'user_profile_' . $loggedInUser->getId();
-        $output = $this->userCache->get($cacheKey, function (ItemInterface $item) use ($username) {
-            $item->expiresAfter(31536000);
+        $userRepo = $this->userRepository->loadUserByIdentifier($username, false);
+        $user = $this->userCache->get($cacheKey, fn (ItemInterface $item) => $this->getClosure($userRepo)($item));
 
-            $profile = JSON::decode(
-                $this->serializer->serialize(
-                    $this->userRepository->loadUserByIdentifier($username, false),
-                    'json',
-                    [
-                        'groups' => User::SET_USER_PROFILE,
-                    ]
-                ),
-                true,
-            );
-            /** @var array<int, string> $roles */
-            $roles = $profile['roles'];
-            $profile['roles'] = $this->rolesService->getInheritedRoles($roles);
-            return new JsonResponse($profile);
-        });
+        $output = JSON::decode(
+            $this->serializer->serialize(
+                $user,
+                'json',
+                [
+                    'groups' => User::SET_USER_PROFILE,
+                ]
+            ),
+            true,
+        );
+        /** @var array<int, string> $roles */
+        $roles = $user['roles'];
+        $output['roles'] = $this->rolesService->getInheritedRoles($roles);
 
         return new JsonResponse($output);
+    }
+
+    /**
+     *
+     * @param User $loggedInUser
+     *
+     * @return Closure
+     */
+    private function getClosure(User $loggedInUser): Closure
+    {
+        return function (ItemInterface $item) use ($loggedInUser): array {
+            $item->expiresAfter(31536000);
+
+            return $this->getFormattedUser($loggedInUser);
+        };
+    }
+
+    /**
+     * @param User $user
+     *
+     * @throws NotSupported
+     * @return array
+     */
+    private function getFormattedUser(User $user): array
+    {
+        $document = [
+            'id' => $user->getId(),
+            'firstName' => $user->getFirstName(),
+            'lastName' => $user->getLastName(),
+            'username' => $user->getUsername(),
+            'email' => $user->getEmail(),
+            'enabled' => $user->isEnabled(),
+            'stories' => [],
+            'friends' => [],
+            'photo' => $user->getProfile()?->getPhoto() ?? 'https://bro-world-space.com/img/person.png',
+        ];
+
+        foreach ($user->getStories() as $key => $story) {
+            $document['stories'][$key]['id'] = $story->getId();
+            $document['stories'][$key]['mediaPath']  = $story->getMediaPath();
+            $document['stories'][$key]['expiresAt']  = $story->getExpiresAt();
+        }
+
+        $allUsers = $this->userRepository->findAll();
+
+        foreach ($allUsers as $key => $otherUser) {
+            if ($otherUser === $user) {
+                continue;
+            }
+
+            $iFollowHim = $this->followRepository->findOneBy([
+                'follower' => $user,
+                'followed' => $otherUser,
+            ]);
+
+            $heFollowsMe = $this->followRepository->findOneBy([
+                'follower' => $otherUser,
+                'followed' => $user,
+            ]);
+
+            if ($iFollowHim && $heFollowsMe) {
+                $status = 1;
+            } elseif ($iFollowHim && !$heFollowsMe) {
+                $status = 2;
+            } elseif (!$iFollowHim && $heFollowsMe) {
+                $status = 3;
+            } else {
+                $status = 0;
+            }
+
+            $document['friends'][$key] = [
+                'user' => $otherUser,
+                'status' => $status,
+            ];
+        }
+
+        return $document;
     }
 }

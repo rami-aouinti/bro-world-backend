@@ -7,6 +7,7 @@ namespace App\User\Transport\Controller\Api\v1\Profile;
 use App\General\Domain\Utils\JSON;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Repository\Interfaces\StoryRepositoryInterface;
+use Closure;
 use OpenApi\Attributes as OA;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -64,5 +65,20 @@ readonly class FeedStoriesController
             );
             return new JsonResponse($data);
         });
+    }
+
+    /**
+     *
+     * @param string $slug
+     *
+     * @return Closure
+     */
+    private function getClosure(string $slug): Closure
+    {
+        return function (ItemInterface $item) use ($slug): array {
+            $item->expiresAfter(31536000);
+
+            return $this->getFormattedPost($slug);
+        };
     }
 }

@@ -9,6 +9,7 @@ use App\User\Application\Service\Interfaces\UserCacheServiceInterface;
 use App\User\Application\Service\Interfaces\UserElasticsearchServiceInterface;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Repository\Interfaces\UserRepositoryInterface;
+use Closure;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -66,5 +67,20 @@ readonly class UserCacheService implements UserCacheServiceInterface
 
             return new JsonResponse($data);
         });
+    }
+
+    /**
+     *
+     * @param string $slug
+     *
+     * @return Closure
+     */
+    private function getClosure(string $slug): Closure
+    {
+        return function (ItemInterface $item) use ($slug): array {
+            $item->expiresAfter(31536000);
+
+            return $this->getFormattedPost($slug);
+        };
     }
 }
