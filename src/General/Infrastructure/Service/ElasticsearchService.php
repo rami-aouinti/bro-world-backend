@@ -58,6 +58,13 @@ class ElasticsearchService implements ElasticsearchServiceInterface
         ]);
     }
 
+    public function delete(string $index): void
+    {
+        if ($this->client->indices()->exists(['index' => $index])) {
+            $this->client->indices()->delete(['index' => $index]);
+        }
+    }
+
     /**
      * {@inheritdoc}
      */

@@ -17,6 +17,7 @@ use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Contracts\Cache\CacheInterface;
 use Throwable;
 
 /**
@@ -27,6 +28,7 @@ use Throwable;
 readonly class StoryController
 {
     public function __construct(
+        private CacheInterface $userCache,
         private SerializerInterface $serializer,
         private UserService $userService
     ) {
@@ -50,6 +52,8 @@ readonly class StoryController
     #[IsGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY)]
     public function __invoke(User $loggedInUser, Request $request): JsonResponse
     {
+        $cacheKey = 'stories_users_' . $loggedInUser->getId();
+        $this->userCache->delete($cacheKey);
         $story = $this->userService->uploadStory($loggedInUser, $request);
 
         /** @var array<string, string|array<string, string>> $output */

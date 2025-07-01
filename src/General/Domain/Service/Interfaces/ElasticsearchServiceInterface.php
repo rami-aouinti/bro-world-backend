@@ -37,6 +37,16 @@ interface ElasticsearchServiceInterface
     public function update(string $index, string $documentId, array $body): mixed;
 
     /**
+     * Index a document
+     *
+     *
+     * @param string $index
+     *
+     * @return void
+     */
+    public function delete(string $index): void;
+
+    /**
      * Get info about elastic
      *
      * @param array<int|string, mixed> $params

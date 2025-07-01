@@ -68,6 +68,7 @@ class IndexUsersCommand extends Command
      */
     private function startIndex(): void
     {
+        $this->userElasticsearchService->deleteUsers();
         $users = $this->userRepository->findAll();
         foreach ($users as $user) {
             $this->userElasticsearchService->indexUserInElasticsearch($user);

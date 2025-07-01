@@ -7,6 +7,7 @@ namespace App\User\Transport\EventListener;
 use App\User\Application\Security\SecurityUser;
 use App\User\Application\Service\Interfaces\UserElasticsearchServiceInterface;
 use App\User\Application\Service\UserCacheService;
+use App\User\Domain\Entity\Story;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Entity\UserProfile;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
@@ -113,6 +114,7 @@ class UserEntityEventListener
     {
         $user = match (true) {
             $entity instanceof User => $entity,
+            $entity instanceof Story => $entity->getUser(),
             $entity instanceof UserProfile => $entity->getUser(),
             default => null,
         };

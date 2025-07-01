@@ -18,6 +18,7 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
@@ -37,6 +38,7 @@ class IndexController
      * Get current user profile data, accessible only for 'IS_AUTHENTICATED_FULLY' users.
      *
      * @throws JsonException
+     * @throws ExceptionInterface
      */
     #[Route(
         path: '/v1/profile',

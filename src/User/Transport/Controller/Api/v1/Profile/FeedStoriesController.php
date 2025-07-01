@@ -7,12 +7,15 @@ namespace App\User\Transport\Controller\Api\v1\Profile;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Repository\Interfaces\StoryRepositoryInterface;
 use OpenApi\Attributes as OA;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 /**
  * @package App\User
@@ -23,6 +26,7 @@ readonly class FeedStoriesController
 {
     public function __construct(
         private StoryRepositoryInterface $storyRepository,
+        private CacheInterface $userCache
     ) {
     }
 
@@ -31,6 +35,7 @@ readonly class FeedStoriesController
      *
      * @param User $loggedInUser
      *
+     * @throws InvalidArgumentException
      * @return JsonResponse
      */
     #[Route(
@@ -40,6 +45,11 @@ readonly class FeedStoriesController
     #[IsGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY)]
     public function __invoke(User $loggedInUser): JsonResponse
     {
-        return new JsonResponse($this->storyRepository->availableStories($loggedInUser));
+        $cacheKey = 'stories_users_' . $loggedInUser->getId();
+        return $this->userCache->get($cacheKey, function (ItemInterface $item) use ($loggedInUser) {
+            $item->expiresAfter(600);
+
+            return new JsonResponse($this->storyRepository->availableStories($loggedInUser));
+        });
     }
 }

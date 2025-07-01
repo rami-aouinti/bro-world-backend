@@ -7,7 +7,9 @@ namespace App\User\Application\Service;
 use App\General\Domain\Service\Interfaces\ElasticsearchServiceInterface;
 use App\User\Application\Service\Interfaces\UserElasticsearchServiceInterface;
 use App\User\Domain\Entity\User;
+use App\User\Domain\Repository\Interfaces\FollowRepositoryInterface;
 use App\User\Infrastructure\Repository\UserRepository;
+use Doctrine\ORM\Exception\NotSupported;
 
 /**
  * @package App\User\Application\Service
@@ -17,7 +19,8 @@ readonly class UserElasticsearchService implements UserElasticsearchServiceInter
 {
     public function __construct(
         private ElasticsearchServiceInterface $elasticsearchService,
-        private UserRepository $userRepository
+        private UserRepository $userRepository,
+        private FollowRepositoryInterface $followRepository
     ) {
     }
 
@@ -45,6 +48,8 @@ readonly class UserElasticsearchService implements UserElasticsearchServiceInter
 
     /**
      * @param User $user
+     *
+     * @throws NotSupported
      */
     public function updateUserInElasticsearch(User $user): void
     {
@@ -55,8 +60,48 @@ readonly class UserElasticsearchService implements UserElasticsearchServiceInter
             'username' => $user->getUsername(),
             'email' => $user->getEmail(),
             'enabled' => $user->isEnabled(),
+            'stories' => [],
+            'friends' => [],
             'photo' => $user->getProfile()?->getPhoto() ?? 'https://bro-world-space.com/img/person.png',
         ];
+        foreach ($user->getStories() as $key => $story) {
+            $document['stories'][$key]['id'] = $story->getId();
+            $document['stories'][$key]['mediaPath']  = $story->getMediaPath();
+            $document['stories'][$key]['expiresAt']  = $story->getExpiresAt();
+        }
+
+        $allUsers = $this->userRepository->findAll();
+
+        foreach ($allUsers as $key => $otherUser) {
+            if ($otherUser === $user) {
+                continue;
+            }
+
+            $iFollowHim = $this->followRepository->findOneBy([
+                'follower' => $user,
+                'followed' => $otherUser,
+            ]);
+
+            $heFollowsMe = $this->followRepository->findOneBy([
+                'follower' => $otherUser,
+                'followed' => $user,
+            ]);
+
+            if ($iFollowHim && $heFollowsMe) {
+                $status = 1;
+            } elseif ($iFollowHim && !$heFollowsMe) {
+                $status = 2;
+            } elseif (!$iFollowHim && $heFollowsMe) {
+                $status = 3;
+            } else {
+                $status = 0;
+            }
+
+            $document['friends'][$key] = [
+                'user' => $otherUser,
+                'status' => $status,
+            ];
+        }
 
         $this->elasticsearchService->update(
             'users',
@@ -80,5 +125,10 @@ readonly class UserElasticsearchService implements UserElasticsearchServiceInter
         );
 
         return array_map(static fn ($hit) => $hit['_source'], $response['hits']['hits']);
+    }
+
+    public function deleteUsers(): void
+    {
+        $this->elasticsearchService->delete('users');
     }
 }
