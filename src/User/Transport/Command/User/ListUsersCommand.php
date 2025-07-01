@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace App\User\Transport\Command\User;
 
 use App\General\Transport\Command\Traits\SymfonyStyleTrait;
-use App\Role\Application\Security\Interfaces\RolesServiceInterface;
-use App\User\Application\Resource\UserResource;
-use App\User\Domain\Entity\User;
-use App\User\Domain\Entity\UserGroup;
-use Closure;
+use App\User\Application\Service\Interfaces\UserElasticsearchServiceInterface;
+use App\User\Domain\Repository\Interfaces\UserRepositoryInterface;
+use Doctrine\ORM\Exception\NotSupported;
 use Override;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -18,29 +16,25 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
-use function array_map;
-use function implode;
-use function sprintf;
-
 /**
  * @package App\User
  */
 #[AsCommand(
     name: self::NAME,
-    description: 'Console command to list users',
+    description: 'Console command to index all users',
 )]
 class ListUsersCommand extends Command
 {
     use SymfonyStyleTrait;
 
-    final public const string NAME = 'user:list';
+    final public const string NAME = 'user:index';
 
     /**
      * @throws LogicException
      */
     public function __construct(
-        private readonly UserResource $userResource,
-        private readonly RolesServiceInterface $roles,
+        private readonly UserRepositoryInterface $userRepository,
+        private readonly UserElasticsearchServiceInterface $userElasticsearchService,
     ) {
         parent::__construct();
     }
@@ -56,52 +50,23 @@ class ListUsersCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = $this->getSymfonyStyle($input, $output);
-        $headers = [
-            'Id',
-            'Username',
-            'Email',
-            'Full name',
-            'Roles (inherited)',
-            'Groups',
-        ];
-        $io->title('Current users');
-        $io->table($headers, $this->getRows());
-
+        $io->title('Start User Indexation');
+        $this->getRows();
+        $io->title('Success User Indexation');
         return 0;
     }
 
     /**
      * Getter method for formatted user rows for console table.
      *
-     * @throws Throwable
-     *
-     * @return array<int, string>
+     * @throws NotSupported
+     * @return void
      */
-    private function getRows(): array
+    private function getRows(): void
     {
-        return array_map($this->getFormatterUser(), $this->userResource->find(orderBy: [
-            'username' => 'ASC',
-        ]));
-    }
-
-    /**
-     * Getter method for user formatter closure. This closure will format single User entity for console table.
-     */
-    private function getFormatterUser(): Closure
-    {
-        $userGroupFormatter = static fn (UserGroup $userGroup): string => sprintf(
-            '%s (%s)',
-            $userGroup->getName(),
-            $userGroup->getRole()->getId(),
-        );
-
-        return fn (User $user): array => [
-            $user->getId(),
-            $user->getUsername(),
-            $user->getEmail(),
-            $user->getFirstName() . ' ' . $user->getLastName(),
-            implode(",\n", $this->roles->getInheritedRoles($user->getRoles())),
-            implode(",\n", $user->getUserGroups()->map($userGroupFormatter)->toArray()),
-        ];
+        $users = $this->userRepository->findAll();
+        foreach ($users as $user) {
+            $this->userElasticsearchService->indexUserInElasticsearch($user);
+        }
     }
 }

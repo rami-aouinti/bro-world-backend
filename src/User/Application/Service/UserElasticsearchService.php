@@ -31,6 +31,9 @@ readonly class UserElasticsearchService implements UserElasticsearchServiceInter
             'firstName' => $user->getFirstName(),
             'lastName' => $user->getLastName(),
             'username' => $user->getUsername(),
+            'email' => $user->getEmail(),
+            'enabled' => $user->isEnabled(),
+            'photo' => $user->getProfile()?->getPhoto() ?? 'https://bro-world-space.com/img/person.png',
         ];
 
         $this->elasticsearchService->index(
@@ -54,6 +57,6 @@ readonly class UserElasticsearchService implements UserElasticsearchServiceInter
             ],
         );
 
-        return array_map(fn ($hit) => $hit['_source'], $response['hits']['hits']);
+        return array_map(static fn ($hit) => $hit['_source'], $response['hits']['hits']);
     }
 }
