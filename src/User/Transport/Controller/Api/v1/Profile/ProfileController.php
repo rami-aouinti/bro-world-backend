@@ -158,10 +158,13 @@ readonly class ProfileController
             'email' => $user->getEmail(),
             'enabled' => $user->isEnabled(),
             'stories' => [],
+            'roles' => $user->getRoles(),
             'friends' => [],
             'photo' => $user->getProfile()?->getPhoto() ?? 'https://bro-world-space.com/img/person.png',
         ];
-
+        /** @var array<int, string> $roles */
+        $roles = $document['roles'];
+        $document['roles'] = $this->rolesService->getInheritedRoles($roles);
         foreach ($user->getStories() as $key => $story) {
             $document['stories'][$key]['id'] = $story->getId();
             $document['stories'][$key]['mediaPath']  = $story->getMediaPath();

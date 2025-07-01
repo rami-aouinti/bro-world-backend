@@ -154,9 +154,12 @@ class IndexController
             'enabled' => $user->isEnabled(),
             'stories' => [],
             'friends' => [],
+            'roles' => $user->getRoles(),
             'photo' => $user->getProfile()?->getPhoto() ?? 'https://bro-world-space.com/img/person.png',
         ];
-
+        /** @var array<int, string> $roles */
+        $roles = $document['roles'];
+        $document['roles'] = $this->rolesService->getInheritedRoles($roles);
         foreach ($user->getStories() as $key => $story) {
             $document['stories'][$key]['id'] = $story->getId();
             $document['stories'][$key]['mediaPath']  = $story->getMediaPath();
