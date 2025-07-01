@@ -62,7 +62,7 @@ readonly class FeedStoriesController
                 ),
                 true,
             );
-            return json_decode($data, true);
+            return new JsonResponse($data);
         });
     }
 }

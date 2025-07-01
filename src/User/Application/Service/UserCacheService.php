@@ -10,6 +10,7 @@ use App\User\Application\Service\Interfaces\UserElasticsearchServiceInterface;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Repository\Interfaces\UserRepositoryInterface;
 use Psr\Cache\InvalidArgumentException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -52,7 +53,7 @@ readonly class UserCacheService implements UserCacheServiceInterface
         $this->userCache->get('users_list', function (ItemInterface $item) {
             $item->expiresAfter(31536000);
 
-            return json_decode(
+            $data =  JSON::decode(
                 $this->serializer->serialize(
                     $this->userRepository->findAll(),
                     'json',
@@ -61,10 +62,8 @@ readonly class UserCacheService implements UserCacheServiceInterface
                     ]
                 ),
                 true,
-                512,
-                JSON_THROW_ON_ERROR
             );
-
+            return new JsonResponse($data);
         });
     }
 }

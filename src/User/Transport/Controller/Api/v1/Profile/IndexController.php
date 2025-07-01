@@ -111,7 +111,7 @@ class IndexController
             /** @var array<int, string> $roles */
             $roles = $profile['roles'];
             $profile['roles'] = $this->rolesService->getInheritedRoles($roles);
-            return json_decode($profile, true);
+            return new JsonResponse($profile);
         });
 
         return new JsonResponse($output);
