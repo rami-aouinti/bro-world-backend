@@ -8,6 +8,7 @@ use App\General\Domain\Utils\JSON;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Repository\Interfaces\StoryRepositoryInterface;
 use Closure;
+use JsonException;
 use OpenApi\Attributes as OA;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,6 +17,7 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -40,6 +42,8 @@ readonly class FeedStoriesController
      * @param User $loggedInUser
      *
      * @throws InvalidArgumentException
+     * @throws ExceptionInterface
+     * @throws JsonException
      * @return JsonResponse
      */
     #[Route(
@@ -50,35 +54,18 @@ readonly class FeedStoriesController
     public function __invoke(User $loggedInUser): JsonResponse
     {
         $cacheKey = 'stories_users_' . $loggedInUser->getId();
-        return $this->userCache->get($cacheKey, function (ItemInterface $item) use ($loggedInUser) {
-            $item->expiresAfter(31536000);
+        $stories = $this->userCache->get($cacheKey, $this->storyRepository->availableStories($loggedInUser));
 
-            $data = JSON::decode(
-                $this->serializer->serialize(
-                    $this->storyRepository->availableStories($loggedInUser),
-                    'json',
-                    [
-                        'groups' => 'Story',
-                    ]
-                ),
-                true,
-            );
-            return new JsonResponse($data);
-        });
-    }
-
-    /**
-     *
-     * @param string $slug
-     *
-     * @return Closure
-     */
-    private function getClosure(string $slug): Closure
-    {
-        return function (ItemInterface $item) use ($slug): array {
-            $item->expiresAfter(31536000);
-
-            return $this->getFormattedPost($slug);
-        };
+        $data = JSON::decode(
+            $this->serializer->serialize(
+                $stories,
+                'json',
+                [
+                    'groups' => 'Story',
+                ]
+            ),
+            true,
+        );
+        return new JsonResponse($data);
     }
 }

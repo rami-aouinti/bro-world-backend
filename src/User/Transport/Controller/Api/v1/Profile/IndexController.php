@@ -154,6 +154,16 @@ class IndexController
             'enabled' => $user->isEnabled(),
             'stories' => [],
             'friends' => [],
+            'profile' => [
+                'id' => $user->getProfile()?->getId(),
+                'title' => $user->getProfile()?->getTitle(),
+                'phone' => $user->getProfile()?->getPhone(),
+                'birthday' => $user->getProfile()?->getBirthday(),
+                'gender' => $user->getProfile()?->getGender(),
+                'photo' => $user->getProfile()?->getPhoto(),
+                'description' => $user->getProfile()?->getDescription(),
+                'address' => $user->getProfile()?->getAddress()
+            ],
             'roles' => $user->getRoles(),
             'photo' => $user->getProfile()?->getPhoto() ?? 'https://bro-world-space.com/img/person.png',
         ];
@@ -194,7 +204,7 @@ class IndexController
             }
 
             $document['friends'][$key] = [
-                'user' => $otherUser,
+                'user' => $otherUser->getId(),
                 'status' => $status,
             ];
         }

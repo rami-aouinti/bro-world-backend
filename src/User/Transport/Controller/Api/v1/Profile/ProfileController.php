@@ -160,6 +160,16 @@ readonly class ProfileController
             'stories' => [],
             'roles' => $user->getRoles(),
             'friends' => [],
+            'profile' => [
+                'id' => $user->getProfile()?->getId(),
+                'title' => $user->getProfile()?->getTitle(),
+                'phone' => $user->getProfile()?->getPhone(),
+                'birthday' => $user->getProfile()?->getBirthday(),
+                'gender' => $user->getProfile()?->getGender(),
+                'photo' => $user->getProfile()?->getPhoto(),
+                'description' => $user->getProfile()?->getDescription(),
+                'address' => $user->getProfile()?->getAddress()
+            ],
             'photo' => $user->getProfile()?->getPhoto() ?? 'https://bro-world-space.com/img/person.png',
         ];
         /** @var array<int, string> $roles */
@@ -170,7 +180,6 @@ readonly class ProfileController
             $document['stories'][$key]['mediaPath']  = $story->getMediaPath();
             $document['stories'][$key]['expiresAt']  = $story->getExpiresAt();
         }
-
         $allUsers = $this->userRepository->findAll();
 
         foreach ($allUsers as $key => $otherUser) {
@@ -199,7 +208,7 @@ readonly class ProfileController
             }
 
             $document['friends'][$key] = [
-                'user' => $otherUser,
+                'user' => $otherUser->getId(),
                 'status' => $status,
             ];
         }
