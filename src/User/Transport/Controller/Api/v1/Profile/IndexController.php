@@ -138,39 +138,39 @@ class IndexController
     }
 
     /**
-     * @param User $user
+     * @param User $loggedInUser
      *
      * @throws NotSupported
      * @return array
      */
-    private function getFormattedUser(User $user): array
+    private function getFormattedUser(User $loggedInUser): array
     {
         $document = [
-            'id' => $user->getId(),
-            'firstName' => $user->getFirstName(),
-            'lastName' => $user->getLastName(),
-            'username' => $user->getUsername(),
-            'email' => $user->getEmail(),
-            'enabled' => $user->isEnabled(),
+            'id' => $loggedInUser->getId(),
+            'firstName' => $loggedInUser->getFirstName(),
+            'lastName' => $loggedInUser->getLastName(),
+            'username' => $loggedInUser->getUsername(),
+            'email' => $loggedInUser->getEmail(),
+            'enabled' => $loggedInUser->isEnabled(),
             'stories' => [],
             'friends' => [],
             'profile' => [
-                'id' => $user->getProfile()?->getId(),
-                'title' => $user->getProfile()?->getTitle(),
-                'phone' => $user->getProfile()?->getPhone(),
-                'birthday' => $user->getProfile()?->getBirthday(),
-                'gender' => $user->getProfile()?->getGender(),
-                'photo' => $user->getProfile()?->getPhoto(),
-                'description' => $user->getProfile()?->getDescription(),
-                'address' => $user->getProfile()?->getAddress()
+                'id' => $loggedInUser->getProfile()?->getId(),
+                'title' => $loggedInUser->getProfile()?->getTitle(),
+                'phone' => $loggedInUser->getProfile()?->getPhone(),
+                'birthday' => $loggedInUser->getProfile()?->getBirthday(),
+                'gender' => $loggedInUser->getProfile()?->getGender(),
+                'photo' => $loggedInUser->getProfile()?->getPhoto(),
+                'description' => $loggedInUser->getProfile()?->getDescription(),
+                'address' => $loggedInUser->getProfile()?->getAddress()
             ],
-            'roles' => $user->getRoles(),
-            'photo' => $user->getProfile()?->getPhoto() ?? 'https://bro-world-space.com/img/person.png',
+            'roles' => $loggedInUser->getRoles(),
+            'photo' => $loggedInUser->getProfile()?->getPhoto() ?? 'https://bro-world-space.com/img/person.png',
         ];
         /** @var array<int, string> $roles */
         $roles = $document['roles'];
         $document['roles'] = $this->rolesService->getInheritedRoles($roles);
-        foreach ($user->getStories() as $key => $story) {
+        foreach ($loggedInUser->getStories() as $key => $story) {
             $document['stories'][$key]['id'] = $story->getId();
             $document['stories'][$key]['mediaPath']  = $story->getMediaPath();
             $document['stories'][$key]['expiresAt']  = $story->getExpiresAt();
@@ -179,18 +179,18 @@ class IndexController
         $allUsers = $this->userRepository->findAll();
 
         foreach ($allUsers as $key => $otherUser) {
-            if ($otherUser === $user) {
+            if ($otherUser === $loggedInUser) {
                 continue;
             }
 
             $iFollowHim = $this->followRepository->findOneBy([
-                'follower' => $user,
+                'follower' => $loggedInUser,
                 'followed' => $otherUser,
             ]);
 
             $heFollowsMe = $this->followRepository->findOneBy([
                 'follower' => $otherUser,
-                'followed' => $user,
+                'followed' => $loggedInUser,
             ]);
 
             if ($iFollowHim && $heFollowsMe) {

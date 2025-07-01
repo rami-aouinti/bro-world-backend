@@ -102,12 +102,15 @@ readonly class UserElasticsearchService implements UserElasticsearchServiceInter
                 'status' => $status,
             ];
         }
-
-        $this->elasticsearchService->update(
-            'users',
-            $user->getId(),
-            $document
-        );
+        $this->elasticsearchService->delete('users');
+        $users = $this->userRepository->findAll();
+        foreach ($users as $user) {
+            $this->elasticsearchService->index(
+                'users',
+                $user->getId(),
+                $document
+            );
+        }
     }
 
     public function searchUsers(string $query): array
