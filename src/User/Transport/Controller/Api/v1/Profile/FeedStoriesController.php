@@ -52,7 +52,7 @@ readonly class FeedStoriesController
         return $this->userCache->get($cacheKey, function (ItemInterface $item) use ($loggedInUser) {
             $item->expiresAfter(31536000);
 
-            return JSON::decode(
+            $data = JSON::decode(
                 $this->serializer->serialize(
                     $this->storyRepository->availableStories($loggedInUser),
                     'json',
@@ -62,6 +62,7 @@ readonly class FeedStoriesController
                 ),
                 true,
             );
+            return json_decode($data, true);
         });
     }
 }

@@ -52,7 +52,7 @@ readonly class UserCacheService implements UserCacheServiceInterface
         $this->userCache->get('users_list', function (ItemInterface $item) {
             $item->expiresAfter(31536000);
 
-            return JSON::decode(
+            $data =  JSON::decode(
                 $this->serializer->serialize(
                     $this->userRepository->findAll(),
                     'json',
@@ -62,6 +62,7 @@ readonly class UserCacheService implements UserCacheServiceInterface
                 ),
                 true,
             );
+            return json_decode($data, true);
         });
     }
 }
