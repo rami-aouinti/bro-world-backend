@@ -63,7 +63,8 @@ readonly class UserCacheService implements UserCacheServiceInterface
                 ),
                 true,
             );
-            return new JsonResponse($data);
+
+            return (new JsonResponse($data))->getContent();
         });
     }
 }
