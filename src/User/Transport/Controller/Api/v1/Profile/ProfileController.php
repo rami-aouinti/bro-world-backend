@@ -8,20 +8,20 @@ use App\General\Domain\Utils\JSON;
 use App\Role\Application\Security\Interfaces\RolesServiceInterface;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Repository\Interfaces\UserRepositoryInterface;
-use Doctrine\ORM\NonUniqueResultException;
-use JsonException;
 use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use OpenApi\Attributes\JsonContent;
 use OpenApi\Attributes\Property;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 /**
  * @package App\User
@@ -33,7 +33,8 @@ readonly class ProfileController
     public function __construct(
         private SerializerInterface $serializer,
         private RolesServiceInterface $rolesService,
-        private UserRepositoryInterface $userRepository
+        private UserRepositoryInterface $userRepository,
+        private CacheInterface $userCache
     ) {
     }
 
@@ -43,9 +44,7 @@ readonly class ProfileController
      * @param User   $loggedInUser
      * @param string $username
      *
-     * @throws ExceptionInterface
-     * @throws JsonException
-     * @throws NonUniqueResultException
+     * @throws InvalidArgumentException
      * @return JsonResponse
      */
     #[Route(
@@ -96,20 +95,24 @@ readonly class ProfileController
     )]
     public function __invoke(User $loggedInUser, string $username): JsonResponse
     {
-        /** @var array<string, string|array<string, string>> $output */
-        $output = JSON::decode(
-            $this->serializer->serialize(
-                $this->userRepository->loadUserByIdentifier($username, false),
-                'json',
-                [
-                    'groups' => User::SET_USER_PROFILE,
-                ]
-            ),
-            true,
-        );
-        /** @var array<int, string> $roles */
-        $roles = $output['roles'];
-        $output['roles'] = $this->rolesService->getInheritedRoles($roles);
+        $cacheKey = 'user_profile_' . $loggedInUser->getId();
+        $output = $this->userCache->get($cacheKey, function (ItemInterface $item) use ($username) {
+            $item->expiresAfter(3600);
+
+            $profile = JSON::decode(
+                $this->serializer->serialize(
+                    $this->userRepository->loadUserByIdentifier($username, false),
+                    'json',
+                    [
+                        'groups' => User::SET_USER_PROFILE,
+                    ]
+                ),
+                true,
+            );
+            /** @var array<int, string> $roles */
+            $roles = $profile['roles'];
+            $profile['roles'] = $this->rolesService->getInheritedRoles($roles);
+        });
 
         return new JsonResponse($output);
     }
