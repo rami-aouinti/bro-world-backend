@@ -173,6 +173,20 @@ readonly class MessengerController
 
             $em->persist($conversation);
             $em->flush();
+
+            foreach ($data['participants'] ?? [] as $userId) {
+                $user = $em->getRepository(User::class)->find($userId);
+                if ($user) {
+                    $message = new Message();
+                    $message->setMediaUrl('test.com');
+                    $message->setSender($user);
+                    $message->setConversation($conversation);
+                    $em->persist($message);
+                    $em->flush();
+                }
+            }
+
+
         }
 
         return new JsonResponse(['id' => $conversation->getId()]);
