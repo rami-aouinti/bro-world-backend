@@ -48,7 +48,7 @@ readonly class ConversationController
                 'username' => $u->getUsername(),
                 'firstName' => $u->getFirstName(),
                 'lastName' => $u->getLastName(),
-                'avatar' => $u->getProfile()?->getPhoto() ?? '/img/person.png']
+                'avatar' => $u->getProfile()?->getPhoto() ?? 'https://bro-world-space.com/img/person.png']
             )];
         return new JsonResponse($conversationArray);
     }

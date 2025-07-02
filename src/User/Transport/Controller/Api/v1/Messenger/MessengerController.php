@@ -189,17 +189,22 @@ readonly class MessengerController
 
         }
 
+        $participants = [];
+        foreach ($conversation->getParticipants() as $key => $participant) {
+            $participants[$key] = [
+                'id' => $participant->getId(),
+                'username' => $participant->getUsername(),
+                'firstName' => $participant->getFirstName(),
+                'lastName' => $participant->getLastName(),
+                'avatar' => $participant->getProfile()?->getPhoto() ?? 'https://bro-world-space.com/img/person.png'
+            ];
+        }
         return new JsonResponse([
             'id' => $conversation->getId(),
             'title' => $conversation->getTitle(),
             'isGroup' => $conversation->isGroup(),
-            'participants' => $conversation->getParticipants()->map(fn(User $u) => [
-                'id' => $u->getId(),
-                'username' => $u->getUsername(),
-                'firstName' => $u->getFirstName(),
-                'lastName' => $u->getLastName(),
-                'avatar' => $u->getProfile()?->getPhoto() ?? '/img/person.png']
-            )]);
+            'participants' => $participants
+        ]);
     }
 
     /**
