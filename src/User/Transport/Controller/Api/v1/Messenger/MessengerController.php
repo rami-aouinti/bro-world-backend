@@ -13,6 +13,9 @@ use App\Messenger\Infrastructure\Repository\ConversationRepository;
 use App\User\Domain\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\NotSupported;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\TransactionRequiredException;
 use JsonException;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -106,25 +109,66 @@ readonly class MessengerController
 
 
     /**
+     * @param Request                $request
+     * @param EntityManagerInterface $em
+     *
      * @throws JsonException
+     * @throws NotSupported
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @throws TransactionRequiredException
+     * @return JsonResponse
      */
     #[Route('/v1/messenger/conversations', methods: ['POST'])]
     public function createConversation(Request $request, EntityManagerInterface $em): JsonResponse
     {
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        $conversation = new Conversation();
-        $conversation->setTitle($data['title'] ?? null);
-        $conversation->setIsGroup($data['isGroup'] ?? false);
-
+        $users = [];
+        $i = 0;
         foreach ($data['participants'] ?? [] as $userId) {
-            $user = $em->getRepository(User::class)->find($userId);
-            if ($user) {
-                $conversation->getParticipants()->add($user);
+            $users[$i] = $userId;
+            $i++;
+        }
+        $conversations = $this->conversationRepository->findAll();
+
+        $conversationArray = [];
+        foreach ($conversations as $key => $conversation) {
+            foreach ($conversation->getParticipants() as $participant) {
+                if(($participant->getId() === $users[0])) {
+                    $conversationArray[$key]['team1'] = $conversation->getId();
+                }
+                if(($participant->getId() === $users[1])) {
+                    $conversationArray[$key]['team2'] = $conversation->getId();
+                }
             }
         }
 
-        $em->persist($conversation);
-        $em->flush();
+        $oldConversation = false;
+        $oldConversationId = null;
+        foreach ($conversationArray as $convArray) {
+            if($convArray['team1'] === $convArray['team2']) {
+                $oldConversation = true;
+                $oldConversationId = $convArray['team1'];
+            }
+        }
+
+        if($oldConversation) {
+            $conversation = $this->conversationRepository->find($oldConversationId);
+        } else {
+            $conversation = new Conversation();
+            $conversation->setTitle($data['title'] ?? null);
+            $conversation->setIsGroup($data['isGroup'] ?? false);
+
+            foreach ($data['participants'] ?? [] as $userId) {
+                $user = $em->getRepository(User::class)->find($userId);
+                if ($user) {
+                    $conversation->getParticipants()->add($user);
+                }
+            }
+
+            $em->persist($conversation);
+            $em->flush();
+        }
 
         return new JsonResponse(['id' => $conversation->getId()]);
     }
