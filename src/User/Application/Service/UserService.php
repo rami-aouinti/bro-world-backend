@@ -14,7 +14,9 @@ use App\User\Domain\Entity\User;
 use App\User\Domain\Message\UserCreatedMessage;
 use App\User\Domain\Repository\Interfaces\UserRepositoryInterface;
 use App\User\Infrastructure\Repository\StoryRepository;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\OptimisticLockException;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -173,15 +175,13 @@ readonly class UserService
      * @param Request $request
      *
      * @throws Throwable
-     * @return Story|JsonResponse
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @return Story|null
      */
-    public function uploadStory(User $user, Request $request): Story|JsonResponse
+    public function uploadStory(User $user, Request $request): ?Story
     {
         $file = $request->files->get('file');
-
-        if (!$file) {
-            return new JsonResponse(['error' => 'No file uploaded.'], 400);
-        }
 
         $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $safeFilename = $this->slugger->slug($originalFilename);
@@ -193,7 +193,7 @@ readonly class UserService
                 $newFilename
             );
         } catch (FileException $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 500);
+            return null;
         }
         $baseUrl = $request->getSchemeAndHttpHost();
         $relativePath = '/uploads/stories/' . $newFilename;
