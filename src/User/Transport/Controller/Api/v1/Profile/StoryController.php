@@ -66,6 +66,7 @@ readonly class StoryController
         );
         $cacheKey = 'stories_users_' . $loggedInUser->getId();
         $this->userCache->delete($cacheKey);
+        $this->userCache->delete('profile:stories_' . $loggedInUser->getId());
         $this->userCache->get($cacheKey, fn (ItemInterface $item) => $this->getClosure($loggedInUser)($item));
 
         /** @var array<string, string|array<string, string>> $output */
