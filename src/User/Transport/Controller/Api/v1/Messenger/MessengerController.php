@@ -189,7 +189,10 @@ readonly class MessengerController
 
         }
 
-        return new JsonResponse(['id' => $conversation->getId()]);
+        return new JsonResponse([
+            'id' => $conversation->getId(),
+            'participants' => $conversation->getParticipants()
+        ]);
     }
 
     /**
