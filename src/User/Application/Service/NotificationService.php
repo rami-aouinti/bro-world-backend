@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\User\Application\Service;
 
 use App\General\Infrastructure\Service\ApiProxyService;
+use App\User\Domain\Entity\Story;
 use App\User\Domain\Entity\User;
 use JsonException;
 use Symfony\Component\HttpFoundation\Request;
@@ -52,6 +53,34 @@ readonly class NotificationService
             'pushSubtitle' => $user?->getProfile()?->getPhoto(),
             'pushContent' => $content,
             'scopeTarget' => '["' . $user?->getId() . '"]',
+        ];
+
+        $this->createPush($token, $notification);
+    }
+
+    /**
+     * @param string|null $token
+     * @param string|null $channel
+     * @param Story|null  $story
+     *
+     * @throws JsonException
+     * @throws TransportExceptionInterface
+     * @return void
+     */
+    public function createNotificationStory(
+        ?string $token,
+        ?string $channel,
+        ?Story $story
+    ): void
+    {
+        $notification = [
+            'channel' => $channel,
+            'scope' => 'INDIVIDUAL',
+            'topic' => '/stories/' . $story?->getUser()->getId(),
+            'pushTitle' => $story?->getUser()?->getFirstName() . ' ' . $story?->getUser()?->getFirstName(),
+            'pushSubtitle' => $story?->getUser()?->getProfile()?->getPhoto(),
+            'pushContent' => $story?->getMediaPath(),
+            'scopeTarget' => '["' . $story?->getUser()?->getId() . '"]',
         ];
 
         $this->createPush($token, $notification);

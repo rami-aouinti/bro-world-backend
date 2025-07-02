@@ -202,8 +202,6 @@ readonly class UserService
         $story = new Story($user, $mediaPath);
 
         $this->storyRepository->save($story);
-        //$this->mercureService->create($user->getUsername(), 'story');
-
         return $story;
     }
 

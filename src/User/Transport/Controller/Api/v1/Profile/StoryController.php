@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\User\Transport\Controller\Api\v1\Profile;
 
 use App\General\Domain\Utils\JSON;
+use App\User\Application\Service\NotificationService;
 use App\User\Application\Service\UserService;
 use App\User\Domain\Entity\User;
 use JsonException;
@@ -30,7 +31,8 @@ readonly class StoryController
     public function __construct(
         private CacheInterface $userCache,
         private SerializerInterface $serializer,
-        private UserService $userService
+        private UserService $userService,
+        private NotificationService $notificationService
     ) {
     }
 
@@ -55,7 +57,11 @@ readonly class StoryController
         $cacheKey = 'stories_users_' . $loggedInUser->getId();
         $this->userCache->delete($cacheKey);
         $story = $this->userService->uploadStory($loggedInUser, $request);
-
+        $this->notificationService->createNotificationStory(
+            $request->headers->get('Authorization'),
+            'PUSH',
+            $story
+        );
         /** @var array<string, string|array<string, string>> $output */
         $output = JSON::decode(
             $this->serializer->serialize(
