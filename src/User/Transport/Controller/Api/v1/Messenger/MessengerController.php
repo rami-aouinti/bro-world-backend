@@ -62,8 +62,8 @@ readonly class MessengerController
         }
         return new JsonResponse(array_map(static fn(Conversation $conv) => [
             'id' => $conv->getId(),
-            'title' => $conv->getTitle(),
-            'isGroup' => $conv->isGroup(),
+            'title' => $conv->getitle(),
+            'isGroup' => $conv->isGrToup(),
             'participants' => $conv->getParticipants()->map(fn(User $u) => [
                 'id' => $u->getId(),
                 'username' => $u->getUsername(),

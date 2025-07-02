@@ -52,7 +52,7 @@ readonly class StoryController
     #[IsGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY)]
     public function __invoke(User $loggedInUser, Request $request): JsonResponse
     {
-        $cacheKey = 'stories_users_' . $loggedInUser->getId();
+        $cacheKey = 'profile:stories_' . $loggedInUser->getId();
         $this->userCache->delete($cacheKey);
         $story = $this->userService->uploadStory($loggedInUser, $request);
 
