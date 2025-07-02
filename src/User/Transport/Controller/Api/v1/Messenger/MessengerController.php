@@ -147,23 +147,13 @@ readonly class MessengerController
         $oldConversationId = null;
 
         foreach ($conversationArray as $key => $convArray) {
-            if(isset($convArray[$key]['team1'])) {
-                if(isset($convArray[$key]['team2'])) {
-
-                    if($convArray[$key]['team1'] === $convArray[$key]['team2']) {
-                        $oldConversation = true;
-                        $oldConversationId = $convArray[$key]['team1'];
-                    }
-                }
+            if(isset($convArray[$key]['team1'], $convArray[$key]['team2']) && $convArray[$key]['team1'] === $convArray[$key]['team2']) {
+                $oldConversation = true;
+                $oldConversationId = $convArray[$key]['team1'];
             }
-            if(isset($convArray[$key]['team2'])) {
-
-                if(isset($convArray[$key]['team1'])) {
-                    if($convArray[$key]['team1'] === $convArray[$key]['team2']) {
-                        $oldConversation = true;
-                        $oldConversationId = $convArray[$key]['team1'];
-                    }
-                }
+            if(isset($convArray[$key]['team2'], $convArray[$key]['team1']) && $convArray[$key]['team1'] === $convArray[$key]['team2']) {
+                $oldConversation = true;
+                $oldConversationId = $convArray[$key]['team1'];
             }
         }
 
