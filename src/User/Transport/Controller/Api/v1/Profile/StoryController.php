@@ -64,10 +64,10 @@ readonly class StoryController
             'PUSH',
             $story
         );
-        $cacheKey = 'profile:stories_' . $loggedInUser->getId();
+        $cacheKey = 'stories_users_' . $loggedInUser->getId();
         $this->userCache->delete($cacheKey);
-        //$this->userCache->delete('profile:stories_' . $loggedInUser->getId());
         $this->userCache->get($cacheKey, fn (ItemInterface $item) => $this->getClosure($loggedInUser)($item));
+        $this->userCache->delete('profile:stories_' . $loggedInUser->getId());
 
         /** @var array<string, string|array<string, string>> $output */
         $output = JSON::decode(
