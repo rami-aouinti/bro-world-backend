@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace App\User\Application\Service;
 
 use App\General\Infrastructure\Service\ApiProxyService;
-use App\User\Domain\Entity\Story;
 use App\User\Domain\Entity\User;
+use App\User\Domain\Repository\Interfaces\StoryRepositoryInterface;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\TransactionRequiredException;
 use JsonException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
@@ -23,7 +26,8 @@ readonly class NotificationService
     private const string CREATE_NOTIFICATION_PATH = 'api/v1/platform/notifications';
 
     public function __construct(
-        private ApiProxyService $proxyService
+        private ApiProxyService $proxyService,
+        private StoryRepositoryInterface $storyRepository
     ) {}
 
     /**
@@ -61,18 +65,22 @@ readonly class NotificationService
     /**
      * @param string|null $token
      * @param string|null $channel
-     * @param Story|null  $story
+     * @param string|null $storyId
      *
      * @throws JsonException
      * @throws TransportExceptionInterface
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @throws TransactionRequiredException
      * @return void
      */
     public function createNotificationStory(
         ?string $token,
         ?string $channel,
-        ?Story $story
+        ?string $storyId
     ): void
     {
+        $story = $this->storyRepository->find($storyId);
         $notification = [
             'channel' => $channel,
             'scope' => 'INDIVIDUAL',

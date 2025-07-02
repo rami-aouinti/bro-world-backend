@@ -8,6 +8,7 @@ use App\General\Domain\Utils\JSON;
 use App\User\Application\Service\NotificationService;
 use App\User\Application\Service\UserService;
 use App\User\Domain\Entity\User;
+use App\User\Domain\Message\NotificationCreatedMessage;
 use App\User\Domain\Repository\Interfaces\StoryRepositoryInterface;
 use Closure;
 use JsonException;
@@ -15,6 +16,7 @@ use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -35,8 +37,8 @@ readonly class StoryController
         private CacheInterface $userCache,
         private SerializerInterface $serializer,
         private UserService $userService,
-        private NotificationService $notificationService,
-        private StoryRepositoryInterface $storyRepository
+        private StoryRepositoryInterface $storyRepository,
+        private MessageBusInterface $bus
     ) {
     }
 
@@ -59,11 +61,15 @@ readonly class StoryController
     public function __invoke(User $loggedInUser, Request $request): JsonResponse
     {
         $story = $this->userService->uploadStory($loggedInUser, $request);
-        $this->notificationService->createNotificationStory(
-            $request->headers->get('Authorization'),
-            'PUSH',
-            $story
+
+        $this->bus->dispatch(
+            new NotificationCreatedMessage(
+                $loggedInUser->getId(),
+                $story?->getId(),
+                $request->headers->get('Authorization')
+            )
         );
+
         $cacheKey = 'stories_users_' . $loggedInUser->getId();
         $this->userCache->delete($cacheKey);
         $this->userCache->get($cacheKey, fn (ItemInterface $item) => $this->getClosure($loggedInUser)($item));
