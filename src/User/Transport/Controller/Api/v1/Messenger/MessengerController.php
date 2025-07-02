@@ -191,8 +191,15 @@ readonly class MessengerController
 
         return new JsonResponse([
             'id' => $conversation->getId(),
-            'participants' => $conversation->getParticipants()
-        ]);
+            'title' => $conversation->getTitle(),
+            'isGroup' => $conversation->isGroup(),
+            'participants' => $conversation->getParticipants()->map(fn(User $u) => [
+                'id' => $u->getId(),
+                'username' => $u->getUsername(),
+                'firstName' => $u->getFirstName(),
+                'lastName' => $u->getLastName(),
+                'avatar' => $u->getProfile()?->getPhoto() ?? '/img/person.png']
+            )]);
     }
 
     /**
