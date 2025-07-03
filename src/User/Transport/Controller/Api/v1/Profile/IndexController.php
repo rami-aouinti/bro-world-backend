@@ -52,6 +52,7 @@ class IndexController
      * @throws InvalidArgumentException
      * @throws JsonException
      * @throws ExceptionInterface
+     * @throws NotSupported
      * @return JsonResponse
      */
     #[Route(
@@ -102,9 +103,7 @@ class IndexController
     )]
     public function __invoke(User $loggedInUser): JsonResponse
     {
-        $cacheKey = 'user_profile_' . $loggedInUser->getId();
-        $user = $this->userCache->get($cacheKey, fn (ItemInterface $item) => $this->getClosure($loggedInUser)($item));
-
+        $user = $this->getFormattedUser($loggedInUser);
         $output = JSON::decode(
             $this->serializer->serialize(
                 $user,
