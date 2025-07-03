@@ -205,8 +205,16 @@ class IndexController
 
             $document['friends'][$key] = [
                 'user' => $otherUser->getId(),
+                'stories' => [],
                 'status' => $status,
             ];
+
+            foreach ($otherUser->getStories() as $otherKey => $story) {
+                $document['friends'][$key]['stories'][$otherKey]['id'] = $story->getId();
+                $document['friends'][$key]['stories'][$otherKey]['mediaPath']  = $story->getMediaPath();
+                $document['friends'][$key]['stories'][$otherKey]['expiresAt']  = $story->getExpiresAt();
+            }
+
         }
 
         return $document;
