@@ -7,6 +7,9 @@ namespace App\User\Infrastructure\DataFixtures\ORM;
 use App\General\Domain\Enum\Language;
 use App\General\Domain\Enum\Locale;
 use App\General\Domain\Rest\UuidHelper;
+use App\Media\Domain\Entity\File;
+use App\Media\Domain\Entity\Folder;
+use App\Media\Domain\Enum\FileType;
 use App\Role\Application\Security\Interfaces\RolesServiceInterface;
 use App\Tests\Utils\PhpUnitUtil;
 use App\User\Domain\Entity\User;
@@ -107,11 +110,69 @@ final class LoadUserData extends Fixture implements OrderedFixtureInterface
             $entity
         );
 
+
+
         // Persist entity
         $manager->persist($entity);
         // Create reference for later usage
         $this->addReference('User-' . $entity->getUsername(), $entity);
 
+        $this->createMediaSpace($entity, $manager);
         return true;
     }
+
+    /**
+     * @param User $user
+     * @param      $manager
+     *
+     * @return void
+     */
+    private function createMediaSpace(User $user, $manager): void
+    {
+        $recipes = new Folder();
+        $recipes->setName('Recipes');
+        $recipes->setIsPrivate(false);
+        $recipes->setIsFavorite(true);
+        $recipes->setUser($user);
+
+        $desserts = new Folder();
+        $desserts->setName('Desserts');
+        $desserts->setIsPrivate(false);
+        $desserts->setIsFavorite(false);
+        $desserts->setParent($recipes);
+        $desserts->setUser($user);
+        $recipes->getChildren()->add($desserts);
+
+        $file1 = $this->createFile('chocolate_cake.pdf', 45678, 'mp4', $desserts, $user);
+        $file2 = $this->createFile('chocolate_cake.pdf', 45678, 'mp3', $desserts, $user);
+        $file3 = $this->createFile('chocolate_cake.pdf', 45678, 'zip', $desserts, $user);
+
+        $xlsx = $this->createFile('recipe_index.xlsx', 32212, 'xlsx', $recipes, $user);
+
+        $manager->persist($recipes);
+        $manager->persist($desserts);
+        $manager->persist($file1);
+        $manager->persist($file2);
+        $manager->persist($file3);
+        $manager->persist($xlsx);
+
+        $manager->flush();
+    }
+    private function createFile(string $name, int $size, string $extension, Folder $folder, User $user): File
+    {
+        $type = FileType::fromExtension($extension);
+        $file = new File();
+        $file->setName($name);
+        $file->setType($type);
+        $file->setExtension($extension);
+        $file->setSize($size);
+        $file->setExtension($extension);
+        $file->setIsPrivate(false);
+        $file->setIsFavorite(false);
+        $file->setFolder($folder);
+        $file->setUser($user);
+        $file->setUrl('/uploads/' . $name);
+        return $file;
+    }
+
 }

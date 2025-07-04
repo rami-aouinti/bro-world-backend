@@ -39,3 +39,12 @@ user-controllers:
     prefix: /api
     defaults:
         _format: json
+
+media-controllers:
+    resource:
+        path: ../src/Media/Transport/Controller/Api/
+        namespace: App\Media\Transport\Controller\Api
+    type: attribute
+    prefix: /api
+    defaults:
+        _format: json

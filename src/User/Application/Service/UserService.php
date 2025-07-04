@@ -6,6 +6,7 @@ namespace App\User\Application\Service;
 
 use App\General\Domain\Enum\Language;
 use App\General\Domain\Enum\Locale;
+use App\General\Infrastructure\Service\ApiProxyService;
 use App\General\Infrastructure\Service\MercureService;
 use App\User\Application\Resource\UserResource;
 use App\User\Application\Service\Interfaces\UserCacheServiceInterface;
@@ -35,6 +36,9 @@ use function sprintf;
  */
 readonly class UserService
 {
+    private const string PATH = 'media';
+    private const string CREATE_MEDIA_PATH = 'v1/platform/media';
+
     public function __construct(
         private UserResource $userResource,
         private UserRepositoryInterface $userRepository,
@@ -42,6 +46,7 @@ readonly class UserService
         private UserCacheServiceInterface $userCacheService,
         private SluggerInterface $slugger,
         private MessageBusInterface $bus,
+        private ApiProxyService $proxyService,
         private string $storiesDirectory,
         private string $avatarDirectory
     ) {
@@ -235,5 +240,34 @@ readonly class UserService
         $relativePath = '/uploads/avatar/' . $newFilename;
 
         return $baseUrl . $relativePath;
+    }
+
+    /**
+     * @param Request $request
+     * @param string  $context
+     *
+     * @throws Throwable
+     * @return array
+     */
+    public function createMedia(Request $request, string $context): array
+    {
+        $mediasArray = [];
+        $medias = $this->proxyService->requestFile(
+            Request::METHOD_POST,
+            self::PATH,
+            $request,
+            [
+                'context' => $context
+            ],
+            self::CREATE_MEDIA_PATH
+        );
+
+        foreach ($medias as $media) {
+            if($media) {
+                $mediasArray[] = $media['id'];
+            }
+        }
+
+        return $mediasArray;
     }
 }
