@@ -12,6 +12,8 @@ use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use JsonException;
 use OpenApi\Attributes as OA;
+use Psr\Cache\CacheItemPoolInterface;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -29,8 +31,8 @@ use Symfony\Component\Serializer\SerializerInterface;
 readonly class UnfollowController
 {
     public function __construct(
-        private SerializerInterface $serializer,
-        private FollowRepositoryInterface $followRepository
+        private FollowRepositoryInterface $followRepository,
+        private CacheItemPoolInterface $cache
     ) {
     }
 
@@ -43,6 +45,7 @@ readonly class UnfollowController
      * @throws NotSupported
      * @throws ORMException
      * @throws OptimisticLockException
+     * @throws InvalidArgumentException
      * @return JsonResponse
      */
     #[Route(
@@ -52,6 +55,9 @@ readonly class UnfollowController
     #[IsGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY)]
     public function __invoke(User $loggedInUser, User $user): JsonResponse
     {
+        $cacheKey = 'user_profile_' . $loggedInUser->getId();
+        $this->cache->deleteItem($cacheKey);
+
         $follow = $this->followRepository->findOneBy([
             'follower' => $loggedInUser,
             'followed' => $user,
