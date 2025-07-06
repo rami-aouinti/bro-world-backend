@@ -62,7 +62,11 @@ readonly class FollowController
         $existing = $this->followRepository->findOneBy([
             'followed' => $loggedInUser,
             'follower' => $user,
-        ]);
+        ]) ??
+            $this->followRepository->findOneBy([
+                'followed' => $user,
+                'follower' => $loggedInUser,
+            ]);
 
         if ($existing) {
             $follow = new Follow($user, $loggedInUser);
