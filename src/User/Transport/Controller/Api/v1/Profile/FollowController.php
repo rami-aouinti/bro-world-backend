@@ -56,7 +56,9 @@ readonly class FollowController
     public function __invoke(User $loggedInUser, User $user): JsonResponse
     {
         $cacheKey = 'user_profile_' . $loggedInUser->getId();
+        $cacheKeyOther = 'user_profile_' . $user->getId();
         $this->cache->deleteItem($cacheKey);
+        $this->cache->deleteItem($cacheKeyOther);
         $existing = $this->followRepository->findOneBy([
             'follower' => $loggedInUser,
             'followed' => $user,
