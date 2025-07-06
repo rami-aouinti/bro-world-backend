@@ -65,8 +65,19 @@ readonly class FollowController
         ]);
 
         if ($existing) {
-            return new JsonResponse(['message' => 'Already following.'], 409);
-        }
+            /** @var array<string, string|array<string, string>> $output */
+            $output = JSON::decode(
+                $this->serializer->serialize(
+                    $existing,
+                    'json',
+                    [
+                        'groups' => User::SET_USER_PROFILE,
+                    ]
+                ),
+                true,
+            );
+
+            return new JsonResponse($output);        }
 
         $follow = new Follow($loggedInUser, $user);
 
