@@ -60,8 +60,8 @@ readonly class FollowController
         $this->cache->deleteItem($cacheKey);
         $this->cache->deleteItem($cacheKeyOther);
         $existing = $this->followRepository->findOneBy([
-            'followed' => $loggedInUser,
-            'follower' => $user,
+            'follower' => $loggedInUser,
+            'followed' => $user,
         ]);
 
         if ($existing) {
