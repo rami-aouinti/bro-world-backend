@@ -106,8 +106,8 @@ readonly class ProfileController
     )]
     public function __invoke(User $loggedInUser, string $username): JsonResponse
     {
-        $cacheKey = 'user_profile_' . $loggedInUser->getId();
         $userRepo = $this->userRepository->loadUserByIdentifier($username, false);
+        $cacheKey = 'user_profile_' . $userRepo?->getId();
         $user = $this->userCache->get($cacheKey, fn (ItemInterface $item) => $this->getClosure($userRepo)($item));
 
         $output = JSON::decode(
