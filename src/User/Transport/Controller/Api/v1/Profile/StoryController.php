@@ -85,7 +85,7 @@ readonly class StoryController
         foreach ($storiesFriends as $friendId) {
             $cacheKey = 'stories_users_' . $friendId;
             $this->userCache->delete($cacheKey);
-            $this->userCache->get($cacheKey, fn (ItemInterface $item) => $this->getClosure($friendId)($item));
+            $this->userCache->get($cacheKey, fn (ItemInterface $item) => $this->getClosure($this->userRepository->find($friendId))($item));
         }
 
         /** @var array<string, string|array<string, string>> $output */
