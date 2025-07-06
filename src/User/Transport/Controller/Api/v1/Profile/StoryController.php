@@ -10,7 +10,10 @@ use App\User\Application\Service\UserService;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Message\NotificationCreatedMessage;
 use App\User\Domain\Repository\Interfaces\StoryRepositoryInterface;
+use App\User\Infrastructure\Repository\FollowRepository;
+use App\User\Infrastructure\Repository\UserRepository;
 use Closure;
+use Doctrine\ORM\Exception\NotSupported;
 use JsonException;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -38,7 +41,9 @@ readonly class StoryController
         private SerializerInterface $serializer,
         private UserService $userService,
         private StoryRepositoryInterface $storyRepository,
-        private MessageBusInterface $bus
+        private MessageBusInterface $bus,
+        private UserRepository $userRepository,
+        private FollowRepository $followRepository
     ) {
     }
 
@@ -75,6 +80,14 @@ readonly class StoryController
         $this->userCache->get($cacheKey, fn (ItemInterface $item) => $this->getClosure($loggedInUser)($item));
         $this->userCache->delete('profile:stories_' . $loggedInUser->getId());
 
+        $storiesFriends = $this->clearFriendsStory($loggedInUser);
+
+        foreach ($storiesFriends as $friendId) {
+            $cacheKey = 'stories_users_' . $friendId;
+            $this->userCache->delete($cacheKey);
+            $this->userCache->get($cacheKey, fn (ItemInterface $item) => $this->getClosure($friendId)($item));
+        }
+
         /** @var array<string, string|array<string, string>> $output */
         $output = JSON::decode(
             $this->serializer->serialize(
@@ -103,5 +116,39 @@ readonly class StoryController
 
             return $this->storyRepository->availableStories($loggedInUser);
         };
+    }
+
+    /**
+     * @param User $loggedInUser
+     *
+     * @throws NotSupported
+     * @return array
+     */
+    private function clearFriendsStory(User $loggedInUser): array
+    {
+        $allUsers = $this->userRepository->findAll();
+
+        $friends = [];
+        foreach ($allUsers as $key => $otherUser) {
+            if ($otherUser === $loggedInUser) {
+                continue;
+            }
+
+            $iFollowHim = $this->followRepository->findOneBy([
+                'follower' => $loggedInUser,
+                'followed' => $otherUser,
+            ]);
+
+            $heFollowsMe = $this->followRepository->findOneBy([
+                'follower' => $otherUser,
+                'followed' => $loggedInUser,
+            ]);
+
+            if ($iFollowHim && $heFollowsMe) {
+                $friends[$key] = $otherUser->getId();
+            }
+        }
+
+        return $friends;
     }
 }
