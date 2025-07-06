@@ -75,9 +75,6 @@ readonly class UnfollowController
         if($follow) {
             $this->followRepository->remove($follow);
         }
-        if (!$follow) {
-            return new JsonResponse(['message' => 'Not following.'], 404);
-        }
 
         return new JsonResponse(true);
     }
