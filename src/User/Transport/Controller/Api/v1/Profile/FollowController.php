@@ -60,11 +60,14 @@ readonly class FollowController
         $this->cache->deleteItem($cacheKey);
         $this->cache->deleteItem($cacheKeyOther);
         $existing = $this->followRepository->findOneBy([
-            'follower' => $loggedInUser,
-            'followed' => $user,
+            'followed' => $loggedInUser,
+            'follower' => $user,
         ]);
 
         if ($existing) {
+            $follow = new Follow($user, $loggedInUser);
+
+            $this->followRepository->save($follow);
             /** @var array<string, string|array<string, string>> $output */
             $output = JSON::decode(
                 $this->serializer->serialize(
@@ -77,7 +80,8 @@ readonly class FollowController
                 true,
             );
 
-            return new JsonResponse($output);        }
+            return new JsonResponse($output);
+        }
 
         $follow = new Follow($loggedInUser, $user);
 
