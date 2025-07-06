@@ -63,16 +63,21 @@ readonly class UnfollowController
         $follow = $this->followRepository->findOneBy([
             'follower' => $loggedInUser,
             'followed' => $user,
-        ]) ?? $this->followRepository->findOneBy([
+        ]);
+        if($follow) {
+            $this->followRepository->remove($follow);
+        }
+
+        $follow = $this->followRepository->findOneBy([
             'follower' => $user,
             'followed' => $loggedInUser,
         ]);
-
+        if($follow) {
+            $this->followRepository->remove($follow);
+        }
         if (!$follow) {
             return new JsonResponse(['message' => 'Not following.'], 404);
         }
-
-        $this->followRepository->remove($follow);
 
         return new JsonResponse(true);
     }
