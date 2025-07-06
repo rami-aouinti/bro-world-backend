@@ -97,7 +97,6 @@ readonly class ApiProxyService implements ApiProxyServiceInterface
         ];
 
         $response = $this->httpClient->request($method, $this->baseUrls[$type] . $path, $options);
-
         return $response->toArray();
     }
 }

@@ -11,6 +11,7 @@ use App\User\Domain\Repository\Interfaces\FollowRepositoryInterface;
 use Doctrine\ORM\Exception\NotSupported;
 use JsonException;
 use OpenApi\Attributes as OA;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -30,7 +31,8 @@ readonly class FollowController
 {
     public function __construct(
         private SerializerInterface $serializer,
-        private FollowRepositoryInterface $followRepository
+        private FollowRepositoryInterface $followRepository,
+        private CacheItemPoolInterface $cache
     ) {
     }
 
@@ -53,6 +55,8 @@ readonly class FollowController
     #[IsGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY)]
     public function __invoke(User $loggedInUser, User $user): JsonResponse
     {
+        $cacheKey = 'user_profile_' . $loggedInUser->getId();
+        $this->cache->deleteItem($cacheKey);
         $existing = $this->followRepository->findOneBy([
             'follower' => $loggedInUser,
             'followed' => $user,
