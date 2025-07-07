@@ -7,6 +7,7 @@ parameters:
     locale: 'en'
     stories_directory: '%kernel.project_dir%/public/uploads/stories'
     avatar_directory: '%kernel.project_dir%/public/uploads/avatar'
+    logo_directory: '%kernel.project_dir%/public/uploads/logo'
     api_media_base_url: '%env(API_MEDIA_BASE_URL)%'
     api_notification_base_url: '%env(API_NOTIFICATION_BASE_URL)%'
 

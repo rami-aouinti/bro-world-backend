@@ -41,8 +41,19 @@ class Plugin implements EntityInterface
     private string $name;
 
     #[ORM\Column(type: 'text', nullable: true)]
+    #[Groups(['Plugin', 'Plugin.subTitle'])]
+    private ?string $subTitle = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
     #[Groups(['Plugin', 'Plugin.description'])]
     private ?string $description = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    #[Groups([
+        'Plugin',
+        'Plugin.logo'
+    ])]
+    private ?string $logo = null;
 
     #[ORM\Column(type: 'string', length: 100)]
     #[Groups(['Plugin', 'Plugin.icon'])]
@@ -70,6 +81,8 @@ class Plugin implements EntityInterface
     public function __construct(
         string $key,
         string $name,
+        string $subTitle,
+        string $logo,
         string $icon,
         string $link,
         string $pricing,
@@ -80,6 +93,8 @@ class Plugin implements EntityInterface
         $this->id = $this->createUuid();
         $this->key = $key;
         $this->name = $name;
+        $this->subTitle = $subTitle;
+        $this->logo = $logo;
         $this->icon = $icon;
         $this->link = $link;
         $this->pricing = $pricing;
@@ -106,6 +121,26 @@ class Plugin implements EntityInterface
     public function getDescription(): ?string
     {
         return $this->description;
+    }
+
+    public function getSubTitle(): ?string
+    {
+        return $this->subTitle;
+    }
+
+    public function setSubTitle(?string $subTitle): void
+    {
+        $this->subTitle = $subTitle;
+    }
+
+    public function getLogo(): ?string
+    {
+        return $this->logo;
+    }
+
+    public function setLogo(?string $logo): void
+    {
+        $this->logo = $logo;
     }
 
     public function getIcon(): string

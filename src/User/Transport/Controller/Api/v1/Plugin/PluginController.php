@@ -57,6 +57,8 @@ readonly class PluginController
                 'id' => $pluginId,
                 'key' => $plugin->getKey(),
                 'name' => $plugin->getName(),
+                'subTitle' => $plugin->getSubTitle(),
+                'logo' => $plugin->getLogo(),
                 'description' => $plugin->getDescription(),
                 'icon' => $plugin->getIcon(),
                 'installed' => $plugin->isInstalled(),
