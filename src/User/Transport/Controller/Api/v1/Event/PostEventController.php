@@ -63,9 +63,13 @@ readonly class PostEventController
             color: $data['color'] ?? null,
             description: $data['description'] ?? null,
             location: $data['location'] ?? null,
-            allDay: $data['allDay'] ?? false,
             isPrivate: $data['isPrivate'] ?? false,
         );
+        if($data['allDay'] ?? false) {
+            $event->setAllDay((bool)$data['allDay']);
+        } else {
+            $event->setAllDay(false);
+        }
         $this->repository->save($event);
         $output = JSON::decode(
             $this->serializer->serialize(
