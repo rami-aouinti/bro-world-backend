@@ -77,7 +77,10 @@ readonly class PostEventController
         $this->repository->save($event);
         $output = JSON::decode(
             $this->serializer->serialize(
-                $event,
+                $this->repository->findBy(
+                    ['user' => $loggedInUser],
+                    ['start' => 'DESC'],
+                ),
                 'json',
                 [
                     'groups' => 'Event',
