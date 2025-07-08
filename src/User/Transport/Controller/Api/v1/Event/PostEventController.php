@@ -54,16 +54,17 @@ readonly class PostEventController
     #[IsGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY)]
     public function __invoke(User $loggedInUser, Request $request): JsonResponse
     {
+        $data = $request->request->all();
         $event = new Event(
             user: $loggedInUser,
-            title: $request->request->get('title', ''),
-            start: new DateTimeImmutable($request->request->get('start')),
-            end: $request->request->has('end') ? new DateTimeImmutable($request->request->get('end')) : null,
-            color: $request->request->get('color', null),
-            description: $request->request->get('description', null),
-            location: $request->request->get('location', null),
-            allDay: (bool)$request->request->get('allDay', false),
-            isPrivate: (bool)$request->request->get('isPrivate', false),
+            title: $data['title'] ?? '',
+            start: new DateTimeImmutable($data['start'] ?? 'now'),
+            end: isset($data['end']) ? new DateTimeImmutable($data['end']) : null,
+            color: $data['color'] ?? null,
+            description: $data['description'] ?? null,
+            location: $data['location'] ?? null,
+            allDay: $data['allDay'] ?? false,
+            isPrivate: $data['isPrivate'] ?? false,
         );
         $this->repository->save($event);
         $output = JSON::decode(
