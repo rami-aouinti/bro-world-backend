@@ -48,7 +48,7 @@ readonly class UpdateEventController
      */
     #[Route(
         path: '/v1/profile/events/{event}',
-        methods: [Request::METHOD_PUT],
+        methods: [Request::METHOD_POST],
     )]
     #[IsGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY)]
     public function __invoke(User $loggedInUser, Event $event, Request $request): JsonResponse
