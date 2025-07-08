@@ -55,6 +55,12 @@ readonly class UpdateEventController
     {
         $data = $request->request->all();
         $event->setTitle($data['title'] ?? $event->getTitle());
+        if($data['start']) {
+            $event->setStart(new DateTimeImmutable($data['start']));
+        }
+        if($data['end']) {
+            $event->setEnd(new DateTimeImmutable($data['end']));
+        }
         $this->repository->save($event);
         $output = JSON::decode(
             $this->serializer->serialize(
