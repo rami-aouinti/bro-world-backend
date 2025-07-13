@@ -8,11 +8,14 @@ use App\General\Domain\Rest\UuidHelper;
 use App\General\Infrastructure\Repository\BaseRepository;
 use App\User\Domain\Entity\User as Entity;
 use App\User\Domain\Repository\Interfaces\UserRepositoryInterface;
+use DateTimeImmutable;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
+use Exception;
 use Ramsey\Uuid\Doctrine\UuidBinaryOrderedTimeType;
 
 use function array_key_exists;
+use function sprintf;
 
 /**
  * @package App\User
@@ -141,5 +144,59 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         }
 
         return $query->getQuery()->getOneOrNullResult() === null;
+    }
+
+    /**
+     * @throws Exception
+     * @return array
+     */
+    public function countUsersByMonth(): array
+    {
+        $qb = $this->createQueryBuilder('b')
+            ->select('YEAR(b.createdAt) AS year, MONTH(b.createdAt) AS month, COUNT(b.id) AS count')
+            ->groupBy('year, month')
+            ->orderBy('year', 'ASC')
+            ->addOrderBy('month', 'ASC');
+
+        $result = $qb->getQuery()->getResult();
+
+        $counts = [];
+        foreach ($result as $row) {
+            $key = sprintf('%04d-%02d', $row['year'], $row['month']);
+            $counts[$key] = (int) $row['count'];
+        }
+
+        $firstKey = array_key_first($counts) ?? (new DateTimeImmutable('now'))->format('Y-m');
+        $lastKey = (new DateTimeImmutable('now'))->format('Y-m');
+
+        $fullMonths = $this->generateMonthRange($firstKey, $lastKey);
+
+        $complete = [];
+        foreach ($fullMonths as $month) {
+            $complete[$month] = $counts[$month] ?? 0;
+        }
+
+        return $complete;
+    }
+
+    /**
+     * @param string $start
+     * @param string $end
+     *
+     * @throws Exception
+     * @return array
+     */
+    private function generateMonthRange(string $start, string $end): array
+    {
+        $months = [];
+        $startDate = new DateTimeImmutable($start . '-01');
+        $endDate = new DateTimeImmutable($end . '-01');
+
+        while ($startDate <= $endDate) {
+            $months[] = $startDate->format('Y-m');
+            $startDate = $startDate->modify('+1 month');
+        }
+
+        return $months;
     }
 }
