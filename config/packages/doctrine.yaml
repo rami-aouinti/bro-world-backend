@@ -96,9 +96,13 @@ doctrine:
                     datetime_functions:
                         datesub: DoctrineExtensions\Query\Mysql\DateSub
                         now: DoctrineExtensions\Query\Mysql\Now
+                        YEAR: DoctrineExtensions\Query\Mysql\Year
+                        MONTH: DoctrineExtensions\Query\Mysql\Month
+                        LPAD: DoctrineExtensions\Query\Mysql\Lpad
                     string_functions:
                         uuid_o_t_to_bin: App\General\Infrastructure\DQL\UuidOTToBin
                         bin_to_uuid_o_t: App\General\Infrastructure\DQL\BinToUuidOT
+                        LPAD: DoctrineExtensions\Query\Mysql\Lpad
 
 when@prod: &not-dev
     doctrine:
