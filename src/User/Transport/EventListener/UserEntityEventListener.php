@@ -123,6 +123,7 @@ class UserEntityEventListener
 
         if ($user instanceof User) {
             $this->userCacheService->clear();
+            $this->userCacheService->clearProfile($user->getId());
             $this->userElasticsearchService->updateUserInElasticsearch($user);
         }
     }

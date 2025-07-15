@@ -74,6 +74,29 @@ readonly class UserCacheService implements UserCacheServiceInterface
     }
 
     /**
+     * @throws InvalidArgumentException
+     */
+    public function clearProfile(?string $userId): void
+    {
+        $this->userCache->delete('user_profile_' . $userId);
+
+        $this->userCache->get('user_profile_' . $userId, function (ItemInterface $item) use ($userId) {
+            $item->expiresAfter(31536000);
+            $data = JSON::decode(
+                $this->serializer->serialize(
+                    $this->getClosureSingle($userId),
+                    'json',
+                    [
+                        'groups' => User::SET_USER_PROFILE,
+                    ]
+                ),
+                true,
+            );
+            return new JsonResponse($data);
+        });
+    }
+
+    /**
      *
      *
      * @return Closure
@@ -84,6 +107,22 @@ readonly class UserCacheService implements UserCacheServiceInterface
             $item->expiresAfter(31536000);
 
             return $this->getFormattedUsers();
+        };
+    }
+
+    /**
+     *
+     *
+     * @param string|null $userId
+     *
+     * @return Closure
+     */
+    private function getClosureSingle(?string $userId): Closure
+    {
+        return function (ItemInterface $item) use ($userId): array {
+            $item->expiresAfter(31536000);
+            $user = $this->userRepository->find($userId);
+            return $this->getFormattedUser($user);
         };
     }
 
@@ -161,6 +200,89 @@ readonly class UserCacheService implements UserCacheServiceInterface
                 ];
             }
         }
+        return $document;
+    }
+
+    /**
+     * @param User|null $loggedInUser
+     *
+     * @throws NotSupported
+     * @return array
+     */
+    private function getFormattedUser(?User $loggedInUser): array
+    {
+        $document = [
+            'id' => $loggedInUser?->getId(),
+            'firstName' => $loggedInUser?->getFirstName(),
+            'lastName' => $loggedInUser?->getLastName(),
+            'username' => $loggedInUser?->getUsername(),
+            'email' => $loggedInUser?->getEmail(),
+            'enabled' => $loggedInUser?->isEnabled(),
+            'stories' => [],
+            'friends' => [],
+            'profile' => [
+                'id' => $loggedInUser?->getProfile()?->getId(),
+                'title' => $loggedInUser?->getProfile()?->getTitle(),
+                'phone' => $loggedInUser?->getProfile()?->getPhone(),
+                'birthday' => $loggedInUser?->getProfile()?->getBirthday(),
+                'gender' => $loggedInUser?->getProfile()?->getGender(),
+                'photo' => $loggedInUser?->getProfile()?->getPhoto(),
+                'description' => $loggedInUser?->getProfile()?->getDescription(),
+                'address' => $loggedInUser?->getProfile()?->getAddress()
+            ],
+            'roles' => $loggedInUser?->getRoles(),
+            'photo' => $loggedInUser?->getProfile()?->getPhoto() ?? 'https://bro-world-space.com/img/person.png',
+        ];
+        /** @var array<int, string> $roles */
+        $roles = $document['roles'];
+        $document['roles'] = $this->rolesService->getInheritedRoles($roles);
+        foreach ($loggedInUser?->getStories() as $key => $story) {
+            $document['stories'][$key]['id'] = $story->getId();
+            $document['stories'][$key]['mediaPath']  = $story->getMediaPath();
+            $document['stories'][$key]['expiresAt']  = $story->getExpiresAt();
+        }
+
+        $allUsers = $this->userRepository->findAll();
+
+        foreach ($allUsers as $key => $otherUser) {
+            if ($otherUser === $loggedInUser) {
+                continue;
+            }
+
+            $iFollowHim = $this->followRepository->findOneBy([
+                'follower' => $loggedInUser,
+                'followed' => $otherUser,
+            ]);
+
+            $heFollowsMe = $this->followRepository->findOneBy([
+                'follower' => $otherUser,
+                'followed' => $loggedInUser,
+            ]);
+
+            if ($iFollowHim && $heFollowsMe) {
+                $status = 1;
+            } elseif ($iFollowHim && !$heFollowsMe) {
+                $status = 2;
+            } elseif (!$iFollowHim && $heFollowsMe) {
+                $status = 3;
+            } else {
+                $status = 0;
+            }
+
+            $document['friends'][$key] = [
+                'user' => $otherUser->getId(),
+                'stories' => [],
+                'status' => $status,
+            ];
+
+            foreach ($otherUser->getStories() as $otherKey => $story) {
+                $document['friends'][$key]['stories'][$otherKey]['id'] = $story->getId();
+                $document['friends'][$key]['stories'][$otherKey]['mediaPath']  = $story->getMediaPath();
+                $document['friends'][$key]['stories'][$otherKey]['expiresAt']  = $story->getExpiresAt();
+            }
+
+        }
+
         return $document;
     }
 }
