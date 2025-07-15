@@ -10,6 +10,7 @@ use App\User\Application\Resource\UserResource;
 use App\User\Application\Service\UserService;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Entity\UserProfile;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use JsonException;
 use Nelmio\ApiDocBundle\Attribute\Model;
@@ -113,7 +114,7 @@ readonly class UpdateController
         }
 
         if(isset($user['birthday'])) {
-            $profile->setBirthday($user['birthday']);
+            $profile->setBirthday(new DateTimeImmutable($user['birthday']));
         }
 
         $this->entityManager->persist($profile);
