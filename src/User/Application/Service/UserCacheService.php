@@ -79,21 +79,6 @@ readonly class UserCacheService implements UserCacheServiceInterface
     public function clearProfile(?string $userId): void
     {
         $this->userCache->delete('user_profile_' . $userId);
-
-        $this->userCache->get('user_profile_' . $userId, function (ItemInterface $item) use ($userId) {
-            $item->expiresAfter(31536000);
-            $data = JSON::decode(
-                $this->serializer->serialize(
-                    $this->getClosureSingle($userId),
-                    'json',
-                    [
-                        'groups' => User::SET_USER_PROFILE,
-                    ]
-                ),
-                true,
-            );
-            return new JsonResponse($data);
-        });
     }
 
     /**
