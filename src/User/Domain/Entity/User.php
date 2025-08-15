@@ -446,4 +446,20 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
     {
         $this->plainPassword = '';
     }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'username' => $this->getUsername(),
+            'firstName' => $this->getFirstName(),
+            'lastName' => $this->getLastName(),
+            'email' => $this->getEmail(),
+            'profile' => $this->getProfile()?->toArray(),
+            'language' => $this->getLanguage()->value,
+            'locale' => $this->getLocale()->value,
+            'timezone' => $this->getTimezone(),
+            'enabled' => $this->isEnabled(),
+        ];
+    }
 }

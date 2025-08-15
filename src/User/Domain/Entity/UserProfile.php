@@ -211,4 +211,13 @@ class UserProfile
     {
         $this->phone = $phone;
     }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'title' => $this->getTitle(),
+            'photo' => $this->getPhoto()
+        ];
+    }
 }
