@@ -17,8 +17,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Throwable;
 
@@ -56,7 +54,6 @@ class ConversationController extends Controller
 
     public function __construct(
         ConversationResource $resource,
-        private readonly Security $security,
     ) {
         parent::__construct($resource);
     }
@@ -66,15 +63,9 @@ class ConversationController extends Controller
      */
     #[Route(path: '/my', methods: [Request::METHOD_GET])]
     #[IsGranted(Role::LOGGED->value)]
-    public function myConversations(Request $request): Response
+    public function myConversations(User $loggedInUser, Request $request): Response
     {
-        $user = $this->security->getUser();
-
-        if (!$user instanceof User) {
-            throw new AccessDeniedException('User not authenticated');
-        }
-
-        $conversations = $this->getResource()->findForUser($user);
+        $conversations = $this->getResource()->findForUser($loggedInUser);
 
         return $this->getResponseHandler()->createResponse($request, $conversations, $this->getResource());
     }
