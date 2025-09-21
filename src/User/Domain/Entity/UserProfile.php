@@ -13,7 +13,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Throwable;
 
 /**
- * @package App\User\Domain\Entity
+ * @package App\User
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 #[ORM\Entity]

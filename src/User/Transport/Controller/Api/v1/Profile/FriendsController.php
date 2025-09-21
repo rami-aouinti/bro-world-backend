@@ -72,7 +72,6 @@ readonly class FriendsController
         );
         return new JsonResponse($output);
     }
-
     /**
      * @param User $loggedInUser
      *

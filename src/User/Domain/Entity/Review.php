@@ -19,7 +19,7 @@ use Throwable;
 /**
  * Class Review
  *
- * @package App\Tool\Domain\Entity
+ * @package App\User
  */
 #[ORM\Entity]
 #[ORM\Table(name: 'review')]

@@ -17,7 +17,7 @@ use Throwable;
 /**
  * Class Plugin
  *
- * @package App\Plugin\Domain\Entity
+ * @package App\User
  */
 #[ORM\Entity]
 #[ORM\Table(name: 'plugin')]

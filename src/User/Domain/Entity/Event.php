@@ -19,7 +19,7 @@ use Throwable;
 /**
  * Class Event
  *
- * @package App\Event\Domain\Entity
+ * @package App\User
  */
 #[ORM\Entity]
 #[ORM\Table(name: 'calendar_event')]

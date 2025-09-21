@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @package App\User\Domain\Entity\Socials
+ * @package App\User
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 #[ORM\Entity]
