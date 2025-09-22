@@ -9,7 +9,7 @@ use App\User\Application\Service\Interfaces\UserElasticsearchServiceInterface;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Repository\Interfaces\FollowRepositoryInterface;
 use App\User\Infrastructure\Repository\UserRepository;
-use Doctrine\ORM\Exception\NotSupported;
+use function array_values;
 
 /**
  * @package App\User\Application\Service
@@ -29,86 +29,27 @@ readonly class UserElasticsearchService implements UserElasticsearchServiceInter
      */
     public function indexUserInElasticsearch(User $user): void
     {
-        $document = [
-            'id' => $user->getId(),
-            'firstName' => $user->getFirstName(),
-            'lastName' => $user->getLastName(),
-            'username' => $user->getUsername(),
-            'email' => $user->getEmail(),
-            'enabled' => $user->isEnabled(),
-            'photo' => $user->getProfile()?->getPhoto() ?? 'https://bro-world-space.com/img/person.png',
-        ];
-
         $this->elasticsearchService->index(
             'users',
             $user->getId(),
-            $document
+            $this->buildDocument($user)
         );
     }
 
     /**
      * @param User $user
-     *
-     * @throws NotSupported
      */
     public function updateUserInElasticsearch(User $user): void
     {
-        $document = [
-            'id' => $user->getId(),
-            'firstName' => $user->getFirstName(),
-            'lastName' => $user->getLastName(),
-            'username' => $user->getUsername(),
-            'email' => $user->getEmail(),
-            'enabled' => $user->isEnabled(),
-            'stories' => [],
-            'friends' => [],
-            'photo' => $user->getProfile()?->getPhoto() ?? 'https://bro-world-space.com/img/person.png',
-        ];
-        foreach ($user->getStories() as $key => $story) {
-            $document['stories'][$key]['id'] = $story->getId();
-            $document['stories'][$key]['mediaPath']  = $story->getMediaPath();
-            $document['stories'][$key]['expiresAt']  = $story->getExpiresAt();
-        }
-
-        $allUsers = $this->userRepository->findAll();
-
-        foreach ($allUsers as $key => $otherUser) {
-            if ($otherUser === $user) {
-                continue;
-            }
-
-            $iFollowHim = $this->followRepository->findOneBy([
-                'follower' => $user,
-                'followed' => $otherUser,
-            ]);
-
-            $heFollowsMe = $this->followRepository->findOneBy([
-                'follower' => $otherUser,
-                'followed' => $user,
-            ]);
-
-            if ($iFollowHim && $heFollowsMe) {
-                $status = 1;
-            } elseif ($iFollowHim && !$heFollowsMe) {
-                $status = 2;
-            } elseif (!$iFollowHim && $heFollowsMe) {
-                $status = 3;
-            } else {
-                $status = 0;
-            }
-
-            $document['friends'][$key] = [
-                'user' => $otherUser,
-                'status' => $status,
-            ];
-        }
         $this->elasticsearchService->delete('users');
+
         $users = $this->userRepository->findAll();
-        foreach ($users as $user) {
+
+        foreach ($users as $indexedUser) {
             $this->elasticsearchService->index(
                 'users',
-                $user->getId(),
-                $document
+                $indexedUser->getId(),
+                $this->buildDocument($indexedUser, $users)
             );
         }
     }
@@ -133,5 +74,73 @@ readonly class UserElasticsearchService implements UserElasticsearchServiceInter
     public function deleteUsers(): void
     {
         $this->elasticsearchService->delete('users');
+    }
+
+    /**
+     * @param array<int, User>|null $allUsers
+     *
+     * @return array<string, mixed>
+     */
+    private function buildDocument(User $user, ?array $allUsers = null): array
+    {
+        $document = [
+            'id' => $user->getId(),
+            'firstName' => $user->getFirstName(),
+            'lastName' => $user->getLastName(),
+            'username' => $user->getUsername(),
+            'email' => $user->getEmail(),
+            'enabled' => $user->isEnabled(),
+            'stories' => $this->buildStories($user),
+            'friends' => [],
+            'photo' => $user->getProfile()?->getPhoto() ?? 'https://bro-world-space.com/img/person.png',
+        ];
+
+        $document['friends'] = $this->buildFriends($user, $allUsers ?? $this->userRepository->findAll());
+
+        return $document;
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function buildStories(User $user): array
+    {
+        $stories = [];
+
+        foreach ($user->getStories() as $story) {
+            $stories[] = [
+                'id' => $story->getId(),
+                'mediaPath' => $story->getMediaPath(),
+                'expiresAt' => $story->getExpiresAt(),
+            ];
+        }
+
+        return $stories;
+    }
+
+    /**
+     * @param array<int, User> $allUsers
+     *
+     * @return array<int, array{id: string, status: int}>
+     */
+    private function buildFriends(User $user, array $allUsers): array
+    {
+        $friends = [];
+        $friendStatuses = $this->followRepository->getFollowStatuses($user);
+
+        foreach ($allUsers as $candidate) {
+            if (!$candidate instanceof User || $candidate === $user) {
+                continue;
+            }
+
+            $friendId = $candidate->getId();
+
+            $friends[] = [
+                'id' => $friendId,
+                'status' => $friendStatuses[$friendId] ?? 0,
+            ];
+        }
+
+        return array_values($friends);
     }
 }
