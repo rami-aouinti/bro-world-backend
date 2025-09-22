@@ -4,22 +4,27 @@ declare(strict_types=1);
 
 namespace App\User\Transport\Controller\Api\v1\Plugin;
 
-use App\User\Domain\Entity\Plugin;
+use App\General\Transport\Rest\ResponseHandler;
+use App\User\Application\DTO\Plugin\Plugin as PluginDto;
+use App\User\Application\Resource\PluginResource;
+use App\User\Domain\Entity\Plugin as Entity;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Entity\UserPlugin;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use OpenApi\Attributes as OA;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Throwable;
-use OpenApi\Attributes as OA;
 
 /**
  * Class PluginController
  *
  * @package App\User\Transport\Controller\Api\v1\Plugin
+ *
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 #[AsController]
@@ -27,48 +32,40 @@ use OpenApi\Attributes as OA;
 readonly class PluginController
 {
     public function __construct(
-        private EntityManagerInterface $em
-    ) {}
+        private PluginResource $pluginResource,
+        private EntityManagerInterface $entityManager,
+        private ResponseHandler $responseHandler,
+    ) {
+    }
 
     /**
      * @throws Throwable
      */
     #[IsGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY)]
     #[Route('/v1/profile/plugins', name: 'api_profile_plugins', methods: ['GET'])]
-    public function __invoke(User $loggedInUser): JsonResponse
+    public function __invoke(Request $request, User $loggedInUser): Response
     {
-        $pluginRepo = $this->em->getRepository(Plugin::class);
-        $userPluginRepo = $this->em->getRepository(UserPlugin::class);
-
-        $plugins = $pluginRepo->findAll();
-        $userPlugins = $userPluginRepo->findBy(['user' => $loggedInUser]);
+        $plugins = $this->pluginResource->find();
+        $userPlugins = $this->entityManager->getRepository(UserPlugin::class)->findBy(['user' => $loggedInUser]);
 
         $activePluginMap = [];
         foreach ($userPlugins as $userPlugin) {
             $activePluginMap[$userPlugin->getPlugin()->getId()] = $userPlugin->isEnabled();
         }
 
-        $result = [];
+        $dtos = array_map(
+            function (Entity $plugin) use ($activePluginMap): PluginDto {
+                $dto = (new PluginDto())->load($plugin);
 
-        foreach ($plugins as $plugin) {
-            $pluginId = $plugin->getId();
+                if (isset($activePluginMap[$plugin->getId()])) {
+                    $dto->setActive($activePluginMap[$plugin->getId()]);
+                }
 
-            $result[] = [
-                'id' => $pluginId,
-                'key' => $plugin->getKey(),
-                'name' => $plugin->getName(),
-                'subTitle' => $plugin->getSubTitle(),
-                'logo' => $plugin->getLogo(),
-                'description' => $plugin->getDescription(),
-                'icon' => $plugin->getIcon(),
-                'installed' => $plugin->isInstalled(),
-                'link' => $plugin->getLink(),
-                'pricing' => $plugin->getPricing(),
-                'action' => $plugin->getAction(),
-                'active' => $activePluginMap[$pluginId] ?? false,
-            ];
-        }
+                return $dto;
+            },
+            $plugins,
+        );
 
-        return new JsonResponse($result);
+        return $this->responseHandler->createResponse($request, $dtos);
     }
 }
