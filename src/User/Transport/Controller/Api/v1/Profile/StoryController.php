@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\User\Transport\Controller\Api\v1\Profile;
 
 use App\General\Domain\Utils\JSON;
-use App\User\Application\Service\NotificationService;
 use App\User\Application\Service\UserService;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Message\NotificationCreatedMessage;
+use App\User\Domain\Exception\StoryUploadException;
 use App\User\Domain\Repository\Interfaces\StoryRepositoryInterface;
 use App\User\Infrastructure\Repository\FollowRepository;
 use App\User\Infrastructure\Repository\UserRepository;
@@ -18,6 +18,7 @@ use JsonException;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
@@ -65,12 +66,21 @@ readonly class StoryController
     #[IsGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY)]
     public function __invoke(User $loggedInUser, Request $request): JsonResponse
     {
-        $story = $this->userService->uploadStory($loggedInUser, $request);
+        try {
+            $story = $this->userService->uploadStory($loggedInUser, $request);
+        } catch (StoryUploadException $exception) {
+            $statusCode = $exception->getStatusCode();
+            $statusCode = $statusCode >= 400 && $statusCode < 600
+                ? $statusCode
+                : Response::HTTP_INTERNAL_SERVER_ERROR;
+
+            return new JsonResponse(['error' => $exception->getMessage()], $statusCode);
+        }
 
         $this->bus->dispatch(
             new NotificationCreatedMessage(
                 $loggedInUser->getId(),
-                $story?->getId(),
+                $story->getId(),
                 $request->headers->get('Authorization')
             )
         );
