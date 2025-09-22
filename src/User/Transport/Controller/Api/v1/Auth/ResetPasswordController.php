@@ -64,7 +64,7 @@ final readonly class ResetPasswordController
             ->hashPassword(new SecurityUser($user, []), $plainPassword);
         $user->setPassword($callback, $password);
         $user->setVerificationToken($token);
-        $frontendUrl = 'https://bro-world-space.com/verify-email?token=' . $user->getVerificationToken();
+        $frontendUrl = 'https://bro-world-space.com/reset-password?token=' . $user->getVerificationToken();
         $this->registrationMailer->sendVerificationPassword($user, $frontendUrl);
         $this->userResource->save($user);
 
