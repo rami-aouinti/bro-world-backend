@@ -12,6 +12,7 @@ use App\User\Application\Resource\UserResource;
 use App\User\Application\Service\Interfaces\UserCacheServiceInterface;
 use App\User\Domain\Entity\Story;
 use App\User\Domain\Entity\User;
+use App\User\Domain\Exception\StoryUploadException;
 use App\User\Domain\Message\UserCreatedMessage;
 use App\User\Domain\Repository\Interfaces\UserRepositoryInterface;
 use App\User\Infrastructure\Repository\StoryRepository;
@@ -20,6 +21,7 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\OptimisticLockException;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -182,11 +184,16 @@ readonly class UserService
      * @throws Throwable
      * @throws ORMException
      * @throws OptimisticLockException
-     * @return Story|null
+     * @throws StoryUploadException
+     * @return Story
      */
-    public function uploadStory(User $user, Request $request): ?Story
+    public function uploadStory(User $user, Request $request): Story
     {
         $file = $request->files->get('file');
+
+        if (!$file instanceof UploadedFile) {
+            throw StoryUploadException::missingFile();
+        }
 
         $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $safeFilename = $this->slugger->slug($originalFilename);
@@ -198,7 +205,7 @@ readonly class UserService
                 $newFilename
             );
         } catch (FileException $e) {
-            return null;
+            throw StoryUploadException::moveFailed($e);
         }
         $baseUrl = $request->getSchemeAndHttpHost();
         $relativePath = '/uploads/stories/' . $newFilename;
