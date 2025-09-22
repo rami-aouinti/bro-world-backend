@@ -24,6 +24,7 @@ use function is_array;
 use function is_string;
 use function mb_strtoupper;
 use function mb_substr;
+use function sprintf;
 use function str_starts_with;
 
 /**
@@ -31,6 +32,19 @@ use function str_starts_with;
  */
 final class RequestHandler
 {
+    /**
+     * @var array<int, string>
+     */
+    private static array $allowedTenants = [];
+
+    /**
+     * @param array<int, string> $allowedTenants
+     */
+    public static function setAllowedTenants(array $allowedTenants): void
+    {
+        self::$allowedTenants = array_values(array_unique($allowedTenants));
+    }
+
     /**
      * Method to get used criteria array for 'find' and 'count' methods. Some examples below.
      *
@@ -139,9 +153,20 @@ final class RequestHandler
     public static function getTenant(HttpFoundationRequest $request): ?string
     {
         $tenant = $request->query->get('tenant') ?? $request->request->get('tenant');
-        //TODO: Think about validation for tenant.
+        $tenant = $tenant !== null ? (string)$tenant : null;
 
-        return $tenant !== null ? (string)$tenant : null;
+        if ($tenant === null || $tenant === '') {
+            return $tenant;
+        }
+
+        if (self::$allowedTenants !== [] && !in_array($tenant, self::$allowedTenants, true)) {
+            throw new HttpException(
+                HttpFoundationResponse::HTTP_BAD_REQUEST,
+                sprintf("Unknown tenant '%s'.", $tenant),
+            );
+        }
+
+        return $tenant;
     }
 
     /**
