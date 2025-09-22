@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace App\Messenger\Infrastructure\Repository;
 
 use App\General\Infrastructure\Repository\BaseRepository;
-use App\Messenger\Domain\Entity\Conversation as Entity;
-use App\Messenger\Domain\Repository\Interfaces\ConversationRepositoryInterface;
-use App\User\Domain\Entity\User;
+use App\Messenger\Domain\Entity\MessageStatus as Entity;
+use App\Messenger\Domain\Repository\Interfaces\MessageStatusRepositoryInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @package App\Event
+ * @package App\Messenger
  *
  * @psalm-suppress LessSpecificImplementedReturnType
  * @codingStandardsIgnoreStart
@@ -25,32 +24,15 @@ use Doctrine\Persistence\ManagerRegistry;
  *
  * @codingStandardsIgnoreEnd
  */
-class ConversationRepository extends BaseRepository implements ConversationRepositoryInterface
+class MessageStatusRepository extends BaseRepository implements MessageStatusRepositoryInterface
 {
     /**
      * @psalm-var class-string
      */
     protected static string $entityName = Entity::class;
 
-    /**
-     * @var array<int, string>
-     */
-    protected static array $searchColumns = ['title'];
-
     public function __construct(
         protected ManagerRegistry $managerRegistry,
     ) {
-    }
-
-    #[Override]
-    public function findByParticipantId(User $user): array
-    {
-        return $this->getEntityManager()
-            ->createQuery('
-            SELECT c FROM App\Messenger\Domain\Entity\Conversation c
-            WHERE :user MEMBER OF c.participants
-        ')
-            ->setParameter('user', $user)
-            ->getResult();
     }
 }
