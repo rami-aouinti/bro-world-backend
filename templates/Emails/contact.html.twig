@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+{% set emailLocale = locale|default('en') %}
+<html lang="{{ emailLocale }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact</title>
+    <title>{{ 'emails.contact.title'|trans({}, 'emails', emailLocale) }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -27,8 +28,8 @@
 </head>
 <body>
 <div class="container">
-    <h1>Hello, Admin!</h1>
-    <p>This is an email from {{ name }}</p>
+    <h1>{{ 'emails.contact.greeting'|trans({}, 'emails', emailLocale) }}</h1>
+    <p>{{ 'emails.contact.message_from'|trans({'%name%': name, '%email%': email}, 'emails', emailLocale) }}</p>
     <br>
     <p>{{ message }}</p>
 </div>
