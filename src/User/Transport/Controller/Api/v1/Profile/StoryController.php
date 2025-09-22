@@ -127,6 +127,7 @@ readonly class StoryController
     private function clearFriendsStory(User $loggedInUser): array
     {
         $allUsers = $this->userRepository->findAll();
+        $followStatuses = $this->followRepository->getFollowStatuses($loggedInUser);
 
         $friends = [];
         foreach ($allUsers as $key => $otherUser) {
@@ -134,17 +135,7 @@ readonly class StoryController
                 continue;
             }
 
-            $iFollowHim = $this->followRepository->findOneBy([
-                'follower' => $loggedInUser,
-                'followed' => $otherUser,
-            ]);
-
-            $heFollowsMe = $this->followRepository->findOneBy([
-                'follower' => $otherUser,
-                'followed' => $loggedInUser,
-            ]);
-
-            if ($iFollowHim && $heFollowsMe) {
+            if (($followStatuses[$otherUser->getId()] ?? 0) === 1) {
                 $friends[$key] = $otherUser->getId();
             }
         }

@@ -181,35 +181,16 @@ readonly class ProfileController
             $document['stories'][$key]['expiresAt']  = $story->getExpiresAt();
         }
         $allUsers = $this->userRepository->findAll();
+        $followStatuses = $this->followRepository->getFollowStatuses($user);
 
         foreach ($allUsers as $key => $otherUser) {
             if ($otherUser === $user) {
                 continue;
             }
 
-            $iFollowHim = $this->followRepository->findOneBy([
-                'follower' => $user,
-                'followed' => $otherUser,
-            ]);
-
-            $heFollowsMe = $this->followRepository->findOneBy([
-                'follower' => $otherUser,
-                'followed' => $user,
-            ]);
-
-            if ($iFollowHim && $heFollowsMe) {
-                $status = 1;
-            } elseif ($iFollowHim && !$heFollowsMe) {
-                $status = 2;
-            } elseif (!$iFollowHim && $heFollowsMe) {
-                $status = 3;
-            } else {
-                $status = 0;
-            }
-
             $document['friends'][$key] = [
                 'user' => $otherUser->getId(),
-                'status' => $status,
+                'status' => $followStatuses[$otherUser->getId()] ?? 0,
             ];
         }
 
