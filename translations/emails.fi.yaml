@@ -1,0 +1,36 @@
+emails:
+  common:
+    automated_notice: "Tämä viesti on luotu automaattisesti. Ethän vastaa tähän sähköpostiin."
+  registration:
+    subject: "Sähköpostiosoitteen vahvistus"
+    title: "Sähköpostiosoitteen vahvistus"
+    greeting: "Tervetuloa, %name%!"
+    intro: "Kiitos rekisteröitymisestä sivustollemme. Aktivoi tilisi napsauttamalla alla olevaa painiketta:"
+    action: "Vahvista sähköpostiosoite"
+    ignore: "Jos et pyytänyt rekisteröitymistä, voit huoletta jättää tämän viestin huomiotta."
+  activation:
+    subject: "Sähköpostin vahvistuskoodi"
+    title: "Sähköpostiosoitteen vahvistus"
+    greeting: "Tervetuloa, %name%!"
+    intro: "Kiitos rekisteröitymisestä sivustollemme."
+    instructions: "Vahvista sähköpostiosoitteesi kopioimalla alla oleva koodi ja liittämällä se vahvistuslomakkeeseen sivustollamme:"
+    ignore: "Jos et pyytänyt rekisteröitymistä, voit huoletta jättää tämän viestin huomiotta."
+  password_reset:
+    subject: "Salasanan palautus"
+    title: "Salasanan palautus"
+    greeting_named: "Hei, %name%!"
+    greeting_generic: "Hei!"
+    intro: "Olet pyytänyt tilisi salasanan palauttamista. Jatka napsauttamalla alla olevaa painiketta:"
+    action: "Palauta salasana"
+    ignore: "Jos et pyytänyt salasanan palautusta, voit jättää tämän viestin huomiotta — salasanasi pysyy muuttumattomana."
+    alternative: "Jos painike ei toimi, voit myös kopioida ja liittää alla olevan linkin selaimeesi:"
+  contact:
+    title: "Yhteydenotto"
+    greeting: "Hei, ylläpitäjä!"
+    message_from: "Tämä viesti on lähetetty henkilöltä %name% (%email%)."
+  error:
+    title: "Virheilmoitus"
+    intro: "Hei,"
+    body: "Tapahtui virhe. Viesti: %message%"
+    instructions: "Ota yhteyttä tukitiimiin, jotta he voivat tutkia virhelokin."
+    thanks: "Kiitos jo etukäteen!"

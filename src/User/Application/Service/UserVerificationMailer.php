@@ -9,6 +9,7 @@ use App\User\Domain\Entity\User;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
@@ -23,11 +24,13 @@ class UserVerificationMailer implements UserVerificationMailerInterface
 {
     private MailerInterface $mailer;
     private Environment $twig;
+    private TranslatorInterface $translator;
 
-    public function __construct(MailerInterface $mailer, Environment $twig)
+    public function __construct(MailerInterface $mailer, Environment $twig, TranslatorInterface $translator)
     {
         $this->mailer = $mailer;
         $this->twig = $twig;
+        $this->translator = $translator;
     }
 
     /**
@@ -38,14 +41,19 @@ class UserVerificationMailer implements UserVerificationMailerInterface
      */
     public function sendVerificationEmail(User $user, string $verificationUrl): void
     {
+        $locale = $user->getLocale()->value;
+
         $email = (new Email())
             ->from('admin@bro-world.de')
             ->to($user->getEmail())
-            ->subject('Email Verification')
+            ->subject(
+                $this->translator->trans('emails.activation.subject', [], 'emails', $locale)
+            )
             ->html(
                 $this->twig->render('Emails/email_activation_verification.html.twig', [
                     'user' => $user,
                     'verification_code' => $verificationUrl,
+                    'locale' => $locale,
                 ])
             );
 
@@ -60,14 +68,19 @@ class UserVerificationMailer implements UserVerificationMailerInterface
      */
     public function sendVerificationPassword(User $user, string $verificationUrl): void
     {
+        $locale = $user->getLocale()->value;
+
         $email = (new Email())
             ->from('admin@bro-world.de')
             ->to($user->getEmail())
-            ->subject('Email Verification')
+            ->subject(
+                $this->translator->trans('emails.password_reset.subject', [], 'emails', $locale)
+            )
             ->html(
                 $this->twig->render('Emails/password_verification.html.twig', [
                     'user' => $user,
                     'reset_password_url' => $verificationUrl,
+                    'locale' => $locale,
                 ])
             );
 

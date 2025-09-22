@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+{% set emailLocale = locale|default('en') %}
+<html lang="{{ emailLocale }}">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Email Address Verification</title>
+    <title>{{ 'emails.activation.title'|trans({}, 'emails', emailLocale) }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -47,12 +48,12 @@
 </head>
 <body>
 <div class="container">
-    <h1>Welcome, {{ user.firstName }}!</h1>
-    <p>Thank you for signing up on our website.</p>
-    <p>To verify your email address, please copy the code below and paste it into the verification form on our site:</p>
+    <h1>{{ 'emails.activation.greeting'|trans({'%name%': user.firstName}, 'emails', emailLocale) }}</h1>
+    <p>{{ 'emails.activation.intro'|trans({}, 'emails', emailLocale) }}</p>
+    <p>{{ 'emails.activation.instructions'|trans({}, 'emails', emailLocale) }}</p>
     <div class="code-box">{{ verification_code }}</div>
-    <p>If you did not request this registration, you can safely ignore this email.</p>
-    <p class="footer">This is an automatically generated email. Please do not reply to this message.</p>
+    <p>{{ 'emails.activation.ignore'|trans({}, 'emails', emailLocale) }}</p>
+    <p class="footer">{{ 'emails.common.automated_notice'|trans({}, 'emails', emailLocale) }}</p>
 </div>
 </body>
 </html>
