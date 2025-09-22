@@ -43,4 +43,21 @@ class RequestHandlerTest extends TestCase
             self::assertSame("Unknown tenant 'unknown'.", $exception->getMessage());
         }
     }
+
+    public function testGetSearchTermsNormalizesDuplicateAndEmptyValues(): void
+    {
+        $request = new Request([
+            'search' => json_encode([
+                'and' => ['foo', '', 'bar', 'foo'],
+                'or' => ['baz', 'baz', '', 'qux'],
+            ]),
+        ]);
+
+        $expected = [
+            'and' => ['foo', 'bar'],
+            'or' => ['baz', 'qux'],
+        ];
+
+        self::assertSame($expected, RequestHandler::getSearchTerms($request));
+    }
 }

@@ -276,7 +276,10 @@ final class RequestHandler
     private static function normalizeSearchTerms(array $searchTerms): array
     {
         // Normalize user input, note that this support array and string formats on value
-        array_walk($searchTerms, static fn (array $terms): array => array_unique(array_values(array_filter($terms))));
+        foreach ($searchTerms as &$terms) {
+            $terms = array_unique(array_values(array_filter($terms)));
+        }
+        unset($terms);
 
         return $searchTerms;
     }
