@@ -67,7 +67,7 @@ class UserRegistrationMailer implements UserRegistrationMailerInterface
             ->html(
                 $this->twig->render('Emails/password_verification.html.twig', [
                     'user' => $user,
-                    'verification_url' => $verificationUrl,
+                    'reset_password_url' => $verificationUrl,
                 ])
             );
 
