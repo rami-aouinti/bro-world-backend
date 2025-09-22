@@ -30,6 +30,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 use Throwable;
 
 use function array_key_exists;
+use function array_key_first;
 use function explode;
 use function sprintf;
 use function str_contains;
@@ -279,7 +280,12 @@ class PhpUnitUtil
         }
 
         $output = match ($type) {
-            self::TYPE_ENUM => current($class::cases()), // TODO: fix this
+            self::TYPE_ENUM => (static function (string $enumClass): mixed {
+                $cases = $enumClass::cases();
+                $firstKey = array_key_first($cases);
+
+                return $firstKey === null ? null : $cases[$firstKey];
+            })($class),
             self::TYPE_CUSTOM_CLASS => new $class(...$params),
             self::TYPE_INT, self::TYPE_INTEGER => 666,
             self::TYPE_STRING => 'Some text here',
