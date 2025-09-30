@@ -203,7 +203,7 @@ class IndexController
             }
 
             $document['friends'][$key] = [
-                'user' => $otherUser->getId(),
+                'user' => $otherUser->toArray(),
                 'stories' => [],
                 'status' => $status,
             ];
