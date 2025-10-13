@@ -1,6 +1,8 @@
 monolog:
     channels:
         - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
+    processors:
+        - App\Log\Application\Monolog\CorrelationIdProcessor
 
 when@dev:
     monolog:

@@ -37,6 +37,7 @@ Environnement Symfony 7 pour construire et exploiter l'API REST du projet Bro Wo
 * **Logs et monitoring** : modules `App\Log` et `App\General` pour tracer requêtes, connexions, santé de la base de données et nettoyage automatisé via cron (voir commandes `make migrate-cron-jobs` et `./bin/console logs:cleanup`).
 * **Gestion des médias et outils utilitaires** : modules `App\Media` et `App\Tool` (génération de DateDimension, sérialiseurs Messenger, etc.).
 * **Outils de développement** : configuration prête à l'emploi pour Xdebug, PhpStorm, PhpInsights, PhpMetrics, documentation dans [docs/development.md](docs/development.md) et [docs/testing.md](docs/testing.md).
+* **Opérations & delivery** : fiches pratiques couvrant idempotence, CI/CD GitLab, déploiements Kubernetes, Azure Blob via Flysystem, Mercure JWT, Temporal, etc. Voir [docs/operational-fiches.md](docs/operational-fiches.md).
 
 ## Mise en place de Docker Engine et Docker Compose
 
@@ -134,6 +135,7 @@ Pour l'exécution ciblée des tests ou des commandes Symfony, entrer dans le con
 * [docs/postman.md](docs/postman.md) / [docs/swagger.md](docs/swagger.md) : documentation et exploration de l'API.
 * [docs/messenger.md](docs/messenger.md) : configuration RabbitMQ, files, stratégies de retry.
 * [docs/api-key.md](docs/api-key.md) : gestion des intégrations externes via clés API.
+* [docs/devops-integration.md](docs/devops-integration.md) : synthèse des briques DevOps (Docker, CI/CD, observabilité, fiabilité) à présenter en entretien.
 * [docs/phpstorm.md](docs/phpstorm.md) et `docs/phpstorm/` : configuration IDE.
 * [docs/xdebug.md](docs/xdebug.md) : debugging pas-à-pas.
 

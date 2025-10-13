@@ -7,6 +7,7 @@ namespace App\Media\Application\Resource;
 use App\General\Application\DTO\Interfaces\RestDtoInterface;
 use App\General\Application\Rest\RestResource;
 use App\General\Domain\Entity\Interfaces\EntityInterface;
+use App\Media\Application\Service\MediaDeletionScheduler;
 use App\Media\Domain\Entity\File as Entity;
 use App\Media\Infrastructure\Repository\FileRepository as Repository;
 
@@ -31,8 +32,17 @@ use App\Media\Infrastructure\Repository\FileRepository as Repository;
  */
 class FileResource extends RestResource
 {
-    public function __construct(Repository $repository)
-    {
+    public function __construct(
+        Repository $repository,
+        private readonly MediaDeletionScheduler $mediaDeletionScheduler,
+    ) {
         parent::__construct($repository);
+    }
+
+    public function beforeDelete(string &$id, EntityInterface $entity): void
+    {
+        if ($entity instanceof Entity) {
+            $this->mediaDeletionScheduler->schedule($entity);
+        }
     }
 }
