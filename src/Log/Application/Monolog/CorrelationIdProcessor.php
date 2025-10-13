@@ -27,8 +27,13 @@ class CorrelationIdProcessor
 
         if ($correlationId !== null) {
             if ($record instanceof LogRecord) {
-                $record->extra['correlation_id'] = $correlationId;
-                $record->context['correlation_id'] = $correlationId;
+                $extra = $record->extra;
+                $extra['correlation_id'] = $correlationId;
+
+                $context = $record->context;
+                $context['correlation_id'] = $correlationId;
+
+                $record = $this->cloneRecordWith($record, $context, $extra);
             } else {
                 $record['extra']['correlation_id'] = $correlationId;
                 $record['context']['correlation_id'] = $correlationId;
@@ -36,5 +41,33 @@ class CorrelationIdProcessor
         }
 
         return $record;
+    }
+
+    /**
+     * @param array<string, mixed> $context
+     * @param array<string, mixed> $extra
+     */
+    private function cloneRecordWith(LogRecord $record, array $context, array $extra): LogRecord
+    {
+        if (property_exists($record, 'formatted')) {
+            return new LogRecord(
+                datetime: $record->datetime,
+                channel: $record->channel,
+                level: $record->level,
+                message: $record->message,
+                context: $context,
+                extra: $extra,
+                formatted: $record->formatted,
+            );
+        }
+
+        return new LogRecord(
+            datetime: $record->datetime,
+            channel: $record->channel,
+            level: $record->level,
+            message: $record->message,
+            context: $context,
+            extra: $extra,
+        );
     }
 }
