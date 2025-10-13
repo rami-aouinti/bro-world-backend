@@ -25,8 +25,6 @@ jobs:
               run: make start-test
             - name: Check running containers
               run: docker ps -a
-            - name: Wait for database connection
-              run: make wait-for-db
             - name: Run migrations
               run: make drop-migrate
             - name: Generate keys
