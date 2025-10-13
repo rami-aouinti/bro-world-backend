@@ -27,6 +27,12 @@ services:
             $elasticNumberOfShards: '%env(int:ELASTICSEARCH_NUMBER_OF_SHARDS)%'
             $elasticNumberOfReplicas: '%env(int:ELASTICSEARCH_NUMBER_OF_REPLICAS)%'
             $lockUserOnLoginFailureAttempts: '%env(int:LOCK_USER_ON_LOGIN_FAILURE_ATTEMPTS)%'
+            $idempotencyTtlSeconds: '%env(int:IDEMPOTENCY_TTL_SECONDS)%'
+            $mediaDeletionDelayDays: '%env(int:MEDIA_PURGE_DELAY_DAYS)%'
+            $azureBlobEndpoint: '%env(AZURE_BLOB_ENDPOINT)%'
+            $azureBlobContainer: '%env(AZURE_BLOB_CONTAINER)%'
+            $azureBlobSasToken: '%env(AZURE_BLOB_SAS_TOKEN)%'
+            $azureBlobApiVersion: '%env(default:2022-11-02:AZURE_BLOB_VERSION)%'
     _instanceof:
         App\General\Application\Rest\Interfaces\RestResourceInterface:
             tags: [ 'app.rest.resource', 'app.stopwatch' ]
@@ -141,6 +147,8 @@ services:
         arguments:
             $apiMediaBaseUrl: '%api_media_base_url%'
             $apiNotificationBaseUrl: '%api_notification_base_url%'
+
+    App\Media\Application\Storage\MediaStorageInterface: '@App\Media\Infrastructure\Storage\AzureBlobStorage'
 when@dev:
     services:
         _defaults:
