@@ -135,6 +135,7 @@ Pour l'exécution ciblée des tests ou des commandes Symfony, entrer dans le con
 * [docs/postman.md](docs/postman.md) / [docs/swagger.md](docs/swagger.md) : documentation et exploration de l'API.
 * [docs/messenger.md](docs/messenger.md) : configuration RabbitMQ, files, stratégies de retry.
 * [docs/api-key.md](docs/api-key.md) : gestion des intégrations externes via clés API.
+* [docs/devops-integration.md](docs/devops-integration.md) : synthèse des briques DevOps (Docker, CI/CD, observabilité, fiabilité) à présenter en entretien.
 * [docs/phpstorm.md](docs/phpstorm.md) et `docs/phpstorm/` : configuration IDE.
 * [docs/xdebug.md](docs/xdebug.md) : debugging pas-à-pas.
 
