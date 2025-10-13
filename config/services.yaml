@@ -73,6 +73,10 @@ services:
         arguments:
             $sensitiveProperties: '%env(json:REQUEST_LOG_SENSITIVE_PROPERTIES)%'
 
+    App\Log\Application\Monolog\CorrelationIdProcessor:
+        tags:
+            - { name: monolog.processor }
+
     App\General\Transport\EventSubscriber\RequestLogSubscriber:
         arguments:
             $ignoredRoutes: '%env(json:REQUEST_LOG_IGNORED_ROUTES)%'
