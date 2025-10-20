@@ -6,7 +6,9 @@ namespace App\Log\Application\Service\Interfaces;
 
 use App\ApiKey\Application\Resource\ApiKeyResource;
 use App\Log\Application\Resource\LogRequestResource;
+use App\Log\Domain\Repository\Interfaces\LogRequestDocumentRepositoryInterface;
 use App\User\Application\Resource\UserResource;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,6 +27,8 @@ interface RequestLoggerServiceInterface
         ApiKeyResource $apiKeyResource,
         LoggerInterface $logger,
         array $sensitiveProperties,
+        LogRequestDocumentRepositoryInterface $logRequestDocumentRepository,
+        DocumentManagerInterface $documentManager,
     );
 
     /**

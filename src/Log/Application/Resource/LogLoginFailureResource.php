@@ -8,7 +8,11 @@ use App\General\Application\DTO\Interfaces\RestDtoInterface;
 use App\General\Application\Rest\RestResource;
 use App\General\Domain\Entity\Interfaces\EntityInterface;
 use App\Log\Domain\Entity\LogLoginFailure as Entity;
+use App\Log\Domain\Repository\Interfaces\LogLoginFailureDocumentRepositoryInterface;
 use App\Log\Domain\Repository\Interfaces\LogLoginFailureRepositoryInterface as Repository;
+use App\Log\Infrastructure\Document\LogLoginFailureDocument;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Override;
 use App\User\Domain\Entity\User;
 use Throwable;
 
@@ -38,6 +42,8 @@ class LogLoginFailureResource extends RestResource
      */
     public function __construct(
         Repository $repository,
+        private readonly LogLoginFailureDocumentRepositoryInterface $logLoginFailureDocumentRepository,
+        private readonly DocumentManagerInterface $documentManager,
     ) {
         parent::__construct($repository);
     }
@@ -50,5 +56,43 @@ class LogLoginFailureResource extends RestResource
     public function reset(User $user): void
     {
         $this->getRepository()->clear($user);
+
+        $documents = $this->logLoginFailureDocumentRepository->findBy([
+            'userId' => $user->getId(),
+        ]);
+
+        foreach ($documents as $document) {
+            if ($document instanceof LogLoginFailureDocument) {
+                $this->logLoginFailureDocumentRepository->remove($document);
+            }
+        }
+    }
+
+    #[Override]
+    public function afterSave(EntityInterface $entity): void
+    {
+        if (!$entity instanceof Entity) {
+            return;
+        }
+
+        $documentClass = $this->logLoginFailureDocumentRepository->getDocumentName();
+        $this->documentManager->clear($documentClass);
+
+        $document = LogLoginFailureDocument::fromEntity($entity);
+        $this->logLoginFailureDocumentRepository->save($document);
+    }
+
+    #[Override]
+    public function afterDelete(string &$id, EntityInterface $entity): void
+    {
+        if (!$entity instanceof Entity) {
+            return;
+        }
+
+        $document = $this->logLoginFailureDocumentRepository->find($id);
+
+        if ($document instanceof LogLoginFailureDocument) {
+            $this->logLoginFailureDocumentRepository->remove($document);
+        }
     }
 }

@@ -105,6 +105,29 @@ make composer-require-checker           # Checks the defined dependencies agains
 make composer-unused                    # Shows unused packages by scanning and comparing package namespaces against your code
 ```
 
+### MongoDB helpers
+
+The MongoDB service that ships with the Compose stack is named `mongodb`, so you can jump into the shell or run tooling via
+`docker compose exec mongodb …` without extra wiring.【F:compose.yaml†L69-L84】 Typical workflows include:
+
+* Generate an ad-hoc dump (used by the ops backup job) with gzip compression:
+
+  ```bash
+  docker compose exec -T mongodb mongodump --db "$MONGODB_DB" --archive=/backups/mongo-$(date +%F).gz --gzip
+  ```
+
+* Recreate the ODM collections after changing a document definition:
+
+  ```bash
+  ./bin/console doctrine:mongodb:schema:drop --full --no-interaction
+  ./bin/console doctrine:mongodb:schema:create --no-interaction
+  ```
+
+  These console commands are the same ones triggered by the PHPUnit bootstrap when the `PHPUNIT_MONGODB_SCHEMA_CREATE` flag is
+  enabled, so local and CI flows stay aligned.【F:tests/bootstrap.php†L95-L141】
+* Register recurring maintenance (backup/cleanup) through the CommandScheduler bundle—`scheduler:cleanup-logs` shows how a
+  scheduled job is persisted before the container-wide cron (`scheduler:execute`) picks it up.【F:src/Log/Transport/Command/Scheduler/CleanupLogsScheduledCommand.php†L24-L90】【F:docker/general/cron†L1-L2】
+
 ## Symfony container shell
 Inside symfony container shell available "native" symfony commands with their description and, in additional, custom commands.
 In order to enter inside symfony container shell please use next command on your local shell:

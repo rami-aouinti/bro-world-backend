@@ -15,6 +15,7 @@ use App\User\Domain\Entity\UserProfile;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use OpenApi\Attributes as OA;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
@@ -106,6 +107,11 @@ trait UserRelations
 
         User::SET_USER_PROFILE,
     ])]
+    #[OA\Property(
+        type: 'array',
+        items: new OA\Items(type: 'string'),
+        description: 'Direct roles assigned to the user.',
+    )]
     public function getRoles(): array
     {
         return $this->userGroups

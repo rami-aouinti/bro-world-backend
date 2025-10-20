@@ -9,7 +9,11 @@ use App\General\Application\Rest\RestResource;
 use App\General\Domain\Entity\Interfaces\EntityInterface;
 use App\Messenger\Application\DTO\Conversation\Conversation as ConversationDto;
 use App\Messenger\Domain\Entity\Conversation as Entity;
+use App\Messenger\Domain\Repository\Interfaces\ConversationDocumentRepositoryInterface;
 use App\Messenger\Domain\Repository\Interfaces\ConversationRepositoryInterface as Repository;
+use App\Messenger\Infrastructure\Document\ConversationDocument;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Override;
 use App\User\Domain\Entity\User;
 use Throwable;
 
@@ -39,6 +43,8 @@ class ConversationResource extends RestResource
      */
     public function __construct(
         Repository $repository,
+        private readonly ConversationDocumentRepositoryInterface $conversationDocumentRepository,
+        private readonly DocumentManagerInterface $documentManager,
     ) {
         parent::__construct($repository);
 
@@ -53,5 +59,40 @@ class ConversationResource extends RestResource
     public function findForUser(User $user): array
     {
         return $this->getRepository()->findByParticipantId($user);
+    }
+
+    #[Override]
+    public function afterSave(EntityInterface $entity): void
+    {
+        if (!$entity instanceof Entity) {
+            return;
+        }
+
+        $documentClass = $this->conversationDocumentRepository->getDocumentName();
+        $this->documentManager->clear($documentClass);
+
+        $document = $this->conversationDocumentRepository->find($entity->getId());
+
+        if ($document instanceof ConversationDocument) {
+            $document->refreshFromEntity($entity);
+        } else {
+            $document = ConversationDocument::fromEntity($entity);
+        }
+
+        $this->conversationDocumentRepository->save($document);
+    }
+
+    #[Override]
+    public function afterDelete(string &$id, EntityInterface $entity): void
+    {
+        if (!$entity instanceof Entity) {
+            return;
+        }
+
+        $document = $this->conversationDocumentRepository->find($id);
+
+        if ($document instanceof ConversationDocument) {
+            $this->conversationDocumentRepository->remove($document);
+        }
     }
 }

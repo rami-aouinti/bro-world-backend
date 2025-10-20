@@ -14,6 +14,10 @@ use App\Messenger\Application\Resource\MessageStatusResource;
 use App\Messenger\Domain\Entity\Conversation;
 use App\Messenger\Domain\Entity\Message as MessageEntity;
 use App\Messenger\Domain\Entity\MessageStatus as MessageStatusEntity;
+use App\Messenger\Domain\Repository\Interfaces\ConversationDocumentRepositoryInterface;
+use App\Messenger\Domain\Repository\Interfaces\MessageDocumentRepositoryInterface;
+use App\Messenger\Domain\Repository\Interfaces\MessageStatusDocumentRepositoryInterface;
+use App\Messenger\Domain\Repository\Interfaces\ReactionDocumentRepositoryInterface;
 use App\Messenger\Domain\Enum\MessageStatusType;
 use App\Tests\TestCase\WebTestCase;
 use App\User\Application\Resource\UserResource;
@@ -30,6 +34,10 @@ class MessengerControllerTest extends WebTestCase
     private MessageResource $messageResource;
     private MessageStatusResource $messageStatusResource;
     private UserResource $userResource;
+    private ConversationDocumentRepositoryInterface $conversationDocumentRepository;
+    private MessageDocumentRepositoryInterface $messageDocumentRepository;
+    private MessageStatusDocumentRepositoryInterface $messageStatusDocumentRepository;
+    private ReactionDocumentRepositoryInterface $reactionDocumentRepository;
 
     protected function setUp(): void
     {
@@ -40,6 +48,10 @@ class MessengerControllerTest extends WebTestCase
         $this->messageResource = $container->get(MessageResource::class);
         $this->messageStatusResource = $container->get(MessageStatusResource::class);
         $this->userResource = $container->get(UserResource::class);
+        $this->conversationDocumentRepository = $container->get(ConversationDocumentRepositoryInterface::class);
+        $this->messageDocumentRepository = $container->get(MessageDocumentRepositoryInterface::class);
+        $this->messageStatusDocumentRepository = $container->get(MessageStatusDocumentRepositoryInterface::class);
+        $this->reactionDocumentRepository = $container->get(ReactionDocumentRepositoryInterface::class);
     }
 
     /**
@@ -184,6 +196,8 @@ class MessengerControllerTest extends WebTestCase
         $data = JSON::decode($content, true);
         self::assertIsArray($data);
         self::assertSame('👍', $data['emoji'] ?? null);
+        self::assertArrayHasKey('id', $data);
+        $this->assertReactionDocumentExists((string) $data['id']);
     }
 
     /**
@@ -248,6 +262,7 @@ class MessengerControllerTest extends WebTestCase
 
         $conversation = $this->conversationResource->create($dto);
         self::assertInstanceOf(Conversation::class, $conversation);
+        self::assertNotNull($this->conversationDocumentRepository->find($conversation->getId()));
 
         return $conversation;
     }
@@ -261,6 +276,7 @@ class MessengerControllerTest extends WebTestCase
 
         $message = $this->messageResource->create($dto);
         self::assertInstanceOf(MessageEntity::class, $message);
+        self::assertNotNull($this->messageDocumentRepository->find($message->getId()));
 
         return $message;
     }
@@ -274,7 +290,13 @@ class MessengerControllerTest extends WebTestCase
 
         $status = $this->messageStatusResource->create($dto);
         self::assertInstanceOf(MessageStatusEntity::class, $status);
+        self::assertNotNull($this->messageStatusDocumentRepository->find($status->getId()));
 
         return $status;
+    }
+
+    private function assertReactionDocumentExists(string $reactionId): void
+    {
+        self::assertNotNull($this->reactionDocumentRepository->find($reactionId));
     }
 }

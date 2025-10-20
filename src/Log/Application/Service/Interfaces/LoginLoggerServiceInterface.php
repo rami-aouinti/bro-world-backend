@@ -6,7 +6,9 @@ namespace App\Log\Application\Service\Interfaces;
 
 use App\Log\Application\Resource\LogLoginResource;
 use App\Log\Domain\Enum\LogLogin;
+use App\Log\Domain\Repository\Interfaces\LogLoginDocumentRepositoryInterface;
 use App\User\Domain\Entity\User;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Throwable;
 
@@ -15,7 +17,12 @@ use Throwable;
  */
 interface LoginLoggerServiceInterface
 {
-    public function __construct(LogLoginResource $logLoginFailureResource, RequestStack $requestStack);
+    public function __construct(
+        LogLoginResource $logLoginFailureResource,
+        RequestStack $requestStack,
+        LogLoginDocumentRepositoryInterface $logLoginDocumentRepository,
+        DocumentManagerInterface $documentManager,
+    );
 
     /**
      * Setter for User object (Entity).

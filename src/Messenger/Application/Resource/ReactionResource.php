@@ -9,7 +9,11 @@ use App\General\Application\Rest\RestResource;
 use App\General\Domain\Entity\Interfaces\EntityInterface;
 use App\Messenger\Application\DTO\Reaction\Reaction as ReactionDto;
 use App\Messenger\Domain\Entity\Reaction as Entity;
+use App\Messenger\Domain\Repository\Interfaces\ReactionDocumentRepositoryInterface;
 use App\Messenger\Domain\Repository\Interfaces\ReactionRepositoryInterface as Repository;
+use App\Messenger\Infrastructure\Document\ReactionDocument;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Override;
 
 /**
  * @package App\Messenger
@@ -37,9 +41,46 @@ class ReactionResource extends RestResource
      */
     public function __construct(
         Repository $repository,
+        private readonly ReactionDocumentRepositoryInterface $reactionDocumentRepository,
+        private readonly DocumentManagerInterface $documentManager,
     ) {
         parent::__construct($repository);
 
         $this->setDtoClass(ReactionDto::class);
+    }
+
+    #[Override]
+    public function afterSave(EntityInterface $entity): void
+    {
+        if (!$entity instanceof Entity) {
+            return;
+        }
+
+        $documentClass = $this->reactionDocumentRepository->getDocumentName();
+        $this->documentManager->clear($documentClass);
+
+        $document = $this->reactionDocumentRepository->find($entity->getId());
+
+        if ($document instanceof ReactionDocument) {
+            $document->refreshFromEntity($entity);
+        } else {
+            $document = ReactionDocument::fromEntity($entity);
+        }
+
+        $this->reactionDocumentRepository->save($document);
+    }
+
+    #[Override]
+    public function afterDelete(string &$id, EntityInterface $entity): void
+    {
+        if (!$entity instanceof Entity) {
+            return;
+        }
+
+        $document = $this->reactionDocumentRepository->find($id);
+
+        if ($document instanceof ReactionDocument) {
+            $this->reactionDocumentRepository->remove($document);
+        }
     }
 }
