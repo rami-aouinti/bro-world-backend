@@ -6,4 +6,17 @@ doctrine_mongodb:
             options: { }
     document_managers:
         default:
-            auto_mapping: true
+            auto_mapping: false
+            mappings:
+                General:
+                    is_bundle: false
+                    type: attribute
+                    dir: '%kernel.project_dir%/src/General/Infrastructure/Document'
+                    prefix: 'App\\General\\Infrastructure\\Document'
+                    alias: GeneralDocument
+                Log:
+                    is_bundle: false
+                    type: attribute
+                    dir: '%kernel.project_dir%/src/Log/Infrastructure/Document'
+                    prefix: 'App\\Log\\Infrastructure\\Document'
+                    alias: LogDocument
