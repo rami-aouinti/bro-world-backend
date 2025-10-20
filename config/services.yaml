@@ -71,8 +71,6 @@ services:
         tags:
             - { name: controller.argument_value_resolver, priority: 150 }
 
-    Doctrine\ODM\MongoDB\DocumentManagerInterface: '@doctrine_mongodb.odm.default_document_manager'
-
     App\Log\Application\Service\RequestLoggerService:
         arguments:
             $sensitiveProperties: '%env(json:REQUEST_LOG_SENSITIVE_PROPERTIES)%'
