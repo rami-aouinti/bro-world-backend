@@ -8,9 +8,12 @@ use App\Log\Application\Resource\LogLoginResource;
 use App\Log\Application\Service\Interfaces\LoginLoggerServiceInterface;
 use App\Log\Domain\Entity\LogLogin;
 use App\Log\Domain\Enum\LogLogin as LogLoginEnum;
+use App\Log\Domain\Repository\Interfaces\LogLoginDocumentRepositoryInterface;
+use App\Log\Infrastructure\Document\LogLoginDocument;
 use App\User\Domain\Entity\User;
 use BadMethodCallException;
 use DeviceDetector\DeviceDetector;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
 use Override;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -27,6 +30,8 @@ class LoginLoggerService implements LoginLoggerServiceInterface
     public function __construct(
         private readonly LogLoginResource $logLoginResource,
         private readonly RequestStack $requestStack,
+        private readonly LogLoginDocumentRepositoryInterface $logLoginDocumentRepository,
+        private readonly DocumentManagerInterface $documentManager,
     ) {
         $this->deviceDetector = new DeviceDetector();
     }
@@ -72,5 +77,11 @@ class LoginLoggerService implements LoginLoggerServiceInterface
         $entry = new LogLogin($type, $request, $this->deviceDetector, $this->user);
         // And store entry to database
         $this->logLoginResource->save($entry, true);
+
+        $documentClass = $this->logLoginDocumentRepository->getDocumentName();
+        $this->documentManager->clear($documentClass);
+
+        $document = LogLoginDocument::fromEntity($entry);
+        $this->logLoginDocumentRepository->save($document);
     }
 }

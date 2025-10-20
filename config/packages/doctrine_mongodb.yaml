@@ -20,3 +20,9 @@ doctrine_mongodb:
                     dir: '%kernel.project_dir%/src/Log/Infrastructure/Document'
                     prefix: 'App\\Log\\Infrastructure\\Document'
                     alias: LogDocument
+                Messenger:
+                    is_bundle: false
+                    type: attribute
+                    dir: '%kernel.project_dir%/src/Messenger/Infrastructure/Document'
+                    prefix: 'App\\Messenger\\Infrastructure\\Document'
+                    alias: MessengerDocument
