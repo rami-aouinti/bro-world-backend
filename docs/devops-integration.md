@@ -5,6 +5,7 @@ Cette fiche synthétise tous les points "DevOps" déjà opérationnels dans le p
 ## 1. Plateforme locale orchestrée par Docker Compose
 
 * `compose.yaml` instancie une stack complète (Nginx, PHP-FPM Symfony, MySQL, RabbitMQ, Elasticsearch + Kibana, Redis, Mailpit, Mercure) avec les bons volumes et ports pour reproduire l'environnement de prod en local.【F:compose.yaml†L1-L113】【F:compose.yaml†L114-L193】
+* MongoDB rejoint la stack locale avec un volume monté (`./var/mongodb-data`) et une version pilotée par l'environnement (`MONGODB_VERSION`), ce qui facilite les tests autour des collections ODM sans installation supplémentaire.【F:compose.yaml†L69-L84】【F:.env†L45-L48】
 * Le service `symfony` est factorisé via un template réutilisé par `supervisord` pour exécuter cron et les consumers Messenger dans un conteneur séparé, ce qui simplifie l'exploitation des workers.【F:compose.yaml†L17-L47】
 
 ## 2. Image applicative PHP durcie
@@ -26,6 +27,7 @@ Cette fiche synthétise tous les points "DevOps" déjà opérationnels dans le p
 
 * Un subscriber HTTP gère l'en-tête `X-Correlation-ID` en entrée/sortie et stocke l'identifiant dans un provider injectable pour les services et les logs.【F:src/General/Transport/EventSubscriber/CorrelationIdSubscriber.php†L7-L55】
 * Le processor Monolog récupère ce même identifiant et l’ajoute automatiquement dans `extra` et `context`; `monolog.yaml` déclare ce processor globalement et formate les logs en JSON en prod/staging/test pour ingestion centralisée.【F:src/Log/Application/Monolog/CorrelationIdProcessor.php†L7-L34】【F:config/packages/monolog.yaml†L1-L55】
+* Les événements HTTP (requests/logins) sont dupliqués dans MongoDB via Doctrine ODM, offrant une base d'audit requêtable sans impacter MySQL, tout en conservant les purges lors des remises à zéro de sécurité.【F:src/Log/Application/Service/RequestLoggerService.php†L34-L104】【F:src/Log/Application/Resource/LogLoginFailureResource.php†L17-L107】
 
 ## 6. Fiabilité des API synchrones
 

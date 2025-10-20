@@ -16,6 +16,7 @@
 - [Fiche 13 — Azure Blob via Flysystem](#fiche-13--azure-blob-via-flysystem)
 - [Fiche 14 — Sécuriser Mercure (JWT)](#fiche-14--sécuriser-mercure-jwt)
 - [Fiche 15 — Temporal workflow (suppression différée)](#fiche-15--temporal-workflow-suppression-différée)
+- [Fiche 16 — Sauvegarde & monitoring MongoDB](#fiche-16--sauvegarde--monitoring-mongodb)
 
 ---
 
@@ -399,3 +400,33 @@ class PurgeWorkflow
 
 **DE**  
 Zuverlässige Orchestrierung mit Retries und Idempotenz: 30 Tage nach dem logischen Delete wird das Medium physisch gelöscht.
+
+---
+
+### Fiche 16 — Sauvegarde & monitoring MongoDB
+**FR**
+L'ODM MongoDB complète désormais MySQL pour conserver les journaux HTTP/login et les conversations Messenger. L'instance Docker locale est déclarée sous le service `mongodb` avec un volume persistant `./var/mongodb-data`, ce qui reflète la topologie des environnements distants.【F:compose.yaml†L69-L84】 Pour garantir la continuité d'activité :
+
+* **Sauvegarde** : planifier un `mongodump` quotidien via le scheduler applicatif afin d'archiver les collections `log_request`, `log_login` et `log_login_failure` nommées dans les documents ODM.【F:src/Log/Infrastructure/Document/LogRequestDocument.php†L10-L83】 Un exemple de commande à inscrire dans le scheduler :
+
+  ```bash
+  docker compose exec -T mongodb mongodump --db "$MONGODB_DB" --archive=/backups/mongo-$(date +%F).gz --gzip
+  ```
+
+  Le bundle CommandScheduler exécute ces tâches en s'appuyant sur le cron `scheduler:execute` déjà lancé par `docker/general/cron`, il suffit donc d'ajouter un job dédié via une commande type `scheduler:create` sur la plateforme cible.【F:docker/general/cron†L1-L2】【F:src/Log/Transport/Command/Scheduler/CleanupLogsScheduledCommand.php†L24-L90】
+* **Monitoring** : exposer des métriques en supervisant `db.serverStatus()` ou `mongostat` depuis le conteneur (`docker compose exec mongodb mongostat --rowcount 1`) et en reliant les alertes à la consommation disque du volume `mongodb-data`.
+* **Maintenance des données** : le nettoyage SQL déclenché par `logs:cleanup` reste en place; pour conserver une rétention alignée côté Mongo, utiliser un script `mongosh` périodique (`db.log_request.deleteMany({createdAt: {$lt: ISODate(...)}})`). Les réinitialisations manuelles des comptes déclenchent déjà la suppression dans Mongo via la ressource `LogLoginFailureResource`.【F:src/Log/Application/Resource/LogLoginFailureResource.php†L17-L107】
+
+**DE**
+Die MongoDB-Instanz ergänzt MySQL, um HTTP-/Login-Logs sowie Messenger-Konversationen auszulagern. Der Docker-Service `mongodb` bindet ein persistentes Volume `./var/mongodb-data`, wodurch lokale und entfernte Umgebungen deckungsgleich bleiben.【F:compose.yaml†L69-L84】 Für einen stabilen Betrieb gilt:
+
+* **Backups**: Tägliche `mongodump`-Runs über den Command Scheduler einplanen, um die in den Dokumentklassen referenzierten Collections (`log_request`, `log_login`, `log_login_failure`) zu sichern.【F:src/Log/Infrastructure/Document/LogRequestDocument.php†L10-L83】 Beispielkommando:
+
+  ```bash
+  docker compose exec -T mongodb mongodump --db "$MONGODB_DB" --archive=/backups/mongo-$(date +%F).gz --gzip
+  ```
+
+  Der Cron im Container ruft `scheduler:execute` auf; neue Dumps lassen sich daher als geplante Jobs hinterlegen, analog zu `scheduler:cleanup-logs` im Code.【F:docker/general/cron†L1-L2】【F:src/Log/Transport/Command/Scheduler/CleanupLogsScheduledCommand.php†L24-L90】
+* **Monitoring**: Kennzahlen per `mongostat` oder `db.serverStatus()` erfassen (`docker compose exec mongodb mongostat --rowcount 1`) und die Volume-Auslastung von `mongodb-data` beobachten.
+* **Datenhygiene**: `logs:cleanup` entfernt weiterhin alte SQL-Zeilen; ergänzend sollte ein `mongosh`-Script regelmäßig veraltete Dokumente löschen. Benutzer-Resets beseitigen ihre Fehlversuche bereits synchron über die Ressource `LogLoginFailureResource`.【F:src/Log/Application/Resource/LogLoginFailureResource.php†L17-L107】
+
