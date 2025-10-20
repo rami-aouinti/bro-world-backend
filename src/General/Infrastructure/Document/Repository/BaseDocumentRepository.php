@@ -8,6 +8,7 @@ use App\General\Domain\Repository\Interfaces\DocumentRepositoryInterface;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry as MongoManagerRegistry;
 use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\LockMode;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use LogicException;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
@@ -87,9 +88,14 @@ abstract class BaseDocumentRepository extends ServiceDocumentRepository implemen
         return $this;
     }
 
-    public function find(string $id, ?string $documentManagerName = null): ?object
+    public function find(
+        mixed $id,
+        int $lockMode = LockMode::NONE,
+        ?int $lockVersion = null,
+        ?string $documentManagerName = null
+    ): ?object
     {
-        return $this->getRepository($documentManagerName)->find($id);
+        return $this->getRepository($documentManagerName)->find($id, $lockMode, $lockVersion);
     }
 
     public function findOneBy(array $criteria, ?array $orderBy = null, ?string $documentManagerName = null): ?object
