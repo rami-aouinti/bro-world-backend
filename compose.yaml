@@ -35,6 +35,7 @@ services:
             - ./:/var/www/html:cached
         depends_on:
             - mysql
+            - mongodb
             - rabbitmq
             - elasticsearch
             - redis
@@ -62,6 +63,19 @@ services:
         volumes:
             - ./var/mysql-data:/var/lib/mysql:delegated
             - ./docker/dev/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+        networks:
+            - symfony
+
+    mongodb:
+        image: mongo:${MONGODB_VERSION}
+        container_name: ${COMPOSE_PROJECT_NAME}-mongodb
+        restart: always
+        environment:
+            MONGO_INITDB_DATABASE: ${MONGODB_DB}
+        ports:
+            - "${MONGODB_PORT}:27017"
+        volumes:
+            - ./var/mongodb-data:/data/db:delegated
         networks:
             - symfony
 
