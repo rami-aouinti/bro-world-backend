@@ -68,6 +68,43 @@ Use [Serializer component](https://symfony.com/doc/current/components/serializer
 Isolate 3rd party dependencies into Service classes for simple refactoring/extension.
 
 
+## MongoDB integration
+
+The local stack now provisions a dedicated MongoDB instance through Docker Compose (`mongodb` service) with its own persisted
+volume so that audit data survives container restarts.【F:compose.yaml†L69-L84】 The default connection settings are exposed via
+environment variables and can be overridden in `.env.local` when you need to point the application at a remote cluster:
+
+```dotenv
+MONGODB_URI=mongodb://mongodb:27017
+MONGODB_DB=bro_world
+MONGODB_PORT=27017
+MONGODB_VERSION=7.0
+```
+
+These defaults live in the root `.env` file and are reused by the staging/prod descriptors, which simplifies parity across
+environments.【F:.env†L45-L48】【F:.env.prod†L9-L10】【F:.env.staging†L9-L10】 When developing locally, simply run `make start` (or
+`docker compose up mongodb`) and the Symfony container will resolve the ODM document manager automatically.
+
+MongoDB is primarily used for operational analytics and messaging payloads:
+
+* Every HTTP request and login event saved by the SQL repositories is mirrored into MongoDB documents so that product analysts
+  can query them without touching the transactional database.【F:src/Log/Application/Service/RequestLoggerService.php†L34-L104】
+  Failed login counters are also synchronized, including purges when an operator resets a user, ensuring the document store
+  stays consistent with MySQL cleanup routines.【F:src/Log/Application/Resource/LogLoginFailureResource.php†L17-L107】
+* Messenger conversations, reactions and status flags are stored as MongoDB documents, which keeps large conversational payloads
+  outside of MySQL while still exposing them to the application layer through ODM repositories.【F:src/Messenger/Infrastructure/Document/MessageDocument.php†L10-L84】【F:src/Messenger/Application/Resource/MessageResource.php†L18-L76】
+
+For automated tests we gate the ODM schema bootstrap behind the `PHPUNIT_MONGODB_SCHEMA_CREATE` flag, so remember to export it
+when you need Mongo collections during integration runs:
+
+```bash
+PHPUNIT_MONGODB_SCHEMA_CREATE=1 vendor/bin/phpunit
+```
+
+The test bootstrap wires this flag to the `doctrine:mongodb:schema:*` console commands so your collections are dropped and
+recreated in between suites.【F:tests/bootstrap.php†L95-L141】
+
+
 ## PHP code quality
 You can control code quality of your PHP project using already integrated code quality tools. Before creating merge request you can run on your local PC code quality tools and get the report with issues that you can fix.
 Also code quality tools integrated inside CI environment and after creating merge request you can check if you have some issues inside your code. Please find the list of code quality tools that we recommend to use while PHP backend development.
