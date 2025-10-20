@@ -92,6 +92,33 @@ $loadFixturesDoctrineCommand = static function () use ($application): void {
     $application->run($input, new ConsoleOutput());
 };
 
+$dropMongoSchemaCommand = static function () use ($application): void {
+    if (!$application->has('doctrine:mongodb:schema:drop')) {
+        return;
+    }
+
+    $input = new ArrayInput([
+        'command' => 'doctrine:mongodb:schema:drop',
+        '--full' => true,
+        '--no-interaction' => true,
+    ]);
+    $input->setInteractive(false);
+    $application->run($input, new ConsoleOutput());
+};
+
+$createMongoSchemaCommand = static function () use ($application): void {
+    if (!$application->has('doctrine:mongodb:schema:create')) {
+        return;
+    }
+
+    $input = new ArrayInput([
+        'command' => 'doctrine:mongodb:schema:create',
+        '--no-interaction' => true,
+    ]);
+    $input->setInteractive(false);
+    $application->run($input, new ConsoleOutput());
+};
+
 // Ensure that we have "clean" JWT auth cache file
 $createJwtAuthCache = static function (): void {
     // Specify used cache file
@@ -116,14 +143,22 @@ $createDatabaseCreateCache = static function () use ($databaseCacheFile): void {
 };
 
 // And finally call each of initialize functions to make test environment ready
-array_map(
-    '\call_user_func',
-    [
-        $dropDatabaseDoctrineCommand,
-        $createDatabaseDoctrineCommand,
-        $updateSchemaDoctrineCommand,
-        $loadFixturesDoctrineCommand,
-        $createJwtAuthCache,
-        $createDatabaseCreateCache,
-    ]
-);
+$initializers = [
+    $dropDatabaseDoctrineCommand,
+    $createDatabaseDoctrineCommand,
+    $updateSchemaDoctrineCommand,
+    $loadFixturesDoctrineCommand,
+    $createJwtAuthCache,
+    $createDatabaseCreateCache,
+];
+
+if ((bool)getenv('PHPUNIT_MONGODB_SCHEMA_CREATE')) {
+    $mongoInitializers = [
+        $dropMongoSchemaCommand,
+        $createMongoSchemaCommand,
+    ];
+
+    array_splice($initializers, 3, 0, $mongoInitializers);
+}
+
+array_map('\call_user_func', $initializers);
