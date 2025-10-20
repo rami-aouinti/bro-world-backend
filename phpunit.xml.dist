@@ -47,6 +47,9 @@
         <env name="APP_ENV" value="test" force="true" />
         <env name="SHELL_VERBOSITY" value="-1" />
         <env name="APP_DEBUG" value="false" force="true" />
+        <env name="MONGODB_DB" value="bro_world" />
+        <env name="MONGODB_URI" value="mongodb://mongodb:27017" />
+        <env name="PHPUNIT_MONGODB_SCHEMA_CREATE" value="1" />
     </php>
     <extensions>
         <bootstrap class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension" />
