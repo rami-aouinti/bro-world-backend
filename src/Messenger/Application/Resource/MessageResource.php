@@ -9,7 +9,11 @@ use App\General\Application\Rest\RestResource;
 use App\General\Domain\Entity\Interfaces\EntityInterface;
 use App\Messenger\Application\DTO\Message\Message as MessageDto;
 use App\Messenger\Domain\Entity\Message as Entity;
+use App\Messenger\Domain\Repository\Interfaces\MessageDocumentRepositoryInterface;
 use App\Messenger\Domain\Repository\Interfaces\MessageRepositoryInterface as Repository;
+use App\Messenger\Infrastructure\Document\MessageDocument;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Override;
 
 /**
  * @package App\Messenger
@@ -37,9 +41,46 @@ class MessageResource extends RestResource
      */
     public function __construct(
         Repository $repository,
+        private readonly MessageDocumentRepositoryInterface $messageDocumentRepository,
+        private readonly DocumentManagerInterface $documentManager,
     ) {
         parent::__construct($repository);
 
         $this->setDtoClass(MessageDto::class);
+    }
+
+    #[Override]
+    public function afterSave(EntityInterface $entity): void
+    {
+        if (!$entity instanceof Entity) {
+            return;
+        }
+
+        $documentClass = $this->messageDocumentRepository->getDocumentName();
+        $this->documentManager->clear($documentClass);
+
+        $document = $this->messageDocumentRepository->find($entity->getId());
+
+        if ($document instanceof MessageDocument) {
+            $document->refreshFromEntity($entity);
+        } else {
+            $document = MessageDocument::fromEntity($entity);
+        }
+
+        $this->messageDocumentRepository->save($document);
+    }
+
+    #[Override]
+    public function afterDelete(string &$id, EntityInterface $entity): void
+    {
+        if (!$entity instanceof Entity) {
+            return;
+        }
+
+        $document = $this->messageDocumentRepository->find($id);
+
+        if ($document instanceof MessageDocument) {
+            $this->messageDocumentRepository->remove($document);
+        }
     }
 }

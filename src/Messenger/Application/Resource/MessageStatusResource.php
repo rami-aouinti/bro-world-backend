@@ -9,7 +9,11 @@ use App\General\Application\Rest\RestResource;
 use App\General\Domain\Entity\Interfaces\EntityInterface;
 use App\Messenger\Application\DTO\MessageStatus\MessageStatus as MessageStatusDto;
 use App\Messenger\Domain\Entity\MessageStatus as Entity;
+use App\Messenger\Domain\Repository\Interfaces\MessageStatusDocumentRepositoryInterface;
 use App\Messenger\Domain\Repository\Interfaces\MessageStatusRepositoryInterface as Repository;
+use App\Messenger\Infrastructure\Document\MessageStatusDocument;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Override;
 
 /**
  * @package App\Messenger
@@ -37,9 +41,46 @@ class MessageStatusResource extends RestResource
      */
     public function __construct(
         Repository $repository,
+        private readonly MessageStatusDocumentRepositoryInterface $messageStatusDocumentRepository,
+        private readonly DocumentManagerInterface $documentManager,
     ) {
         parent::__construct($repository);
 
         $this->setDtoClass(MessageStatusDto::class);
+    }
+
+    #[Override]
+    public function afterSave(EntityInterface $entity): void
+    {
+        if (!$entity instanceof Entity) {
+            return;
+        }
+
+        $documentClass = $this->messageStatusDocumentRepository->getDocumentName();
+        $this->documentManager->clear($documentClass);
+
+        $document = $this->messageStatusDocumentRepository->find($entity->getId());
+
+        if ($document instanceof MessageStatusDocument) {
+            $document->refreshFromEntity($entity);
+        } else {
+            $document = MessageStatusDocument::fromEntity($entity);
+        }
+
+        $this->messageStatusDocumentRepository->save($document);
+    }
+
+    #[Override]
+    public function afterDelete(string &$id, EntityInterface $entity): void
+    {
+        if (!$entity instanceof Entity) {
+            return;
+        }
+
+        $document = $this->messageStatusDocumentRepository->find($id);
+
+        if ($document instanceof MessageStatusDocument) {
+            $this->messageStatusDocumentRepository->remove($document);
+        }
     }
 }
