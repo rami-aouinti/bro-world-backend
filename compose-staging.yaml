@@ -32,6 +32,7 @@ services:
         restart: always
         depends_on:
             - mysql
+            - mongodb
             - rabbitmq
             - elasticsearch
             - redis
@@ -56,6 +57,19 @@ services:
             MYSQL_DATABASE: symfony
         volumes:
             - ./var/mysql-data:/var/lib/mysql:delegated
+        networks:
+            - symfony
+
+    mongodb:
+        image: mongo:${MONGODB_VERSION}
+        container_name: ${COMPOSE_PROJECT_NAME}-mongodb
+        restart: always
+        environment:
+            MONGO_INITDB_DATABASE: ${MONGODB_DB}
+        ports:
+            - "${MONGODB_PORT}:27017"
+        volumes:
+            - ./var/mongodb-data:/data/db:delegated
         networks:
             - symfony
 
