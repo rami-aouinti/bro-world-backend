@@ -106,8 +106,8 @@ abstract class BaseDocumentRepository extends ServiceDocumentRepository implemen
     public function findBy(
         array $criteria,
         ?array $orderBy = null,
-        ?int $limit = null,
-        ?int $skip = null,
+        $limit = null,
+        $skip = null,
         ?string $documentManagerName = null
     ): array {
         return $this->getRepository($documentManagerName)->findBy($criteria, $orderBy ?? [], $limit, $skip);

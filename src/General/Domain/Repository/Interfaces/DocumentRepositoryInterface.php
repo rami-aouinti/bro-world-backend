@@ -66,13 +66,15 @@ interface DocumentRepositoryInterface
      *
      * @param array<string, mixed> $criteria
      * @param array<string, string>|null $orderBy
+     * @param int|null $limit
+     * @param int|null $skip
      * @return array<int, object>
      */
     public function findBy(
         array $criteria,
         ?array $orderBy = null,
-        ?int $limit = null,
-        ?int $skip = null,
+        $limit = null,
+        $skip = null,
         ?string $documentManagerName = null
     ): array;
 
