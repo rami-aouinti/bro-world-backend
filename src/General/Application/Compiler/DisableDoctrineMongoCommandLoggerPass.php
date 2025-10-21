@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\General\Application\Compiler;
 
-use Doctrine\Bundle\MongoDBBundle\APM\PSRCommandLogger;
-use Doctrine\Bundle\MongoDBBundle\APM\StopwatchCommandLogger;
 use MongoDB\Driver\Monitoring\CommandSubscriber;
 use Override;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -25,8 +23,8 @@ class DisableDoctrineMongoCommandLoggerPass implements CompilerPassInterface
         }
 
         $classesToRemove = [
-            StopwatchCommandLogger::class,
-            PSRCommandLogger::class,
+            'Doctrine\\Bundle\\MongoDBBundle\\APM\\StopwatchCommandLogger',
+            'Doctrine\\Bundle\\MongoDBBundle\\APM\\PSRCommandLogger',
         ];
 
         $serviceIdsToRemove = [];
