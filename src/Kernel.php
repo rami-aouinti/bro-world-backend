@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\General\Application\Compiler\DisableDoctrineMongoCommandLoggerPass;
 use App\General\Application\Compiler\StopwatchCompilerPass;
 use Override;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
@@ -21,6 +22,8 @@ class Kernel extends BaseKernel
     protected function build(ContainerBuilder $container): void
     {
         parent::build($container);
+
+        $container->addCompilerPass(new DisableDoctrineMongoCommandLoggerPass());
 
         if ($this->environment === 'dev') {
             $container->addCompilerPass(new StopwatchCompilerPass());
