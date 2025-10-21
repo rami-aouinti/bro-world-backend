@@ -23,21 +23,23 @@ namespace MongoDB\Driver\Monitoring {
     /**
      * @internal
      */
-    abstract class AbstractEventStub
-    {
-        public function __construct(...$arguments)
+    if (!class_exists(AbstractEventStub::class)) {
+        abstract class AbstractEventStub
         {
-            // No-op constructor to mirror the real extension signatures.
-        }
+            public function __construct(...$arguments)
+            {
+                // No-op constructor to mirror the real extension signatures.
+            }
 
-        public function __call(string $name, array $arguments): mixed
-        {
-            return null;
-        }
+            public function __call(string $name, array $arguments): mixed
+            {
+                return null;
+            }
 
-        public function __get(string $name): mixed
-        {
-            return null;
+            public function __get(string $name): mixed
+            {
+                return null;
+            }
         }
     }
 
