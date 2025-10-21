@@ -150,13 +150,16 @@
 			"require": "7.2.*"
 		}
 	},
-	"autoload": {
-		"psr-4": {
-			"App\\": "src/"
-		},
-		"classmap": [],
-		"exclude-from-classmap": []
-	},
+        "autoload": {
+                "psr-4": {
+                        "App\\": "src/"
+                },
+                "classmap": [],
+                "exclude-from-classmap": [],
+                "files": [
+                        "src/Polyfill/MongoDB/MonitoringStubs.php"
+                ]
+        },
 	"autoload-dev": {
 		"psr-4": {
 			"App\\Tests\\": "tests/",
