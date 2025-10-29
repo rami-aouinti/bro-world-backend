@@ -131,9 +131,10 @@
 		"platform": {
 			"php": "8.3.0"
 		},
-		"preferred-install": {
-			"*": "dist"
-		},
+                "preferred-install": {
+                        "bamarni/composer-bin-plugin": "source",
+                        "*": "dist"
+                },
 		"bump-after-update": true,
 		"sort-packages": true
 	},
