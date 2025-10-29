@@ -35,7 +35,6 @@ services:
             - ./:/var/www/html:cached
         depends_on:
             - mysql
-            - mongodb
             - rabbitmq
             - elasticsearch
             - redis
@@ -63,19 +62,6 @@ services:
         volumes:
             - ./var/mysql-data:/var/lib/mysql:delegated
             - ./docker/dev/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
-        networks:
-            - symfony
-
-    mongodb:
-        image: mongo:${MONGODB_VERSION}
-        container_name: ${COMPOSE_PROJECT_NAME}-mongodb
-        restart: always
-        environment:
-            MONGO_INITDB_DATABASE: ${MONGODB_DB}
-        ports:
-            - "${MONGODB_PORT}:27017"
-        volumes:
-            - ./var/mongodb-data:/data/db:delegated
         networks:
             - symfony
 
@@ -187,21 +173,6 @@ services:
             - mercure_data:/data
             - mercure_config:/config
 ###< symfony/mercure-bundle ###
-
-###> doctrine/mongodb-odm-bundle ###
-  mongodb:
-    # In production, you may want to use a managed database service
-    image: mongodb/mongodb-atlas-local:latest
-    environment:
-      - MONGODB_INITDB_DATABASE=${MONGODB_DB:-app}
-      # You should definitely set a root username and password in production
-      - MONGODB_INITDB_ROOT_USERNAME=${MONGODB_USERNAME:-}
-      - MONGODB_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD:-}
-    volumes:
-      - mongodb_data:/data/db:rw
-      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-      # - ./docker/mongodb/data:/data/db:rw
-###< doctrine/mongodb-odm-bundle ###
 networks:
     symfony:
         name: symfony
@@ -210,7 +181,3 @@ volumes:
     mercure_data:
     mercure_config:
 ###< symfony/mercure-bundle ###
-
-###> doctrine/mongodb-odm-bundle ###
-  mongodb_data:
-###< doctrine/mongodb-odm-bundle ###
