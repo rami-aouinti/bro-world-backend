@@ -12,23 +12,23 @@ doctrine_mongodb:
                     is_bundle: false
                     type: attribute
                     dir: '%kernel.project_dir%/src/General/Infrastructure/Document'
-                    prefix: 'App\\General\\Infrastructure\\Document'
+                    prefix: 'App\General\Infrastructure\Document'
                     alias: GeneralDocument
                 Log:
                     is_bundle: false
                     type: attribute
                     dir: '%kernel.project_dir%/src/Log/Infrastructure/Document'
-                    prefix: 'App\\Log\\Infrastructure\\Document'
+                    prefix: 'App\Log\Infrastructure\Document'
                     alias: LogDocument
                 LogLoginFailure:
                     is_bundle: false
                     type: attribute
                     dir: '%kernel.project_dir%/src/Log/Infrastructure/Document'
-                    prefix: 'App\\Log\\Infrastructure\\Document'
+                    prefix: 'App\Log\Infrastructure\Document'
                     alias: LogLoginFailureDocument
                 Messenger:
                     is_bundle: false
                     type: attribute
                     dir: '%kernel.project_dir%/src/Messenger/Infrastructure/Document'
-                    prefix: 'App\\Messenger\\Infrastructure\\Document'
+                    prefix: 'App\Messenger\Infrastructure\Document'
                     alias: MessengerDocument
