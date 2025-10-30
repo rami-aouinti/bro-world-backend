@@ -64,6 +64,7 @@ services:
             - '../src/*/Domain/Entity/'
             - '../src/*/Transport/EventListener/'
             - '../src/Kernel.php'
+            - '../src/Polyfill/'
 
     Doctrine\ODM\MongoDB\DocumentManagerInterface: '@doctrine_mongodb.odm.document_manager'
 
