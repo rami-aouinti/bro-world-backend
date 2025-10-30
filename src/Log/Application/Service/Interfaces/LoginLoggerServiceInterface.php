@@ -8,7 +8,7 @@ use App\Log\Application\Resource\LogLoginResource;
 use App\Log\Domain\Enum\LogLogin;
 use App\Log\Domain\Repository\Interfaces\LogLoginDocumentRepositoryInterface;
 use App\User\Domain\Entity\User;
-use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Throwable;
 
@@ -21,7 +21,7 @@ interface LoginLoggerServiceInterface
         LogLoginResource $logLoginFailureResource,
         RequestStack $requestStack,
         LogLoginDocumentRepositoryInterface $logLoginDocumentRepository,
-        DocumentManagerInterface $documentManager,
+        DocumentManager $documentManager,
     );
 
     /**

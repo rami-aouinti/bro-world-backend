@@ -11,7 +11,7 @@ use App\Log\Domain\Entity\LogLoginFailure as Entity;
 use App\Log\Domain\Repository\Interfaces\LogLoginFailureDocumentRepositoryInterface;
 use App\Log\Domain\Repository\Interfaces\LogLoginFailureRepositoryInterface as Repository;
 use App\Log\Infrastructure\Document\LogLoginFailureDocument;
-use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Override;
 use App\User\Domain\Entity\User;
 use Throwable;
@@ -43,7 +43,7 @@ class LogLoginFailureResource extends RestResource
     public function __construct(
         Repository $repository,
         private readonly LogLoginFailureDocumentRepositoryInterface $logLoginFailureDocumentRepository,
-        private readonly DocumentManagerInterface $documentManager,
+        private readonly DocumentManager $documentManager,
     ) {
         parent::__construct($repository);
     }

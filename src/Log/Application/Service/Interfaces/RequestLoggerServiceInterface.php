@@ -8,7 +8,7 @@ use App\ApiKey\Application\Resource\ApiKeyResource;
 use App\Log\Application\Resource\LogRequestResource;
 use App\Log\Domain\Repository\Interfaces\LogRequestDocumentRepositoryInterface;
 use App\User\Application\Resource\UserResource;
-use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,7 +28,7 @@ interface RequestLoggerServiceInterface
         LoggerInterface $logger,
         array $sensitiveProperties,
         LogRequestDocumentRepositoryInterface $logRequestDocumentRepository,
-        DocumentManagerInterface $documentManager,
+        DocumentManager $documentManager,
     );
 
     /**

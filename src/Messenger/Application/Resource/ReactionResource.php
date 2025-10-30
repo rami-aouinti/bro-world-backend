@@ -12,7 +12,7 @@ use App\Messenger\Domain\Entity\Reaction as Entity;
 use App\Messenger\Domain\Repository\Interfaces\ReactionDocumentRepositoryInterface;
 use App\Messenger\Domain\Repository\Interfaces\ReactionRepositoryInterface as Repository;
 use App\Messenger\Infrastructure\Document\ReactionDocument;
-use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Override;
 
 /**
@@ -42,7 +42,7 @@ class ReactionResource extends RestResource
     public function __construct(
         Repository $repository,
         private readonly ReactionDocumentRepositoryInterface $reactionDocumentRepository,
-        private readonly DocumentManagerInterface $documentManager,
+        private readonly DocumentManager $documentManager,
     ) {
         parent::__construct($repository);
 

@@ -12,7 +12,7 @@ use App\Messenger\Domain\Entity\Conversation as Entity;
 use App\Messenger\Domain\Repository\Interfaces\ConversationDocumentRepositoryInterface;
 use App\Messenger\Domain\Repository\Interfaces\ConversationRepositoryInterface as Repository;
 use App\Messenger\Infrastructure\Document\ConversationDocument;
-use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Override;
 use App\User\Domain\Entity\User;
 use Throwable;
@@ -44,7 +44,7 @@ class ConversationResource extends RestResource
     public function __construct(
         Repository $repository,
         private readonly ConversationDocumentRepositoryInterface $conversationDocumentRepository,
-        private readonly DocumentManagerInterface $documentManager,
+        private readonly DocumentManager $documentManager,
     ) {
         parent::__construct($repository);
 
