@@ -24,5 +24,5 @@ doctrine_mongodb:
                     is_bundle: false
                     type: attribute
                     dir: '%kernel.project_dir%/src/Log/Infrastructure/Document'
-                    prefix: 'App\\Log\\Infrastructure\\Document\\LogLoginFailureDocument'
+                    prefix: 'App\\Log\\Infrastructure\\Document'
                     alias: LogLoginFailureDocument
