@@ -65,7 +65,9 @@ services:
             - '../src/*/Domain/Entity/'
             - '../src/*/Transport/EventListener/'
             - '../src/Kernel.php'
-
+    MongoDB\Client:
+        arguments:
+            - '%env(MONGODB_URL)%'
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class
     App\General\Transport\ValueResolver\EntityValueResolver:

@@ -1,12 +1,13 @@
 doctrine_mongodb:
-    default_database: '%env(string:MONGODB_DB)%'
+    auto_generate_proxy_classes: true
     connections:
         default:
-            server: '%env(resolve:MONGODB_URI)%'
+            server: '%env(resolve:MONGODB_URL)%'   # ex: mongodb://localhost:27017
             options: { }
+    default_database: '%env(MONGODB_DB)%'
     document_managers:
         default:
-            auto_mapping: false
+            auto_mapping: true
             mappings:
                 General:
                     is_bundle: false

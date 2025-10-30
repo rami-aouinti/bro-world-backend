@@ -36,6 +36,7 @@ services:
         depends_on:
             - mysql
             - mongodb
+            - mongo-express
             - rabbitmq
             - elasticsearch
             - redis
@@ -175,17 +176,26 @@ services:
             - mercure_config:/config
 
     mongodb:
-        # In production, you may want to use a managed database service
-        image: mongodb/mongodb-atlas-local:latest
+        image: mongo:7
+        restart: unless-stopped
+        ports:
+            - "27017:27017"
         environment:
-            - MONGODB_INITDB_DATABASE=${MONGODB_DB:-app}
-            # You should definitely set a root username and password in production
-            - MONGODB_INITDB_ROOT_USERNAME=${MONGODB_USERNAME:-}
-            - MONGODB_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD:-}
+            MONGO_INITDB_DATABASE: app
         volumes:
-            - mongodb_data:/data/db:rw
-            # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-            # - ./docker/mongodb/data:/data/db:rw
+            - mongo_data:/data/db
+        networks:
+            - symfony
+
+    mongo-express:
+        image: mongo-express:1.0.2
+        restart: unless-stopped
+        ports:
+            - "8081:8081"
+        environment:
+            ME_CONFIG_MONGODB_SERVER: mongodb
+        networks:
+            - symfony
 ###< symfony/mercure-bundle ###
 networks:
     symfony:
@@ -194,5 +204,5 @@ volumes:
     ###> symfony/mercure-bundle ###
     mercure_data:
     mercure_config:
-    mongodb_data:
+    mongo_data:
 ###< symfony/mercure-bundle ###
