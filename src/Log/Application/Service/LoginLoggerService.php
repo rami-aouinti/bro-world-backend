@@ -13,7 +13,7 @@ use App\Log\Infrastructure\Document\LogLoginDocument;
 use App\User\Domain\Entity\User;
 use BadMethodCallException;
 use DeviceDetector\DeviceDetector;
-use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Override;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -31,7 +31,7 @@ class LoginLoggerService implements LoginLoggerServiceInterface
         private readonly LogLoginResource $logLoginResource,
         private readonly RequestStack $requestStack,
         private readonly LogLoginDocumentRepositoryInterface $logLoginDocumentRepository,
-        private readonly DocumentManagerInterface $documentManager,
+        private readonly DocumentManager $documentManager,
     ) {
         $this->deviceDetector = new DeviceDetector();
     }

@@ -11,7 +11,7 @@ use App\Log\Domain\Entity\LogRequest;
 use App\Log\Domain\Repository\Interfaces\LogRequestDocumentRepositoryInterface;
 use App\Log\Infrastructure\Document\LogRequestDocument;
 use App\User\Application\Resource\UserResource;
-use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Override;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -39,7 +39,7 @@ class RequestLoggerService implements RequestLoggerServiceInterface
         private readonly LoggerInterface $logger,
         private readonly array $sensitiveProperties,
         private readonly LogRequestDocumentRepositoryInterface $logRequestDocumentRepository,
-        private readonly DocumentManagerInterface $documentManager,
+        private readonly DocumentManager $documentManager,
     ) {
     }
 
