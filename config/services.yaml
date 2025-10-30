@@ -35,7 +35,6 @@ services:
             $azureBlobContainer: '%env(AZURE_BLOB_CONTAINER)%'
             $azureBlobSasToken: '%env(AZURE_BLOB_SAS_TOKEN)%'
             $azureBlobApiVersion: '%env(default:2022-11-02:AZURE_BLOB_VERSION)%'
-    Doctrine\ODM\MongoDB\DocumentManagerInterface: '@doctrine_mongodb.odm.document_manager'
     _instanceof:
         App\General\Application\Rest\Interfaces\RestResourceInterface:
             tags: [ 'app.rest.resource', 'app.stopwatch' ]
@@ -65,6 +64,9 @@ services:
             - '../src/*/Domain/Entity/'
             - '../src/*/Transport/EventListener/'
             - '../src/Kernel.php'
+
+    Doctrine\ODM\MongoDB\DocumentManagerInterface: '@doctrine_mongodb.odm.document_manager'
+
     MongoDB\Client:
         arguments:
             - '%env(MONGODB_URL)%'

@@ -49,10 +49,6 @@ abstract class BaseDocumentRepository extends ServiceDocumentRepository implemen
 
     public function getRepository(?string $documentManagerName = null): self
     {
-        if ($documentManagerName === null) {
-            return $this;
-        }
-
         $repository = $this->getDocumentManager($documentManagerName)->getRepository(static::$documentClass);
 
         if (!$repository instanceof self) {
