@@ -89,13 +89,20 @@ abstract class BaseDocumentRepository extends ServiceDocumentRepository implemen
         int $lockMode = LockMode::NONE,
         ?int $lockVersion = null,
         ?string $documentManagerName = null
-    ): ?object
-    {
+    ): ?object {
+        if ($documentManagerName === null) {
+            return parent::find($id, $lockMode, $lockVersion);
+        }
+
         return $this->getRepository($documentManagerName)->find($id, $lockMode, $lockVersion);
     }
 
     public function findOneBy(array $criteria, ?array $orderBy = null, ?string $documentManagerName = null): ?object
     {
+        if ($documentManagerName === null) {
+            return parent::findOneBy($criteria, $orderBy ?? []);
+        }
+
         return $this->getRepository($documentManagerName)->findOneBy($criteria, $orderBy ?? []);
     }
 
@@ -106,11 +113,19 @@ abstract class BaseDocumentRepository extends ServiceDocumentRepository implemen
         $skip = null,
         ?string $documentManagerName = null
     ): array {
+        if ($documentManagerName === null) {
+            return parent::findBy($criteria, $orderBy ?? [], $limit, $skip);
+        }
+
         return $this->getRepository($documentManagerName)->findBy($criteria, $orderBy ?? [], $limit, $skip);
     }
 
     public function findAll(?string $documentManagerName = null): array
     {
+        if ($documentManagerName === null) {
+            return parent::findAll();
+        }
+
         return $this->getRepository($documentManagerName)->findAll();
     }
 
