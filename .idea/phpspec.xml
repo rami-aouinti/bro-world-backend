@@ -30,7 +30,7 @@
         <option name="myPath" value="$PROJECT_DIR$/tools/02_phpstan" />
       </PhpSpecSuiteConfiguration>
       <PhpSpecSuiteConfiguration>
-        <option name="myPath" value="$PROJECT_DIR$" />
+        <option name="myPath" value="$PROJECT_DIR$/tools/10_phpcpd" />
       </PhpSpecSuiteConfiguration>
     </suites>
   </component>

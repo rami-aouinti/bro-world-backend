@@ -2,6 +2,7 @@
 <dataSource name="symfony@localhost">
   <database-model serializer="dbm" dbms="MYSQL" family-id="MYSQL" format-version="4.53">
     <root id="1">
+      <DefaultAuthPlugin>caching_sha2_password</DefaultAuthPlugin>
       <DefaultCasing>exact</DefaultCasing>
       <DefaultEngine>InnoDB</DefaultEngine>
       <DefaultTmpEngine>InnoDB</DefaultTmpEngine>
@@ -1069,24 +1070,24 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
     <collation id="287" parent="1" name="utf8mb4_mn_cyrl_0900_as_cs">
       <Charset>utf8mb4</Charset>
     </collation>
-    <schema id="288" parent="1" name="mysql">
-      <CollationName>utf8mb4_0900_ai_ci</CollationName>
-    </schema>
-    <schema id="289" parent="1" name="information_schema">
+    <schema id="288" parent="1" name="information_schema">
       <CollationName>utf8mb3_general_ci</CollationName>
+    </schema>
+    <schema id="289" parent="1" name="mysql">
+      <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </schema>
     <schema id="290" parent="1" name="performance_schema">
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </schema>
-    <schema id="291" parent="1" name="sys">
+    <schema id="291" parent="1" name="symfony">
+      <Current>1</Current>
+      <LastIntrospectionLocalTimestamp>2025-10-13.22:35:32</LastIntrospectionLocalTimestamp>
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </schema>
     <schema id="292" parent="1" name="symfony_testing">
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </schema>
-    <schema id="293" parent="1" name="symfony">
-      <Current>1</Current>
-      <LastIntrospectionLocalTimestamp>2025-10-13.22:35:32</LastIntrospectionLocalTimestamp>
+    <schema id="293" parent="1" name="sys">
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </schema>
     <user id="294" parent="1" name="root">
@@ -1111,119 +1112,119 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <Host>localhost</Host>
       <Plugin>caching_sha2_password</Plugin>
     </user>
-    <table id="299" parent="293" name="api_key">
+    <table id="299" parent="291" name="api_key">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="300" parent="293" name="api_key_has_user_group">
+    <table id="300" parent="291" name="api_key_has_user_group">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="301" parent="293" name="calendar_event">
+    <table id="301" parent="291" name="calendar_event">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="302" parent="293" name="contact">
+    <table id="302" parent="291" name="contact">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="303" parent="293" name="conversation">
+    <table id="303" parent="291" name="conversation">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="304" parent="293" name="conversation_participants">
+    <table id="304" parent="291" name="conversation_participants">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="305" parent="293" name="date_dimension">
+    <table id="305" parent="291" name="date_dimension">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="306" parent="293" name="files">
+    <table id="306" parent="291" name="files">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="307" parent="293" name="folders">
+    <table id="307" parent="291" name="folders">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="308" parent="293" name="health">
+    <table id="308" parent="291" name="health">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="309" parent="293" name="idempotency_key">
+    <table id="309" parent="291" name="idempotency_key">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="310" parent="293" name="log_login">
+    <table id="310" parent="291" name="log_login">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="311" parent="293" name="log_login_failure">
+    <table id="311" parent="291" name="log_login_failure">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="312" parent="293" name="log_request">
+    <table id="312" parent="291" name="log_request">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="313" parent="293" name="message">
+    <table id="313" parent="291" name="message">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="314" parent="293" name="message_reaction">
+    <table id="314" parent="291" name="message_reaction">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="315" parent="293" name="message_status">
+    <table id="315" parent="291" name="message_status">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="316" parent="293" name="messenger_messages">
+    <table id="316" parent="291" name="messenger_messages">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="317" parent="293" name="plugin">
+    <table id="317" parent="291" name="plugin">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="318" parent="293" name="review">
+    <table id="318" parent="291" name="review">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="319" parent="293" name="role">
+    <table id="319" parent="291" name="role">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="320" parent="293" name="scheduled_command">
+    <table id="320" parent="291" name="scheduled_command">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="321" parent="293" name="story">
+    <table id="321" parent="291" name="story">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="322" parent="293" name="user">
+    <table id="322" parent="291" name="user">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="323" parent="293" name="user_follow">
+    <table id="323" parent="291" name="user_follow">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="324" parent="293" name="user_group">
+    <table id="324" parent="291" name="user_group">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="325" parent="293" name="user_has_user_group">
+    <table id="325" parent="291" name="user_has_user_group">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="326" parent="293" name="user_plugin">
+    <table id="326" parent="291" name="user_plugin">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="327" parent="293" name="user_profile">
+    <table id="327" parent="291" name="user_profile">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
