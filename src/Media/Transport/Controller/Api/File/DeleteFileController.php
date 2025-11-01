@@ -14,6 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 /**
  * @package App\File
@@ -33,6 +34,7 @@ readonly class DeleteFileController
      * @param User $loggedInUser
      * @param File $file
      *
+     * @throws Throwable
      * @return Response
      */
     #[Route(

@@ -14,6 +14,7 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Throwable;
 
 /**
  * @package App\Folder
@@ -31,8 +32,10 @@ readonly class IndexController
     /**
      * Get current user profile data, accessible only for 'IS_AUTHENTICATED_FULLY' users.
      *
-     * @param User $loggedInUser
+     * @param Request $request
+     * @param User    $loggedInUser
      *
+     * @throws Throwable
      * @return Response
      */
     #[Route(

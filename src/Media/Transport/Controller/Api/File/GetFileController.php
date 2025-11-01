@@ -15,6 +15,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 /**
  * @package App\File
@@ -32,9 +33,11 @@ readonly class GetFileController
     /**
      * Get current user profile data, accessible only for 'IS_AUTHENTICATED_FULLY' users.
      *
-     * @param User $loggedInUser
-     * @param File $file
+     * @param Request $request
+     * @param User    $loggedInUser
+     * @param File    $file
      *
+     * @throws Throwable
      * @return Response
      */
     #[Route(

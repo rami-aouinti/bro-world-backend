@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="c2dbbbe3-3281-43ed-8f1e-1d9537aa180b" name="bro-world-backend">
+        <fileTransfer accessType="SFTP" host="217.160.17.66" port="22" sshConfigId="70e3713d-ef14-4f31-9cd4-b71a45d59c2b" sshConfig="ramroum@217.160.17.66:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

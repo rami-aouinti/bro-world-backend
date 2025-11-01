@@ -8,6 +8,7 @@ use App\General\Transport\Rest\ResponseHandler;
 use App\Media\Application\DTO\Folder\FolderCreate;
 use App\Media\Application\Resource\FolderResource;
 use App\User\Domain\Entity\User;
+use AutoMapperPlus\Exception\UnregisteredMappingException;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -16,6 +17,7 @@ use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\Response;
 use AutoMapperPlus\AutoMapperInterface;
+use Throwable;
 
 /**
  * @package App\Folder
@@ -37,6 +39,8 @@ readonly class CreateFolderController
      * @param User    $loggedInUser
      * @param Request $request
      *
+     * @throws UnregisteredMappingException
+     * @throws Throwable
      * @return Response
      */
     #[Route(

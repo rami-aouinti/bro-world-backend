@@ -1,0 +1,24 @@
+<changelist name="Uncommitted_changes_before_Update_at_01_11_2025_22_52_[Changes]" date="1762034004243" recycled="true" deleted="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_01_11_2025_22_52_[Changes]/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Update at 01.11.2025 22:52 [Changes]" />
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/AKM81NrGTSiMJHObXdPu1w/0/translog/translog.ckp" />
+    <option name="AFTER_PATH" value="var/elasticsearch-data/nodes/0/indices/AKM81NrGTSiMJHObXdPu1w/0/translog/translog.ckp" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_01_11_2025_22_52_[Changes]/translog.ckp" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/translog/translog-34.tlog" />
+    <option name="AFTER_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/translog/translog-34.tlog" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_01_11_2025_22_52_[Changes]/translog-34.tlog" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/translog/translog.ckp" />
+    <option name="AFTER_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/translog/translog.ckp" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_01_11_2025_22_52_[Changes]/translog1.ckp" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/AKM81NrGTSiMJHObXdPu1w/0/translog/translog-4.tlog" />
+    <option name="AFTER_PATH" value="var/elasticsearch-data/nodes/0/indices/AKM81NrGTSiMJHObXdPu1w/0/translog/translog-4.tlog" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_01_11_2025_22_52_[Changes]/translog-4.tlog" />
+  </binary>
+</changelist>

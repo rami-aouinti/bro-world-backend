@@ -15,6 +15,7 @@ use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\Response;
 use App\Media\Application\Resource\FolderResource;
+use Throwable;
 
 /**
  * @package App\Folder
@@ -32,9 +33,11 @@ readonly class GetFolderController
     /**
      * Get current user profile data, accessible only for 'IS_AUTHENTICATED_FULLY' users.
      *
-     * @param User   $loggedInUser
-     * @param Folder $folder
+     * @param Request $request
+     * @param User    $loggedInUser
+     * @param Folder  $folder
      *
+     * @throws Throwable
      * @return Response
      */
     #[Route(
