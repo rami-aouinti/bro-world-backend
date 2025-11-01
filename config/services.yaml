@@ -199,9 +199,15 @@ when@dev:
             factory: [ '@App\General\Application\Decorator\StopwatchDecorator', decorate ]
             arguments: [ '@symfony.component.serializer.stopwatch.inner' ]
 
+        app.doctrine_mongodb.command_logger:
+            class: Doctrine\Bundle\MongoDBBundle\Logger\CommandLogger
+            factory: [ '@doctrine_mongodb.odm.command_logger_registry', 'getCommandLogger' ]
+            arguments:
+                - '%doctrine_mongodb.odm.default_document_manager%'
+
         App\General\Infrastructure\DataCollector\MongoCommandDataCollector:
             arguments:
-                - '@doctrine_mongodb.odm.command_logger'
+                - '@app.doctrine_mongodb.command_logger'
             tags:
                 - { name: data_collector, template: '@DoctrineMongoDB/Collector/mongodb.html.twig', id: 'mongodb' }
 
