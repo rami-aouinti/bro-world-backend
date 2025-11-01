@@ -10,7 +10,6 @@ use DateTimeImmutable;
 use DateTimeZone;
 use Ramsey\Uuid\UuidInterface;
 
-use function is_string;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
@@ -22,7 +21,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 abstract class AbstractDocument
 {
     #[ODM\Id(type: 'uuid', strategy: 'NONE')]
-    protected UuidInterface $id;
+    protected string $id;
 
     #[ODM\Field(type: 'date_immutable')]
     protected DateTimeImmutable $createdAt;
@@ -32,17 +31,24 @@ abstract class AbstractDocument
      */
     public function __construct(string|UuidInterface $id)
     {
-        if (is_string($id)) {
-            $id = UuidHelper::fromString($id);
+        if ($id instanceof UuidInterface) {
+            $id = $id->toString();
+        } else {
+            $id = UuidHelper::fromString($id)->toString();
         }
 
         $this->id = $id;
         $this->createdAt = new DateTimeImmutable(timezone: new DateTimeZone('UTC'));
     }
 
-    public function getId(): UuidInterface
+    public function getId(): string
     {
         return $this->id;
+    }
+
+    public function getUuid(): UuidInterface
+    {
+        return UuidHelper::fromString($this->id);
     }
 
     public function getCreatedAt(): DateTimeImmutable
