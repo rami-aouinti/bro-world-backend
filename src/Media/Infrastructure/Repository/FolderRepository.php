@@ -6,6 +6,8 @@ namespace App\Media\Infrastructure\Repository;
 
 use App\General\Infrastructure\Repository\BaseRepository;
 use App\Media\Domain\Entity\Folder as Entity;
+use App\Media\Domain\Repository\Interfaces\FolderRepositoryInterface;
+use App\User\Domain\Entity\User;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -23,7 +25,7 @@ use Doctrine\Persistence\ManagerRegistry;
  *
  * @codingStandardsIgnoreEnd
  */
-class FolderRepository extends BaseRepository
+class FolderRepository extends BaseRepository implements FolderRepositoryInterface
 {
     /**
      * @psalm-var class-string
@@ -33,6 +35,19 @@ class FolderRepository extends BaseRepository
     public function __construct(
         protected ManagerRegistry $managerRegistry,
     ) {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findRootFoldersForUser(User $user): array
+    {
+        return $this->findBy(
+            [
+                'user' => $user,
+                'parent' => null,
+            ],
+        );
     }
 
 }

@@ -6,6 +6,7 @@ namespace App\Media\Infrastructure\Repository;
 
 use App\General\Infrastructure\Repository\BaseRepository;
 use App\Media\Domain\Entity\File as Entity;
+use App\Media\Domain\Repository\Interfaces\FileRepositoryInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -23,7 +24,7 @@ use Doctrine\Persistence\ManagerRegistry;
  *
  * @codingStandardsIgnoreEnd
  */
-class FileRepository extends BaseRepository
+class FileRepository extends BaseRepository implements FileRepositoryInterface
 {
     /**
      * @psalm-var class-string

@@ -161,6 +161,8 @@ services:
             $apiNotificationBaseUrl: '%api_notification_base_url%'
 
     App\Media\Application\Storage\MediaStorageInterface: '@App\Media\Infrastructure\Storage\AzureBlobStorage'
+    App\Media\Domain\Repository\Interfaces\FolderRepositoryInterface: '@App\Media\Infrastructure\Repository\FolderRepository'
+    App\Media\Domain\Repository\Interfaces\FileRepositoryInterface: '@App\Media\Infrastructure\Repository\FileRepository'
 when@dev:
     services:
         _defaults:

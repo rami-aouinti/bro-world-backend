@@ -7,9 +7,10 @@ namespace App\Media\Application\Resource;
 use App\General\Application\DTO\Interfaces\RestDtoInterface;
 use App\General\Application\Rest\RestResource;
 use App\General\Domain\Entity\Interfaces\EntityInterface;
+use App\Media\Application\DTO\File\File as FileDto;
 use App\Media\Application\Service\MediaDeletionScheduler;
 use App\Media\Domain\Entity\File as Entity;
-use App\Media\Infrastructure\Repository\FileRepository as Repository;
+use App\Media\Domain\Repository\Interfaces\FileRepositoryInterface as Repository;
 
 /**
  * @package App\Media
@@ -37,6 +38,8 @@ class FileResource extends RestResource
         private readonly MediaDeletionScheduler $mediaDeletionScheduler,
     ) {
         parent::__construct($repository);
+
+        $this->setDtoClass(FileDto::class);
     }
 
     public function beforeDelete(string &$id, EntityInterface $entity): void
