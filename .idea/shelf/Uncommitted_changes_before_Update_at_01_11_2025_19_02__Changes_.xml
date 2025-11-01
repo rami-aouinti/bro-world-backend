@@ -1,0 +1,108 @@
+<changelist name="Uncommitted_changes_before_Update_at_01_11_2025_19_02_[Changes]" date="1762020214359" recycled="true" deleted="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_01_11_2025_19_02_[Changes]/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Update at 01.11.2025 19:02 [Changes]" />
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/AKM81NrGTSiMJHObXdPu1w/0/translog/translog.ckp" />
+    <option name="AFTER_PATH" value="var/elasticsearch-data/nodes/0/indices/AKM81NrGTSiMJHObXdPu1w/0/translog/translog.ckp" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_01_11_2025_19_02_[Changes]/translog.ckp" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/translog/translog.ckp" />
+    <option name="AFTER_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/translog/translog.ckp" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_01_11_2025_19_02_[Changes]/translog1.ckp" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/index/_gu6.si" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/AKM81NrGTSiMJHObXdPu1w/0/translog/translog-2.tlog" />
+    <option name="AFTER_PATH" value="var/elasticsearch-data/nodes/0/indices/AKM81NrGTSiMJHObXdPu1w/0/translog/translog-2.tlog" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_01_11_2025_19_02_[Changes]/translog-2.tlog" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/index/_guh.si" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/index/_gu6_Lucene84_0.tip" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/index/_gu6_Lucene80_0.dvd" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/index/_gu6.kdi" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/index/_gu6.kdm" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/index/_gu6.nvd" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/ojwebNQASiu2ANOxiWGl7A/0/translog/translog.ckp" />
+    <option name="AFTER_PATH" value="var/elasticsearch-data/nodes/0/indices/ojwebNQASiu2ANOxiWGl7A/0/translog/translog.ckp" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_01_11_2025_19_02_[Changes]/translog2.ckp" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/index/_gu6_1_Lucene80_0.dvm" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/ojwebNQASiu2ANOxiWGl7A/0/translog/translog-2.tlog" />
+    <option name="AFTER_PATH" value="var/elasticsearch-data/nodes/0/indices/ojwebNQASiu2ANOxiWGl7A/0/translog/translog-2.tlog" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_01_11_2025_19_02_[Changes]/translog-21.tlog" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/index/_gu6_1.fnm" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/index/_gu6.fnm" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/index/_gu6.kdd" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/index/_gu6_Lucene84_0.doc" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/index/_guh.cfe" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/index/_guh.cfs" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/translog/translog-32.tlog" />
+    <option name="AFTER_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/translog/translog-32.tlog" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_01_11_2025_19_02_[Changes]/translog-32.tlog" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/index/_gu6.fdt" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/index/_gu6.fdm" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/index/_gu6_1_Lucene80_0.dvd" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/ojwebNQASiu2ANOxiWGl7A/0/index/_9.fdt" />
+    <option name="AFTER_PATH" value="var/elasticsearch-data/nodes/0/indices/ojwebNQASiu2ANOxiWGl7A/0/index/_9.fdt" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_01_11_2025_19_02_[Changes]/_9.fdt" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/index/_gu6.fdx" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/index/_gu6_Lucene84_0.pos" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/index/_gu6.nvm" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/index/_gu6_Lucene80_0.dvm" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/index/_gu6_Lucene84_0.tim" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="var/elasticsearch-data/nodes/0/indices/R5yEhEPlRAWVUQrOazT9gA/0/index/_gu6_Lucene84_0.tmd" />
+  </binary>
+</changelist>

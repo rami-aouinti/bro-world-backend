@@ -7,6 +7,7 @@ namespace App\Log\Infrastructure\Document;
 use App\General\Infrastructure\Document\AbstractDocument;
 use App\Log\Domain\Entity\LogLogin as LogLoginEntity;
 use App\Log\Infrastructure\Document\Repository\LogLoginDocumentRepository;
+use DateTimeImmutable;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
@@ -61,10 +62,10 @@ class LogLoginDocument extends AbstractDocument
     private ?string $model = null;
 
     #[ODM\Field(type: 'date_immutable')]
-    private \DateTimeImmutable $time;
+    private DateTimeImmutable $time;
 
     #[ODM\Field(type: 'date_immutable')]
-    private \DateTimeImmutable $date;
+    private DateTimeImmutable $date;
 
     #[ODM\Field(type: 'string')]
     private string $agent = '';
@@ -76,11 +77,13 @@ class LogLoginDocument extends AbstractDocument
     private string $clientIp = '';
 
     /**
-     * @throws \DateMalformedStringException
+     * @param LogLoginEntity $entity
+     *
+     * @return LogLoginDocument
      */
     public static function fromEntity(LogLoginEntity $entity): self
     {
-        $document = new self($entity->getUuid()->toString());
+        $document = new self();
         $document->type = $entity->getType()->value;
         $document->username = $entity->getUsername();
         $document->userId = $entity->getUser()?->getId();
@@ -181,12 +184,12 @@ class LogLoginDocument extends AbstractDocument
         return $this->model;
     }
 
-    public function getTime(): \DateTimeImmutable
+    public function getTime(): DateTimeImmutable
     {
         return $this->time;
     }
 
-    public function getDate(): \DateTimeImmutable
+    public function getDate(): DateTimeImmutable
     {
         return $this->date;
     }
