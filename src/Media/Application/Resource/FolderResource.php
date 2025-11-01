@@ -8,7 +8,9 @@ use App\General\Application\DTO\Interfaces\RestDtoInterface;
 use App\General\Application\Rest\RestResource;
 use App\General\Domain\Entity\Interfaces\EntityInterface;
 use App\Media\Domain\Entity\Folder as Entity;
-use App\Media\Infrastructure\Repository\FolderRepository as Repository;
+use App\Media\Application\DTO\Folder\Folder as FolderDto;
+use App\Media\Domain\Repository\Interfaces\FolderRepositoryInterface as Repository;
+use App\User\Domain\Entity\User;
 
 /**
  * @package App\Media
@@ -34,5 +36,15 @@ class FolderResource extends RestResource
     public function __construct(Repository $repository)
     {
         parent::__construct($repository);
+
+        $this->setDtoClass(FolderDto::class);
+    }
+
+    /**
+     * @return array<int, Entity>
+     */
+    public function findRootFoldersForUser(User $user): array
+    {
+        return $this->getRepository()->findRootFoldersForUser($user);
     }
 }

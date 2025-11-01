@@ -22,7 +22,7 @@ use Override;
  * @codingStandardsIgnoreStart
  *
  * @method Entity getReference(string $id, ?string $entityManagerName = null)
- * @method \App\Messenger\Infrastructure\Repository\ReactionRepository getRepository()
+ * @method Repository getRepository()
  * @method Entity[] find(?array $criteria = null, ?array $orderBy = null, ?int $limit = null, ?int $offset = null, ?array $search = null, ?string $entityManagerName = null)
  * @method Entity|null findOne(string $id, ?bool $throwExceptionIfNotFound = null, ?string $entityManagerName = null)
  * @method Entity|null findOneBy(array $criteria, ?array $orderBy = null, ?bool $throwExceptionIfNotFound = null, ?string $entityManagerName = null)
@@ -36,9 +36,6 @@ use Override;
  */
 class ReactionResource extends RestResource
 {
-    /**
-     * @param \App\Messenger\Infrastructure\Repository\ReactionRepository $repository
-     */
     public function __construct(
         Repository $repository,
         private readonly ReactionDocumentRepositoryInterface $reactionDocumentRepository,

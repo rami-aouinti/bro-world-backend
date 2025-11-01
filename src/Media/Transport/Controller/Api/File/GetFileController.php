@@ -4,19 +4,17 @@ declare(strict_types=1);
 
 namespace App\Media\Transport\Controller\Api\File;
 
-use App\General\Domain\Utils\JSON;
 use App\Media\Domain\Entity\File;
+use App\General\Transport\Rest\ResponseHandler;
+use App\Media\Application\Resource\FileResource;
 use App\User\Domain\Entity\User;
-use JsonException;
 use OpenApi\Attributes as OA;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\Serializer\Exception\ExceptionInterface;
-use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @package App\File
@@ -26,7 +24,8 @@ use Symfony\Component\Serializer\SerializerInterface;
 readonly class GetFileController
 {
     public function __construct(
-        private SerializerInterface $serializer
+        private ResponseHandler $responseHandler,
+        private FileResource $fileResource,
     ) {
     }
 
@@ -36,28 +35,19 @@ readonly class GetFileController
      * @param User $loggedInUser
      * @param File $file
      *
-     * @throws ExceptionInterface
-     * @throws JsonException
-     * @return JsonResponse
+     * @return Response
      */
     #[Route(
         path: '/v1/file/{file}',
         methods: [Request::METHOD_GET],
     )]
     #[IsGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY)]
-    public function __invoke(User $loggedInUser, File $file): JsonResponse
+    public function __invoke(Request $request, User $loggedInUser, File $file): Response
     {
-        $output = JSON::decode(
-            $this->serializer->serialize(
-                $file,
-                'json',
-                [
-                    'groups' => 'File',
-                ]
-            ),
-            true,
+        return $this->responseHandler->createResponse(
+            $request,
+            $file,
+            $this->fileResource,
         );
-
-        return new JsonResponse($output);
     }
 }

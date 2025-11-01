@@ -4,28 +4,18 @@ declare(strict_types=1);
 
 namespace App\Media\Transport\Controller\Api\File;
 
-use App\General\Domain\Utils\JSON;
-use App\Media\Domain\Entity\File;
+use App\General\Transport\Rest\ResponseHandler;
+use App\Media\Application\Resource\FileResource;
+use App\Media\Application\Service\FileCreationService;
 use App\Media\Domain\Entity\Folder;
-use App\Media\Domain\Enum\FileType;
-use App\Media\Infrastructure\Repository\FileRepository;
-use App\Media\Infrastructure\Repository\FolderRepository;
-use App\User\Application\Service\UserService;
 use App\User\Domain\Entity\User;
-use Doctrine\ORM\Exception\NotSupported;
-use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\OptimisticLockException;
-use JsonException;
 use OpenApi\Attributes as OA;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\Serializer\Exception\ExceptionInterface;
-use Symfony\Component\Serializer\SerializerInterface;
-use Throwable;
 
 /**
  * @package App\File
@@ -35,68 +25,29 @@ use Throwable;
 readonly class CreateChildFileController
 {
     public function __construct(
-        private SerializerInterface $serializer,
-        private UserService $userService,
-        private FileRepository $fileRepository,
-        private FolderRepository $repository
+        private FileCreationService $fileCreationService,
+        private ResponseHandler $responseHandler,
+        private FileResource $fileResource,
     ) {
     }
 
     /**
      * Get current user profile data, accessible only for 'IS_AUTHENTICATED_FULLY' users.
-     *
-     * @param User    $loggedInUser
-     * @param Request $request
-     * @param Folder  $folder
-     *
-     * @throws ExceptionInterface
-     * @throws JsonException
-     * @throws Throwable
-     * @throws NotSupported
-     * @throws ORMException
-     * @throws OptimisticLockException
-     * @return JsonResponse
      */
     #[Route(
         path: '/v1/file/{folder}',
         methods: [Request::METHOD_POST],
     )]
     #[IsGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY)]
-    public function __invoke(User $loggedInUser, Request $request, Folder $folder): JsonResponse
+    public function __invoke(User $loggedInUser, Request $request, Folder $folder): Response
     {
-        $medias = $request->files->all() ? $this->userService->createMedia($request, 'media') : [];
+        $createdFiles = $this->fileCreationService->create($loggedInUser, $request, $folder);
 
-        foreach ($medias as $media) {
-            $data = $request->request->all();
-            $file = new File();
-            $file->setName($media['fileName']);
-            $file->setUrl($media['path']);
-            $file->setSize($media['fileSize']);
-            $type = FileType::fromExtension(pathinfo($media['fileName'], PATHINFO_EXTENSION));
-            $file->setType($type);
-            $file->setExtension(pathinfo($media['fileName'], PATHINFO_EXTENSION));
-            $file->setUser($loggedInUser);
-            $file->setIsFavorite($data['isFavorite']?? false);
-            $file->setIsPrivate($data['isPrivate'] ?? false);
-            $file->setFolder($folder);
-
-            $this->fileRepository->save($file);
-        }
-
-        $output = JSON::decode(
-            $this->serializer->serialize(
-                $this->repository->findBy([
-                    'user' => $loggedInUser,
-                    'parent' => null
-                ]),
-                'json',
-                [
-                    'groups' => 'Folder',
-                ]
-            ),
-            true,
+        return $this->responseHandler->createResponse(
+            $request,
+            $createdFiles,
+            $this->fileResource,
         );
-
-        return new JsonResponse($output);
     }
 }
+

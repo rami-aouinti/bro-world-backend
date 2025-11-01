@@ -4,19 +4,17 @@ declare(strict_types=1);
 
 namespace App\Media\Transport\Controller\Api\Folder;
 
-use App\General\Domain\Utils\JSON;
 use App\Media\Domain\Entity\Folder;
+use App\General\Transport\Rest\ResponseHandler;
 use App\User\Domain\Entity\User;
-use JsonException;
 use OpenApi\Attributes as OA;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\Serializer\Exception\ExceptionInterface;
-use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\HttpFoundation\Response;
+use App\Media\Application\Resource\FolderResource;
 
 /**
  * @package App\Folder
@@ -26,7 +24,8 @@ use Symfony\Component\Serializer\SerializerInterface;
 readonly class GetFolderController
 {
     public function __construct(
-        private SerializerInterface $serializer
+        private ResponseHandler $responseHandler,
+        private FolderResource $folderResource,
     ) {
     }
 
@@ -36,28 +35,19 @@ readonly class GetFolderController
      * @param User   $loggedInUser
      * @param Folder $folder
      *
-     * @throws ExceptionInterface
-     * @throws JsonException
-     * @return JsonResponse
+     * @return Response
      */
     #[Route(
         path: '/v1/folder/{folder}',
         methods: [Request::METHOD_GET],
     )]
     #[IsGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY)]
-    public function __invoke(User $loggedInUser, Folder $folder): JsonResponse
+    public function __invoke(Request $request, User $loggedInUser, Folder $folder): Response
     {
-        $output = JSON::decode(
-            $this->serializer->serialize(
-                $loggedInUser,
-                'json',
-                [
-                    'groups' => 'Folder',
-                ]
-            ),
-            true,
+        return $this->responseHandler->createResponse(
+            $request,
+            $folder,
+            $this->folderResource,
         );
-
-        return new JsonResponse($output);
     }
 }

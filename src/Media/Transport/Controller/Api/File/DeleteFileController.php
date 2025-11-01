@@ -4,22 +4,15 @@ declare(strict_types=1);
 
 namespace App\Media\Transport\Controller\Api\File;
 
-use App\General\Domain\Utils\JSON;
+use App\Media\Application\Resource\FileResource;
 use App\Media\Domain\Entity\File;
-use App\Media\Infrastructure\Repository\FileRepository;
 use App\User\Domain\Entity\User;
-use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\OptimisticLockException;
-use JsonException;
 use OpenApi\Attributes as OA;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\Serializer\Exception\ExceptionInterface;
-use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @package App\File
@@ -29,8 +22,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 readonly class DeleteFileController
 {
     public function __construct(
-        private SerializerInterface $serializer,
-        private FileRepository $fileRepository
+        private FileResource $fileResource,
     ) {
     }
 
@@ -40,31 +32,17 @@ readonly class DeleteFileController
      * @param User $loggedInUser
      * @param File $file
      *
-     * @throws ExceptionInterface
-     * @throws JsonException
-     * @throws ORMException
-     * @throws OptimisticLockException
-     * @return JsonResponse
+     * @return Response
      */
     #[Route(
         path: '/v1/file/{file}',
         methods: [Request::METHOD_DELETE],
     )]
     #[IsGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY)]
-    public function __invoke(User $loggedInUser, File $file): JsonResponse
+    public function __invoke(User $loggedInUser, File $file): Response
     {
-        $this->fileRepository->remove($file);
-        $output = JSON::decode(
-            $this->serializer->serialize(
-                'success',
-                'json',
-                [
-                    'groups' => 'File',
-                ]
-            ),
-            true,
-        );
+        $this->fileResource->delete($file->getId(), true);
 
-        return new JsonResponse($output);
+        return new Response(status: Response::HTTP_NO_CONTENT);
     }
 }
