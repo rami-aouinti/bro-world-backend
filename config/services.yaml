@@ -197,6 +197,14 @@ when@dev:
             factory: [ '@App\General\Application\Decorator\StopwatchDecorator', decorate ]
             arguments: [ '@symfony.component.serializer.stopwatch.inner' ]
 
+        App\General\Infrastructure\DataCollector\MongoCommandDataCollector:
+            arguments:
+                - '@doctrine_mongodb.odm.command_logger'
+            tags:
+                - { name: data_collector, template: '@DoctrineMongoDB/Collector/mongodb.html.twig', id: 'mongodb' }
+
+        Doctrine\Bundle\MongoDBBundle\DataCollector\CommandDataCollector: '@App\General\Infrastructure\DataCollector\MongoCommandDataCollector'
+
 when@test:
     services:
         _defaults:
