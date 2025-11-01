@@ -9,6 +9,9 @@ use App\Log\Domain\Entity\LogLogin as LogLoginEntity;
 use App\Log\Infrastructure\Document\Repository\LogLoginDocumentRepository;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
+/**
+ * @package App\Log
+ */
 #[ODM\Document(collection: 'log_login', repositoryClass: LogLoginDocumentRepository::class)]
 class LogLoginDocument extends AbstractDocument
 {
@@ -72,9 +75,12 @@ class LogLoginDocument extends AbstractDocument
     #[ODM\Field(type: 'string')]
     private string $clientIp = '';
 
+    /**
+     * @throws \DateMalformedStringException
+     */
     public static function fromEntity(LogLoginEntity $entity): self
     {
-        $document = new self($entity->getId());
+        $document = new self($entity->getUuid()->toString());
         $document->type = $entity->getType()->value;
         $document->username = $entity->getUsername();
         $document->userId = $entity->getUser()?->getId();
