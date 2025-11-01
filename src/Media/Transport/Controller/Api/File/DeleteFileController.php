@@ -8,6 +8,7 @@ use App\Media\Application\Resource\FileResource;
 use App\Media\Domain\Entity\File;
 use App\User\Domain\Entity\User;
 use OpenApi\Attributes as OA;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
