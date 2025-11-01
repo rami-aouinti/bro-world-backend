@@ -31,6 +31,8 @@ when@dev: &dev
             security:
                 -   Bearer: []
                 -   ApiKey: []
+        models:
+            use_jms: false
         areas: # to filter documented areas
             path_patterns:
                 - ^/api(?!/doc$) # Accepts routes under /api except /api/doc
