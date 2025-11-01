@@ -158,7 +158,8 @@
                 "classmap": [],
                 "exclude-from-classmap": [],
                 "files": [
-                        "src/Polyfill/MongoDB/MonitoringStubs.php"
+                        "src/Polyfill/MongoDB/MonitoringStubs.php",
+                        "src/Polyfill/Symfony/Component/Uid/Uuid.php"
                 ]
         },
 	"autoload-dev": {
