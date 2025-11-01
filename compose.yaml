@@ -33,6 +33,10 @@ services:
         container_name: ${COMPOSE_PROJECT_NAME}-symfony
         volumes:
             - ./:/var/www/html:cached
+        environment:
+            MONGODB_HOST: mongodb
+            MONGODB_URI: mongodb://mongodb:${MONGODB_PORT}
+            MONGODB_URL: mongodb://mongodb:${MONGODB_PORT}
         depends_on:
             - mysql
             - mongodb
@@ -81,6 +85,7 @@ services:
             RABBITMQ_DEFAULT_VHOST: /
         ports:
             - "${RABBITMQ_MANAGEMENT_PORT}:15672"
+            - "5672:5672"
         volumes:
             - ./var/rabbitmq:/var/lib/rabbitmq:delegated
         networks:

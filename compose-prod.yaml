@@ -47,19 +47,6 @@ services:
         networks:
             - symfony
 
-    mongodb:
-        image: mongo:${MONGODB_VERSION}
-        container_name: ${COMPOSE_PROJECT_NAME}-mongodb
-        restart: always
-        environment:
-            MONGO_INITDB_DATABASE: ${MONGODB_DB}
-        ports:
-            - "${MONGODB_PORT}:27017"
-        volumes:
-            - ./var/mongodb-data:/data/db:delegated
-        networks:
-            - symfony
-
     kibana:
         image: ${COMPOSE_PROJECT_NAME}-kibana
         platform: linux/x86_64
@@ -111,6 +98,28 @@ services:
         networks:
             - symfony
 
+    mongodb:
+        image: mongo:7
+        restart: unless-stopped
+        ports:
+            - "27017:27017"
+        environment:
+            MONGO_INITDB_DATABASE: app
+        volumes:
+            - mongo_data:/data/db
+        networks:
+            - symfony
+
+    mongo-express:
+        image: mongo-express:1.0.2
+        restart: unless-stopped
+        ports:
+            - "8081:8081"
+        environment:
+            ME_CONFIG_MONGODB_SERVER: mongodb
+        networks:
+            - symfony
+
 ###< symfony/mercure-bundle ###
 networks:
     symfony:
@@ -119,4 +128,5 @@ volumes:
     ###> symfony/mercure-bundle ###
     mercure_data:
     mercure_config:
+    mongo_data:
 ###< symfony/mercure-bundle ###
