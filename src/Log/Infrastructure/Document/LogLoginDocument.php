@@ -83,7 +83,7 @@ class LogLoginDocument extends AbstractDocument
      */
     public static function fromEntity(LogLoginEntity $entity): self
     {
-        $document = new self();
+        $document = new self($entity->getId());
         $document->type = $entity->getType()->value;
         $document->username = $entity->getUsername();
         $document->userId = $entity->getUser()?->getId();
