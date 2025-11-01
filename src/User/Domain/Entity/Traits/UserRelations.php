@@ -12,6 +12,7 @@ use App\User\Domain\Entity\Story;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Entity\UserGroup;
 use App\User\Domain\Entity\UserProfile;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -124,6 +125,13 @@ trait UserRelations
      *
      * @return Collection<int, UserGroup>|ArrayCollection<int, UserGroup>
      */
+    #[OA\Property(
+        type: 'array',
+        items: new OA\Items(
+            ref: new Model(type: UserGroup::class, groups: ['UserGroup', 'UserGroup.role']),
+        ),
+        description: 'User groups attached to the user.',
+    )]
     public function getUserGroups(): Collection | ArrayCollection
     {
         return $this->userGroups;
