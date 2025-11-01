@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\General\Infrastructure\Document;
 
+use App\General\Domain\Rest\UuidHelper;
 use DateMalformedStringException;
 use DateTimeImmutable;
 use DateTimeZone;
 use Ramsey\Uuid\UuidInterface;
+
+use function is_string;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
@@ -27,8 +30,13 @@ abstract class AbstractDocument
     /**
      * @throws DateMalformedStringException
      */
-    public function __construct()
+    public function __construct(string|UuidInterface $id)
     {
+        if (is_string($id)) {
+            $id = UuidHelper::fromString($id);
+        }
+
+        $this->id = $id;
         $this->createdAt = new DateTimeImmutable(timezone: new DateTimeZone('UTC'));
     }
 
