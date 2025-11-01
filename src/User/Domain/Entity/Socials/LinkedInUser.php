@@ -6,6 +6,7 @@ namespace App\User\Domain\Entity\Socials;
 
 use App\User\Domain\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
+use OpenApi\Attributes as OA;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
@@ -43,6 +44,7 @@ class LinkedInUser extends User
     private ?string $profileUrl = null;
 
     #[ORM\Column(type: 'json', nullable: true)]
+    #[OA\Property(type: 'object', nullable: true, description: 'Raw LinkedIn payload data.')]
     #[Groups([
         'LinkedInUser',
         'LinkedInUser.raw',
