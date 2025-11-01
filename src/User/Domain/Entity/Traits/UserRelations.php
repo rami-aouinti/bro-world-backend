@@ -109,6 +109,7 @@ trait UserRelations
         User::SET_USER_PROFILE,
     ])]
     #[OA\Property(
+        property: 'roles',
         type: 'array',
         items: new OA\Items(type: 'string'),
         description: 'Direct roles assigned to the user.',
@@ -126,6 +127,7 @@ trait UserRelations
      * @return Collection<int, UserGroup>|ArrayCollection<int, UserGroup>
      */
     #[OA\Property(
+        property: 'userGroups',
         type: 'array',
         items: new OA\Items(
             ref: new Model(type: UserGroup::class, groups: ['UserGroup', 'UserGroup.role']),
