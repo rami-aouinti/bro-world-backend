@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\General\Infrastructure\Factory;
 
+use App\General\Infrastructure\Mongo\NullCommandLogger;
 use Doctrine\Bundle\MongoDBBundle\APM\CommandLoggerRegistry;
-use LogicException;
 
 use function is_object;
 use function method_exists;
@@ -28,7 +28,7 @@ final readonly class MongoCommandLoggerFactory
             return $logger;
         }
 
-        throw new LogicException('Unable to resolve the Doctrine MongoDB command logger.');
+        return new NullCommandLogger();
     }
 
     private function getLoggerFromRegistry(string $managerName): ?object
