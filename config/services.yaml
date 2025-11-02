@@ -201,7 +201,7 @@ when@dev:
             arguments: [ '@symfony.component.serializer.stopwatch.inner' ]
 
         app.doctrine_mongodb.command_logger:
-            class: Doctrine\Bundle\MongoDBBundle\Logger\CommandLogger
+            class: Doctrine\Bundle\MongoDBBundle\APM\CommandLoggerRegistry
             factory: [ '@App\General\Infrastructure\Factory\MongoCommandLoggerFactory', 'create' ]
             arguments:
                 - '%doctrine_mongodb.odm.default_document_manager%'

@@ -10,9 +10,13 @@ use LogicException;
 use function is_object;
 use function method_exists;
 
-final class MongoCommandLoggerFactory
+/**
+ * Class MongoCommandLoggerFactory
+ *
+ */
+final readonly class MongoCommandLoggerFactory
 {
-    public function __construct(private readonly CommandLoggerRegistry $registry)
+    public function __construct(private CommandLoggerRegistry $registry)
     {
     }
 
