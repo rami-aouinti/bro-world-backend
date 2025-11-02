@@ -201,7 +201,7 @@ when@dev:
 
         app.doctrine_mongodb.command_logger:
             class: Doctrine\Bundle\MongoDBBundle\Logger\CommandLogger
-            factory: [ '@doctrine_mongodb.odm.command_logger_registry', 'getCommandLogger' ]
+            factory: [ '@App\\General\\Infrastructure\\Factory\\MongoCommandLoggerFactory', 'create' ]
             arguments:
                 - '%doctrine_mongodb.odm.default_document_manager%'
 
