@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\General\Infrastructure\Factory;
 
 use Doctrine\Bundle\MongoDBBundle\APM\CommandLoggerRegistry;
-use Doctrine\Bundle\MongoDBBundle\Logger\CommandLogger;
 use LogicException;
 
+use function is_object;
 use function method_exists;
 
 final class MongoCommandLoggerFactory
@@ -16,22 +16,33 @@ final class MongoCommandLoggerFactory
     {
     }
 
-    public function create(string $managerName): CommandLogger
+    public function create(string $managerName): object
     {
-        if (method_exists($this->registry, 'getCommandLogger')) {
-            $logger = $this->registry->getCommandLogger($managerName);
-            if ($logger instanceof CommandLogger) {
-                return $logger;
-            }
-        }
+        $logger = $this->getLoggerFromRegistry($managerName);
 
-        if (method_exists($this->registry, 'getCommandLoggerForManager')) {
-            $logger = $this->registry->getCommandLoggerForManager($managerName);
-            if ($logger instanceof CommandLogger) {
-                return $logger;
-            }
+        if ($logger !== null) {
+            return $logger;
         }
 
         throw new LogicException('Unable to resolve the Doctrine MongoDB command logger.');
+    }
+
+    private function getLoggerFromRegistry(string $managerName): ?object
+    {
+        $registryMethodNames = ['getCommandLogger', 'getCommandLoggerForManager'];
+
+        foreach ($registryMethodNames as $method) {
+            if (!method_exists($this->registry, $method)) {
+                continue;
+            }
+
+            $logger = $this->registry->{$method}($managerName);
+
+            if (is_object($logger) && method_exists($logger, 'getExecutedCommands')) {
+                return $logger;
+            }
+        }
+
+        return null;
     }
 }

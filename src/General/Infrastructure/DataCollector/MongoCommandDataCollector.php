@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\General\Infrastructure\DataCollector;
 
-use Doctrine\Bundle\MongoDBBundle\Logger\CommandLogger;
 use MongoDB\BSON\Document;
 use MongoDB\BSON\Type;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,7 +27,7 @@ use const JSON_THROW_ON_ERROR;
  */
 class MongoCommandDataCollector extends DataCollector implements LateDataCollectorInterface
 {
-    public function __construct(private readonly CommandLogger $commandLogger)
+    public function __construct(private readonly object $commandLogger)
     {
         $this->reset();
     }
@@ -40,10 +39,14 @@ class MongoCommandDataCollector extends DataCollector implements LateDataCollect
 
     public function lateCollect(): void
     {
-        $commands = array_map(
-            fn (array $command): array => $this->normaliseCommand($command),
-            $this->commandLogger->getExecutedCommands(),
-        );
+        $commands = [];
+
+        if (method_exists($this->commandLogger, 'getExecutedCommands')) {
+            $commands = array_map(
+                fn (array $command): array => $this->normaliseCommand($command),
+                $this->commandLogger->getExecutedCommands(),
+            );
+        }
 
         $failedCommands = array_values(array_filter(
             $commands,
