@@ -117,6 +117,9 @@ services:
             - "8081:8081"
         environment:
             ME_CONFIG_MONGODB_SERVER: mongodb
+            ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
+            ME_CONFIG_BASICAUTH_USERNAME: "monuser"
+            ME_CONFIG_BASICAUTH_PASSWORD: "motdepasseFort!"
         networks:
             - symfony
 

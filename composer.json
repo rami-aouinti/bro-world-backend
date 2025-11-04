@@ -1,5 +1,5 @@
 {
-	"name": "systemsdk/docker-symfony-api",
+	"name": "bro-world/backend-microservice",
 	"type": "project",
 	"description": "JSON REST API",
 	"keywords": [
@@ -13,20 +13,14 @@
 		"RabbitMQ",
 		"Elasticsearch"
 	],
-	"homepage": "https://github.com/systemsdk/docker-symfony-api",
-	"version": "v3.4.5",
-	"license": "MIT",
+	"homepage": "https://github.com/rami-aouinti/bro-world-backend",
+	"version": "v1.0.0",
+	"license": "proprietary",
 	"authors": [
 		{
-			"name": "Dmitriy Kravtsov",
-			"email": "dmytro.kravtsov@systemsdk.com",
-			"homepage": "https://github.com/systemsdk",
-			"role": "Developer"
-		},
-		{
-			"name": "Tarmo Leppänen",
-			"email": "tarmo.leppanen@protacon.com",
-			"homepage": "https://github.com/tarlepp",
+			"name": "Rami Aouinti",
+			"email": "rami.aouinti@gmail.com",
+			"homepage": "https://github.com/rami-aouinti",
 			"role": "Developer"
 		}
 	],
@@ -214,6 +208,6 @@
 		}
 	},
 	"support": {
-		"issues": "https://github.com/systemsdk/docker-symfony-api/issues"
+		"issues": "https://github.com/rami-aouinti/bro-world-backend/issues"
 	}
 }

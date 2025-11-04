@@ -360,7 +360,7 @@ messenger-setup-transports: ## Initializes transports for Symfony Messenger bund
 	@make exec cmd="php bin/console messenger:setup-transports"
 
 elastic-create-or-update-template: ## Creates or updates elastic templates
-	@make exec cmd="php "
+	@make exec cmd="php bin/console elastic:create-or-update-template"
 
 phpunit: ## Runs PhpUnit tests
 	@make exec-bash cmd="rm -rf ./var/cache/test* && bin/console cache:warmup --env=test && ./vendor/bin/phpunit -c phpunit.xml.dist --coverage-html reports/coverage $(PHPUNIT_OPTIONS) --coverage-clover reports/clover.xml --log-junit reports/junit.xml"
