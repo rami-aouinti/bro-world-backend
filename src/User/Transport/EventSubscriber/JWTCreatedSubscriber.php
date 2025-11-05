@@ -76,6 +76,7 @@ class JWTCreatedSubscriber implements EventSubscriberInterface
     private function setDefaultData(array &$payload, UserInterface $user): void
     {
         $payload['id'] = $user->getUserIdentifier();
+        $payload['userIdentifier'] = $user->getUserIdentifier();
         $payload['email'] = $user->getEmail();
         $payload['firstName'] = $user->getFirstName();
         $payload['lastName'] = $user->getLastName();
