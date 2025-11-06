@@ -48,3 +48,12 @@ media-controllers:
     prefix: /api
     defaults:
         _format: json
+
+workplace-controllers:
+    resource:
+        path: ../src/Workplace/Transport/Controller/Api/
+        namespace: App\Workplace\Transport\Controller\Api
+    type: attribute
+    prefix: /api
+    defaults:
+        _format: json
