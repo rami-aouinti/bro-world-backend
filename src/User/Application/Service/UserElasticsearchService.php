@@ -9,6 +9,8 @@ use App\User\Application\Service\Interfaces\UserElasticsearchServiceInterface;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Repository\Interfaces\FollowRepositoryInterface;
 use App\User\Infrastructure\Repository\UserRepository;
+use Doctrine\ORM\Exception\NotSupported;
+
 use function array_values;
 
 /**
@@ -38,6 +40,8 @@ readonly class UserElasticsearchService implements UserElasticsearchServiceInter
 
     /**
      * @param User $user
+     *
+     * @throws NotSupported
      */
     public function updateUserInElasticsearch(User $user): void
     {

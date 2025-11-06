@@ -92,6 +92,12 @@ doctrine:
                         dir: '%kernel.project_dir%/src/Media/Domain/Entity'
                         prefix: 'App\Media\Domain\Entity'
                         alias: Media
+                    Workplace:
+                        type: attribute
+                        is_bundle: false
+                        dir: '%kernel.project_dir%/src/Workplace/Domain/Entity'
+                        prefix: 'App\Workplace\Domain\Entity'
+                        alias: Workplace
                 dql:
                     datetime_functions:
                         datesub: DoctrineExtensions\Query\Mysql\DateSub

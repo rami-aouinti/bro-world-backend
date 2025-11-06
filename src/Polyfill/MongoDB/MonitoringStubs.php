@@ -8,9 +8,11 @@ namespace MongoDB\BSON {
     use JsonException;
     use JsonSerializable;
 
+    use function is_array;
+
     if (!class_exists(Document::class)) {
         /**
-         * Lightweight polyfill for {@see \MongoDB\BSON\Document} when the MongoDB extension
+         * Lightweight polyfill for {@see Document} when the MongoDB extension
          * is not installed or an older version is used that does not ship the class.
          *
          * The real implementation offers a BSON backed object. For the purposes of the
@@ -22,6 +24,8 @@ namespace MongoDB\BSON {
         {
             /**
              * @param iterable|object $document
+             *
+             * @return Document
              */
             public static function fromPHP(iterable|object $document): self
             {
@@ -73,6 +77,8 @@ namespace MongoDB\BSON {
 
             /**
              * @param iterable|object $document
+             *
+             * @return array
              */
             private static function normalize(iterable|object $document): array
             {
@@ -115,6 +121,9 @@ namespace {
 
 namespace MongoDB\Driver\Monitoring {
     if (!interface_exists(CommandSubscriber::class)) {
+        /**
+         * @internal
+         */
         interface CommandSubscriber
         {
             public function commandStarted(CommandStartedEvent $event): void;
@@ -129,6 +138,9 @@ namespace MongoDB\Driver\Monitoring {
      * @internal
      */
     if (!class_exists(AbstractEventStub::class)) {
+        /**
+         * @internal
+         */
         abstract class AbstractEventStub
         {
             public function __construct(...$arguments)
@@ -149,18 +161,27 @@ namespace MongoDB\Driver\Monitoring {
     }
 
     if (!class_exists(CommandStartedEvent::class)) {
+        /**
+         * @internal
+         */
         class CommandStartedEvent extends AbstractEventStub
         {
         }
     }
 
     if (!class_exists(CommandSucceededEvent::class)) {
+        /**
+         * @internal
+         */
         class CommandSucceededEvent extends AbstractEventStub
         {
         }
     }
 
     if (!class_exists(CommandFailedEvent::class)) {
+        /**
+         * @internal
+         */
         class CommandFailedEvent extends AbstractEventStub
         {
         }
