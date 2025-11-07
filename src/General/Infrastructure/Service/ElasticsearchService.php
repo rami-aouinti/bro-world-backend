@@ -43,6 +43,7 @@ class ElasticsearchService implements ElasticsearchServiceInterface
             'index' => $index,
             'id' => $documentId,
             'body' => $body,
+            'wait_for_active_shards' => 1,
         ]);
     }
 
@@ -55,6 +56,7 @@ class ElasticsearchService implements ElasticsearchServiceInterface
             'index' => $index,
             'id' => $documentId,
             'body' => $body,
+            'wait_for_active_shards' => 1,
         ]);
     }
 
