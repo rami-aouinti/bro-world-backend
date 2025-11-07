@@ -28,6 +28,18 @@ interface ElasticsearchServiceInterface
     public function index(string $index, string $documentId, array $body): mixed;
 
     /**
+     * Create index if needed.
+     *
+     * @param array<string, mixed> $body
+     */
+    public function createIndex(string $index, array $body = []): void;
+
+    /**
+     * Check if index exists.
+     */
+    public function indexExists(string $index): bool;
+
+    /**
      * Index a document
      *
      * @param array<int|string, mixed> $body
