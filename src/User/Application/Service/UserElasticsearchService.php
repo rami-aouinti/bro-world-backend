@@ -31,6 +31,8 @@ readonly class UserElasticsearchService implements UserElasticsearchServiceInter
      */
     public function indexUserInElasticsearch(User $user): void
     {
+        $this->ensureUsersIndexExists();
+
         $this->elasticsearchService->index(
             'users',
             $user->getId(),
@@ -46,6 +48,8 @@ readonly class UserElasticsearchService implements UserElasticsearchServiceInter
     public function updateUserInElasticsearch(User $user): void
     {
         $this->elasticsearchService->delete('users');
+
+        $this->ensureUsersIndexExists();
 
         $users = $this->userRepository->findAll();
 
@@ -78,6 +82,19 @@ readonly class UserElasticsearchService implements UserElasticsearchServiceInter
     public function deleteUsers(): void
     {
         $this->elasticsearchService->delete('users');
+    }
+
+    private function ensureUsersIndexExists(): void
+    {
+        $this->elasticsearchService->createIndex(
+            'users',
+            [
+                'settings' => [
+                    'number_of_shards' => 1,
+                    'number_of_replicas' => 0,
+                ],
+            ]
+        );
     }
 
     /**

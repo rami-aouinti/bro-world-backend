@@ -43,7 +43,32 @@ class ElasticsearchService implements ElasticsearchServiceInterface
             'index' => $index,
             'id' => $documentId,
             'body' => $body,
+            'wait_for_active_shards' => 1,
         ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createIndex(string $index, array $body = []): void
+    {
+        if ($this->indexExists($index)) {
+            return;
+        }
+
+        $this->client->indices()->create([
+            'index' => $index,
+            'body' => $body,
+            'wait_for_active_shards' => 1,
+        ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function indexExists(string $index): bool
+    {
+        return $this->client->indices()->exists(['index' => $index]);
     }
 
     /**
@@ -55,12 +80,13 @@ class ElasticsearchService implements ElasticsearchServiceInterface
             'index' => $index,
             'id' => $documentId,
             'body' => $body,
+            'wait_for_active_shards' => 1,
         ]);
     }
 
     public function delete(string $index): void
     {
-        if ($this->client->indices()->exists(['index' => $index])) {
+        if ($this->indexExists($index)) {
             $this->client->indices()->delete(['index' => $index]);
         }
     }
