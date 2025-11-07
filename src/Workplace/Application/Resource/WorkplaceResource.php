@@ -7,8 +7,10 @@ namespace App\Workplace\Application\Resource;
 use App\General\Application\DTO\Interfaces\RestDtoInterface;
 use App\General\Application\Rest\RestResource;
 use App\General\Domain\Entity\Interfaces\EntityInterface;
+use App\Workplace\Application\DTO\Workplace\Workplace as WorkplaceDto;
 use App\Workplace\Domain\Entity\Workplace as Entity;
 use App\Workplace\Domain\Repository\Interfaces\WorkplaceRepositoryInterface as Repository;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 /**
  * @package App\Workplace
@@ -36,7 +38,37 @@ class WorkplaceResource extends RestResource
      */
     public function __construct(
         Repository $repository,
+        private readonly SluggerInterface $slugger,
     ) {
         parent::__construct($repository);
+    }
+
+    public function beforeCreate(RestDtoInterface $restDto, EntityInterface $entity): void
+    {
+        $this->synchronizeSlug($restDto, $entity);
+    }
+
+    public function beforeUpdate(string &$id, RestDtoInterface $restDto, EntityInterface $entity): void
+    {
+        $this->synchronizeSlug($restDto, $entity);
+    }
+
+    public function beforePatch(string &$id, RestDtoInterface $restDto, EntityInterface $entity): void
+    {
+        $this->synchronizeSlug($restDto, $entity);
+    }
+
+    private function synchronizeSlug(RestDtoInterface $restDto, EntityInterface $entity): void
+    {
+        if (!$restDto instanceof WorkplaceDto || !$entity instanceof Entity) {
+            return;
+        }
+
+        if (!in_array('name', $restDto->getVisited(), true)) {
+            return;
+        }
+
+        $slug = $this->slugger->slug($restDto->getName())->lower()->toString();
+        $entity->setSlug($slug);
     }
 }
