@@ -9,6 +9,7 @@ use App\General\Application\DTO\RestDto;
 use App\General\Domain\Entity\Interfaces\EntityInterface;
 use App\User\Domain\Entity\Plugin as Entity;
 use Override;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 /**
  * @package App\Plugin
@@ -19,27 +20,45 @@ use Override;
  */
 class Plugin extends RestDto
 {
+    #[Groups(['Plugin', 'default'])]
     protected string $key = '';
 
+    #[Groups(['Plugin', 'default'])]
     protected string $name = '';
 
+    #[Groups(['Plugin', 'default'])]
     protected ?string $subTitle = null;
 
+    #[Groups(['Plugin', 'default'])]
     protected ?string $description = null;
 
+    #[Groups(['Plugin', 'default'])]
     protected ?string $logo = null;
 
+    #[Groups(['Plugin', 'default'])]
     protected string $icon = '';
 
+    #[Groups(['Plugin', 'default'])]
     protected bool $installed = false;
 
+    #[Groups(['Plugin', 'default'])]
     protected string $link = '';
 
+    #[Groups(['Plugin', 'default'])]
     protected string $pricing = '';
 
+    #[Groups(['Plugin', 'default'])]
     protected string $action = '';
 
+    #[Groups(['Plugin', 'default'])]
     protected bool $active = false;
+
+    #[Groups(['Plugin', 'default'])]
+    #[Override]
+    public function getId(): ?string
+    {
+        return parent::getId();
+    }
 
     public function getKey(): string
     {
