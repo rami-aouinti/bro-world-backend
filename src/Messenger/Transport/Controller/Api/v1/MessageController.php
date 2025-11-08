@@ -12,10 +12,12 @@ use App\Messenger\Application\Resource\ConversationResource;
 use App\Messenger\Application\Resource\MessageResource;
 use App\Messenger\Domain\Entity\Conversation;
 use App\Role\Domain\Enum\Role;
+use App\User\Domain\Entity\User;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
@@ -66,12 +68,16 @@ class MessageController extends Controller
      */
     #[Route(path: '/conversation/{conversationId}', methods: [Request::METHOD_GET])]
     #[IsGranted(Role::LOGGED->value)]
-    public function messagesForConversation(Request $request, string $conversationId): Response
+    public function messagesForConversation(User $loggedInUser, Request $request, string $conversationId): Response
     {
         $conversation = $this->conversationResource->getReference($conversationId);
 
         if (!$conversation instanceof Conversation) {
             throw new NotFoundHttpException('Conversation not found');
+        }
+
+        if (!$conversation->getParticipants()->contains($loggedInUser)) {
+            throw new AccessDeniedHttpException('You are not allowed to access this conversation');
         }
 
         $messages = $this->getResource()->find(

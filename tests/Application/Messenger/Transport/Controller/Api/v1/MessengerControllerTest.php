@@ -165,6 +165,22 @@ class MessengerControllerTest extends WebTestCase
         self::assertContains('Hello from tests', $texts);
     }
 
+    public function testMessageListRequiresParticipation(): void
+    {
+        $user = $this->getUser('john-user');
+        $admin = $this->getUser('john-admin');
+        $conversation = $this->createConversationForUsers([$user, $admin], 'Restricted conversation');
+
+        $client = $this->getTestClient('john-logged', 'password-logged');
+        $client->request(
+            method: 'GET',
+            uri: self::API_URL_PREFIX . '/v1/messenger/message/conversation/' . $conversation->getId(),
+        );
+
+        $response = $client->getResponse();
+        self::assertSame(Response::HTTP_FORBIDDEN, $response->getStatusCode());
+    }
+
     /**
      * @throws Throwable
      */
