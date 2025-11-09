@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\General\Infrastructure\Rest;
 
+use App\General\Domain\Entity\Interfaces\EntityInterface;
 use App\General\Domain\Rest\UuidHelper;
 use Closure;
 use Doctrine\ORM\Query\Expr\Composite;
@@ -11,6 +12,7 @@ use Doctrine\ORM\Query\Expr\Literal;
 use Doctrine\ORM\QueryBuilder;
 use InvalidArgumentException;
 use Ramsey\Uuid\Exception\InvalidUuidStringException;
+use Ramsey\Uuid\UuidInterface;
 use stdClass;
 
 use function array_combine;
@@ -20,6 +22,9 @@ use function array_walk;
 use function call_user_func_array;
 use function is_array;
 use function is_numeric;
+use function is_object;
+use function is_scalar;
+use function method_exists;
 use function str_contains;
 use function strcmp;
 use function strtolower;
@@ -271,11 +276,11 @@ class RepositoryHelper
     /**
      * Lambda function to create condition array for 'getExpression' method.
      *
-     * @param string|array<int, string> $value
+     * @param mixed $value
      *
-     * @return array{0: string, 1: string, 2: string|array<int, string>}
+     * @return array{0: string, 1: string, 2: mixed}
      */
-    private static function createCriteria(string $column, string | array $value): array
+    private static function createCriteria(string $column, mixed $value): array
     {
         if (!str_contains($column, '.')) {
             $column = 'entity.' . $column;
@@ -357,7 +362,7 @@ class RepositoryHelper
      */
     private static function getIterator(array &$condition): Closure
     {
-        return static function (string | array $value, string $column) use (&$condition): void {
+        return static function (mixed $value, string $column) use (&$condition): void {
             // If criteria contains 'and' OR 'or' key(s) assume that array in only in the right format
             if (strcmp($column, 'and') === 0 || strcmp($column, 'or') === 0) {
                 $condition[$column] = $value;
@@ -384,11 +389,22 @@ class RepositoryHelper
             $parameters = self::getParameters($queryBuilder, $lowercaseOperator, $parameters, $value);
         } else {
             $parameters[] = '?' . self::$parameterCount;
-            $queryBuilder->setParameter(
-                self::$parameterCount,
-                $comparison->value,
-                UuidHelper::getType((string)$comparison->value)
-            );
+            $value = $comparison->value;
+            $type = null;
+            $parameterValue = $value;
+
+            if ($value instanceof EntityInterface) {
+                $type = null;
+            } elseif ($value instanceof UuidInterface) {
+                $type = UuidHelper::getType($value->toString());
+            } elseif (is_scalar($value)) {
+                $type = UuidHelper::getType((string)$value);
+            } elseif (is_object($value) && method_exists($value, '__toString')) {
+                $parameterValue = (string)$value;
+                $type = UuidHelper::getType($parameterValue);
+            }
+
+            $queryBuilder->setParameter(self::$parameterCount, $parameterValue, $type);
         }
 
         return $parameters;
