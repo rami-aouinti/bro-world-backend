@@ -66,16 +66,10 @@ class MessageController extends Controller
     /**
      * @throws Throwable
      */
-    #[Route(path: '/conversation/{conversationId}', methods: [Request::METHOD_GET])]
+    #[Route(path: '/conversation/{conversation}', methods: [Request::METHOD_GET])]
     #[IsGranted(Role::LOGGED->value)]
-    public function messagesForConversation(User $loggedInUser, Request $request, string $conversationId): Response
+    public function messagesForConversation(User $loggedInUser, Request $request, Conversation $conversation): Response
     {
-        $conversation = $this->conversationResource->getReference($conversationId);
-
-        if (!$conversation instanceof Conversation) {
-            throw new NotFoundHttpException('Conversation not found');
-        }
-
         if (!$conversation->getParticipants()->contains($loggedInUser)) {
             throw new AccessDeniedHttpException('You are not allowed to access this conversation');
         }
