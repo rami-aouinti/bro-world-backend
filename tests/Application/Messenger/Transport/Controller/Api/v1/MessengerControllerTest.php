@@ -127,6 +127,44 @@ class MessengerControllerTest extends WebTestCase
     /**
      * @throws Throwable
      */
+    public function testConversationCreateDirect(): void
+    {
+        $user = $this->getUser('john-user');
+        $admin = $this->getUser('john-admin');
+
+        $client = $this->getTestClient('john-user', 'password-user');
+        $payload = [
+            'receiverId' => $admin->getId(),
+        ];
+
+        $client->request(
+            method: 'POST',
+            uri: self::API_URL_PREFIX . '/v1/messenger/conversation/direct',
+            server: $this->getJsonHeaders(),
+            content: JSON::encode($payload),
+        );
+
+        $response = $client->getResponse();
+        self::assertSame(Response::HTTP_CREATED, $response->getStatusCode());
+        $content = $response->getContent();
+        self::assertNotFalse($content);
+        $data = JSON::decode($content, true);
+        self::assertIsArray($data);
+        self::assertArrayHasKey('participants', $data);
+        self::assertCount(2, $data['participants']);
+
+        $participantIds = array_map(
+            static fn (array $participant): ?string => $participant['id'] ?? null,
+            $data['participants'],
+        );
+
+        self::assertContains($user->getId(), $participantIds);
+        self::assertContains($admin->getId(), $participantIds);
+    }
+
+    /**
+     * @throws Throwable
+     */
     public function testMessageCreateAndList(): void
     {
         $user = $this->getUser('john-user');
