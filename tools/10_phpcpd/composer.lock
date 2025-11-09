@@ -134,12 +134,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "d2e1583e5f89f53f7882861c1639c14c9a154585"
+                "reference": "19966d2f97bbc444bb176432754e33256a7d45bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/d2e1583e5f89f53f7882861c1639c14c9a154585",
-                "reference": "d2e1583e5f89f53f7882861c1639c14c9a154585",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/19966d2f97bbc444bb176432754e33256a7d45bf",
+                "reference": "19966d2f97bbc444bb176432754e33256a7d45bf",
                 "shasum": ""
             },
             "conflict": {
@@ -574,7 +574,7 @@
                 "maikuolan/phpmussel": ">=1,<1.6",
                 "mainwp/mainwp": "<=4.4.3.3",
                 "manogi/nova-tiptap": "<=3.2.6",
-                "mantisbt/mantisbt": "<=2.26.3",
+                "mantisbt/mantisbt": "<2.27.2",
                 "marcwillmann/turn": "<0.3.3",
                 "marshmallow/nova-tiptap": "<5.7",
                 "matomo/matomo": "<1.11",
@@ -662,7 +662,7 @@
                 "open-web-analytics/open-web-analytics": "<1.8.1",
                 "opencart/opencart": ">=0",
                 "openid/php-openid": "<2.3",
-                "openmage/magento-lts": "<20.12.3",
+                "openmage/magento-lts": "<20.16",
                 "opensolutions/vimbadmin": "<=3.0.15",
                 "opensource-workshop/connect-cms": "<1.8.7|>=2,<2.4.7",
                 "orchid/platform": ">=8,<14.43",
@@ -1117,7 +1117,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-10-30T18:07:16+00:00"
+            "time": "2025-11-03T21:05:38+00:00"
         },
         {
             "name": "sebastian/cli-parser",
@@ -1244,16 +1244,16 @@
         },
         {
             "name": "systemsdk/phpcpd",
-            "version": "v8.2.3",
+            "version": "v8.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/systemsdk/phpcpd.git",
-                "reference": "f285389e4eec538f3ea95d05be46eb096d63c837"
+                "reference": "3cb8396a3f958f3e805dc9b75ac1a8912cb5d086"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/systemsdk/phpcpd/zipball/f285389e4eec538f3ea95d05be46eb096d63c837",
-                "reference": "f285389e4eec538f3ea95d05be46eb096d63c837",
+                "url": "https://api.github.com/repos/systemsdk/phpcpd/zipball/3cb8396a3f958f3e805dc9b75ac1a8912cb5d086",
+                "reference": "3cb8396a3f958f3e805dc9b75ac1a8912cb5d086",
                 "shasum": ""
             },
             "require": {
@@ -1302,7 +1302,7 @@
                     "role": "lead"
                 },
                 {
-                    "name": "Dmitriy Kravtsov",
+                    "name": "Dmitry Kravtsov",
                     "email": "dmytro.kravtsov@systemsdk.com",
                     "homepage": "https://github.com/systemsdk",
                     "role": "Developer"
@@ -1318,9 +1318,9 @@
             ],
             "support": {
                 "issues": "https://github.com/systemsdk/phpcpd/issues",
-                "source": "https://github.com/systemsdk/phpcpd/tree/v8.2.3"
+                "source": "https://github.com/systemsdk/phpcpd/tree/v8.2.4"
             },
-            "time": "2025-05-25T16:26:17+00:00"
+            "time": "2025-11-08T13:11:51+00:00"
         }
     ],
     "aliases": [],

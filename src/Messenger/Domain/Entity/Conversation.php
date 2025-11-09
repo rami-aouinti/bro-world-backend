@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Override;
 use Ramsey\Uuid\Doctrine\UuidBinaryOrderedTimeType;
 use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Throwable;
 
 /**
@@ -35,19 +36,39 @@ class Conversation implements EntityInterface
         unique: true,
         nullable: false,
     )]
+    #[Groups([
+        'Conversation',
+        'Conversation.id'
+    ])]
     private UuidInterface $id;
 
     #[ORM\Column(type: 'string', nullable: true)]
+    #[Groups([
+        'Conversation',
+        'Conversation.title'
+    ])]
     private ?string $title = null;
 
     #[ORM\Column(type: 'boolean')]
+    #[Groups([
+        'Conversation',
+        'Conversation.isGroup'
+    ])]
     private bool $isGroup = false;
 
     #[ORM\ManyToMany(targetEntity: User::class)]
     #[ORM\JoinTable(name: 'conversation_participants')]
+    #[Groups([
+        'Conversation',
+        'Conversation.participants'
+    ])]
     private Collection $participants;
 
     #[ORM\OneToMany(mappedBy: 'conversation', targetEntity: Message::class, cascade: ['persist', 'remove'])]
+    #[Groups([
+        'Conversation',
+        'Conversation.messages'
+    ])]
     private Collection $messages;
 
     /**

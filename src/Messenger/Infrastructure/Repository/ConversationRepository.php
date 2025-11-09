@@ -8,6 +8,7 @@ use App\General\Infrastructure\Repository\BaseRepository;
 use App\Messenger\Domain\Entity\Conversation as Entity;
 use App\Messenger\Domain\Repository\Interfaces\ConversationRepositoryInterface;
 use App\User\Domain\Entity\User;
+use Doctrine\ORM\Exception\NotSupported;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -42,15 +43,18 @@ class ConversationRepository extends BaseRepository implements ConversationRepos
     ) {
     }
 
+    /**
+     * @throws NotSupported
+     */
     #[Override]
     public function findByParticipantId(User $user): array
     {
-        return $this->getEntityManager()
-            ->createQuery('
-            SELECT c FROM App\Messenger\Domain\Entity\Conversation c
-            WHERE :user MEMBER OF c.participants
-        ')
-            ->setParameter('user', $user)
-            ->getResult();
+        $qb = $this->createQueryBuilder('c')
+            ->select('DISTINCT c')
+            ->innerJoin('c.participants', 'p')
+            ->andWhere('p.id = :user')
+            ->setParameter('user', $user->getId(), 'uuid_binary_ordered_time');
+
+        return $qb->getQuery()->getResult();
     }
 }

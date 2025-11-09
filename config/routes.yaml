@@ -57,3 +57,12 @@ workplace-controllers:
     prefix: /api
     defaults:
         _format: json
+
+messenger-controllers:
+    resource:
+        path: ../src/Messenger/Transport/Controller/Api/
+        namespace: App\Messenger\Transport\Controller\Api
+    type: attribute
+    prefix: /api
+    defaults:
+        _format: json

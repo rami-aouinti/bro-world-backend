@@ -28,6 +28,7 @@ trait UserRelations
     #[Groups([
         'User',
         'User.profile',
+        'Conversation',
 
         User::SET_USER_PROFILE,
         User::SET_USER_BASIC,

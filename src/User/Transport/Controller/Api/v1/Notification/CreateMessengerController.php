@@ -50,10 +50,6 @@ readonly class CreateMessengerController
     {
         $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
-        $sender = $em->getRepository(User::class)->find($data['sender']);
-        if (!$sender) {
-            return new JsonResponse(['error' => 'Sender not found'], 404);
-        }
 
         $this->notificationService->createNotification(
             $request->headers->get('Authorization'),
@@ -64,7 +60,7 @@ readonly class CreateMessengerController
         );
         $message = new Message();
         $message->setConversation($conversation);
-        $message->setSender($sender);
+        $message->setSender($loggedInUser);
         $message->setText($data['text'] ?? null);
         $message->setMediaUrl($data['mediaUrl'] ?? null);
         $message->setMediaType($data['mediaType'] ?? null);
@@ -86,7 +82,7 @@ readonly class CreateMessengerController
             $status->setMessage($message);
             $status->setUser($participant);
             $status->setStatus(
-                $participant === $sender ? MessageStatusType::READ : MessageStatusType::DELIVERED
+                $participant === $loggedInUser ? MessageStatusType::READ : MessageStatusType::DELIVERED
             );
             $em->persist($status);
         }

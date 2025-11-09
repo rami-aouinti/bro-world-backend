@@ -85,6 +85,7 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
         'LogRequest.user',
         'Story',
         'UserGroup.users',
+        'Conversation',
 
         self::SET_USER_PROFILE,
         self::SET_USER_BASIC,
@@ -100,6 +101,7 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
     #[Groups([
         'User',
         'User.username',
+        'Conversation',
 
         self::SET_USER_PROFILE,
         self::SET_USER_BASIC,
@@ -121,6 +123,7 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
     #[Groups([
         'User',
         'User.firstName',
+        'Conversation',
 
         self::SET_USER_PROFILE,
         self::SET_USER_BASIC,
@@ -142,6 +145,7 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
     #[Groups([
         'User',
         'User.lastName',
+        'Conversation',
 
         self::SET_USER_PROFILE,
         self::SET_USER_BASIC,
@@ -163,6 +167,7 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
     #[Groups([
         'User',
         'User.email',
+        'Conversation',
 
         self::SET_USER_PROFILE,
         self::SET_USER_BASIC,
@@ -262,6 +267,7 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
     #[Groups([
         'User',
         'User.enabled',
+        'Conversation',
 
         self::SET_USER_PROFILE,
         self::SET_USER_BASIC,

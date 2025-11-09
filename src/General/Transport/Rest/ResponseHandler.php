@@ -121,7 +121,6 @@ class ResponseHandler implements ResponseHandlerInterface
         $context ??= $this->getSerializeContext($request, $restResource);
         $format = $this->getFormat($request, $format);
         $response = $this->getResponse($data, $httpStatus, $format, $context);
-        // Set content type
         $response->headers->set('Content-Type', $this->contentTypes[$format]);
 
         return $response;

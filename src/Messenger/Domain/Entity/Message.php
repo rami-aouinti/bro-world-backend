@@ -34,7 +34,7 @@ class Message implements EntityInterface
         unique: true,
         nullable: false,
     )]
-    #[Groups(['Message', 'Message.id'])]
+    #[Groups(['Message', 'Message.id', 'Conversation'])]
     private UuidInterface $id;
 
     #[ORM\ManyToOne(targetEntity: Conversation::class, inversedBy: 'messages')]
@@ -42,32 +42,32 @@ class Message implements EntityInterface
     private Conversation $conversation;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
-    #[Groups(['Message', 'Message.sender'])]
+    #[Groups(['Message', 'Message.sender', 'Conversation'])]
     private User $sender;
 
     #[ORM\Column(type: 'text', nullable: true)]
-    #[Groups(['Message', 'Message.text'])]
+    #[Groups(['Message', 'Message.text', 'Conversation'])]
     private ?string $text = null;
 
     #[ORM\Column(type: 'string', nullable: true)]
-    #[Groups(['Message', 'Message.mediaUrl'])]
+    #[Groups(['Message', 'Message.mediaUrl', 'Conversation'])]
     private ?string $mediaUrl = null;
 
     #[ORM\Column(type: 'string', nullable: true)]
-    #[Groups(['Message', 'Message.mediaType'])]
+    #[Groups(['Message', 'Message.mediaType', 'Conversation'])]
     private ?string $mediaType = null;
 
     #[ORM\Column(type: 'string', nullable: true)]
-    #[Groups(['Message', 'Message.attachmentUrl'])]
+    #[Groups(['Message', 'Message.attachmentUrl', 'Conversation'])]
     private ?string $attachmentUrl = null;
 
     #[ORM\Column(type: 'string', nullable: true)]
-    #[Groups(['Message', 'Message.attachmentType'])]
+    #[Groups(['Message', 'Message.attachmentType', 'Conversation'])]
     private ?string $attachmentType = null;
 
     #[ORM\ManyToOne(targetEntity: self::class)]
     #[ORM\JoinColumn(name: 'reply_to_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
-    #[Groups(['Message', 'Message.replyTo'])]
+    #[Groups(['Message', 'Message.replyTo', 'Conversation'])]
     private ?self $replyTo = null;
 
     /**
