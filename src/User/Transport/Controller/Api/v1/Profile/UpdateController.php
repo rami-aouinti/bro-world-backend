@@ -83,7 +83,7 @@ readonly class UpdateController
         }
 
         if(isset($file)) {
-            $mediaPath = $this->userService->uploadPhoto($file, $request);
+            $mediaPath = $this->userService->uploadPhoto($loggedInUser, $request);
             $profile->setPhoto($mediaPath);
         }
 
