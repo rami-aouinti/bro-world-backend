@@ -51,8 +51,8 @@ media-controllers:
 
 workplace-controllers:
     resource:
-        path: ../src/Workplace/Transport/Controller/Api/
-        namespace: App\Workplace\Transport\Controller\Api
+        path: ../src/Workplace/Transport/Controller/
+        namespace: App\Workplace\Transport\Controller
     type: attribute
     prefix: /api
     defaults:
