@@ -34,8 +34,12 @@ use Throwable;
 )]
 #[IsGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY)]
 #[OA\Tag(name: 'Workplace Management')]
-class WorkplaceController
+readonly class WorkplaceController
 {
+    public function __construct(
+        private WorkplaceResource $resource,
+    ) {
+    }
 
     /**
      * @throws Throwable
@@ -43,9 +47,9 @@ class WorkplaceController
     #[Route(path: '/', methods: [Request::METHOD_GET])]
     public function myWorkplaces(User $loggedInUser, Request $request): Response
     {
-        $workplaces = $this->getResource()->findForMember($loggedInUser);
+        $workplaces = $this->resource->findForMember($loggedInUser);
 
-        return $this->getResponseHandler()->createResponse($request, $workplaces, $this->getResource());
+        return $this->getResponseHandler()->createResponse($request, $workplaces, $this->resource);
     }
 
     /**
@@ -60,8 +64,8 @@ class WorkplaceController
     )]
     public function getWorkplaceBySlug(User $loggedInUser, Request $request, string $slug): Response
     {
-        $workplace = $this->getResource()->findOneForMemberBySlug($loggedInUser, $slug);
+        $workplace = $this->resource->findOneForMemberBySlug($loggedInUser, $slug);
 
-        return $this->getResponseHandler()->createResponse($request, $workplace, $this->getResource());
+        return $this->getResponseHandler()->createResponse($request, $workplace, $this->resource);
     }
 }
