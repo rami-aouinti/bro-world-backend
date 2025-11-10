@@ -17,6 +17,9 @@ use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Throwable;
 
+/**
+ * Class DeleteWorkplaceController
+ */
 #[AsController]
 #[OA\Tag(name: 'Workplace Frontend')]
 readonly class DeleteWorkplaceController

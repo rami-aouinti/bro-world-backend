@@ -23,6 +23,9 @@ use Throwable;
 use function array_filter;
 use function array_map;
 
+/**
+ * Class RemoveWorkplacePluginController
+ */
 #[AsController]
 #[OA\Tag(name: 'Workplace Frontend')]
 readonly class RemoveWorkplacePluginController
