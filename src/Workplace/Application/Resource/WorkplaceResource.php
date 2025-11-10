@@ -7,10 +7,14 @@ namespace App\Workplace\Application\Resource;
 use App\General\Application\DTO\Interfaces\RestDtoInterface;
 use App\General\Application\Rest\RestResource;
 use App\General\Domain\Entity\Interfaces\EntityInterface;
+use App\User\Domain\Entity\User;
 use App\Workplace\Application\DTO\Workplace\Workplace as WorkplaceDto;
 use App\Workplace\Domain\Entity\Workplace as Entity;
 use App\Workplace\Domain\Repository\Interfaces\WorkplaceRepositoryInterface as Repository;
+use Doctrine\ORM\Exception\NotSupported;
+use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * @package App\Workplace
@@ -56,6 +60,31 @@ class WorkplaceResource extends RestResource
     public function beforePatch(string &$id, RestDtoInterface $restDto, EntityInterface $entity): void
     {
         $this->synchronizeSlug($restDto, $entity);
+    }
+
+    /**
+     * @return array<int, Entity>
+     *
+     * @throws NotSupported
+     */
+    public function findForMember(User $user): array
+    {
+        return $this->getRepository()->findByMember($user);
+    }
+
+    /**
+     * @throws NotSupported
+     * @throws NonUniqueResultException
+     */
+    public function findOneForMemberBySlug(User $user, string $slug): Entity
+    {
+        $workplace = $this->getRepository()->findOneBySlugAndMember($user, $slug);
+
+        if ($workplace === null) {
+            throw new NotFoundHttpException('Workplace not found.');
+        }
+
+        return $workplace;
     }
 
     private function synchronizeSlug(RestDtoInterface $restDto, EntityInterface $entity): void
