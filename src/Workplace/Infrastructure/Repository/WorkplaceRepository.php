@@ -5,9 +5,14 @@ declare(strict_types=1);
 namespace App\Workplace\Infrastructure\Repository;
 
 use App\General\Infrastructure\Repository\BaseRepository;
+use App\User\Domain\Entity\User;
 use App\Workplace\Domain\Entity\Workplace as Entity;
 use App\Workplace\Domain\Repository\Interfaces\WorkplaceRepositoryInterface;
+use Doctrine\ORM\Exception\NotSupported;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
+
+use function assert;
 
 /**
  * @package App\Workplace
@@ -39,5 +44,41 @@ class WorkplaceRepository extends BaseRepository implements WorkplaceRepositoryI
     public function __construct(
         protected ManagerRegistry $managerRegistry,
     ) {
+    }
+
+    /**
+     * @return array<int, Entity>
+     *
+     * @throws NotSupported
+     */
+    public function findByMember(User $user): array
+    {
+        $qb = $this->createQueryBuilder('w')
+            ->select('DISTINCT w')
+            ->innerJoin('w.members', 'm')
+            ->andWhere('m.id = :user')
+            ->setParameter('user', $user->getId(), 'uuid_binary_ordered_time');
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @throws NotSupported
+     * @throws NonUniqueResultException
+     */
+    public function findOneBySlugAndMember(User $user, string $slug): ?Entity
+    {
+        $qb = $this->createQueryBuilder('w')
+            ->innerJoin('w.members', 'm')
+            ->andWhere('w.slug = :slug')
+            ->andWhere('m.id = :user')
+            ->setParameter('slug', $slug)
+            ->setParameter('user', $user->getId(), 'uuid_binary_ordered_time')
+            ->setMaxResults(1);
+
+        $result = $qb->getQuery()->getOneOrNullResult();
+        assert($result === null || $result instanceof Entity);
+
+        return $result;
     }
 }
