@@ -38,6 +38,7 @@ readonly class WorkplaceController
 {
     public function __construct(
         private WorkplaceResource $resource,
+        private ResponseHandler $responseHandler,
     ) {
     }
 
@@ -49,7 +50,7 @@ readonly class WorkplaceController
     {
         $workplaces = $this->resource->findForMember($loggedInUser);
 
-        return $this->getResponseHandler()->createResponse($request, $workplaces, $this->resource);
+        return $this->responseHandler->createResponse($request, $workplaces, $this->resource);
     }
 
     /**
@@ -66,6 +67,6 @@ readonly class WorkplaceController
     {
         $workplace = $this->resource->findOneForMemberBySlug($loggedInUser, $slug);
 
-        return $this->getResponseHandler()->createResponse($request, $workplace, $this->resource);
+        return $this->responseHandler->createResponse($request, $workplace, $this->resource);
     }
 }
