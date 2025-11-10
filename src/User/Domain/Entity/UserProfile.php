@@ -75,6 +75,7 @@ class UserProfile
         'Profile.photo','User',
         'User.photo',
         'Conversation',
+        'Message',
 
         User::SET_USER_PROFILE,
         User::SET_USER_BASIC,

@@ -29,6 +29,7 @@ trait UserRelations
         'User',
         'User.profile',
         'Conversation',
+        'Message',
 
         User::SET_USER_PROFILE,
         User::SET_USER_BASIC,

@@ -86,6 +86,7 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
         'Story',
         'UserGroup.users',
         'Conversation',
+        'Message',
 
         self::SET_USER_PROFILE,
         self::SET_USER_BASIC,
@@ -102,6 +103,7 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
         'User',
         'User.username',
         'Conversation',
+        'Message',
 
         self::SET_USER_PROFILE,
         self::SET_USER_BASIC,
@@ -124,6 +126,7 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
         'User',
         'User.firstName',
         'Conversation',
+        'Message',
 
         self::SET_USER_PROFILE,
         self::SET_USER_BASIC,
@@ -146,6 +149,7 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
         'User',
         'User.lastName',
         'Conversation',
+        'Message',
 
         self::SET_USER_PROFILE,
         self::SET_USER_BASIC,
