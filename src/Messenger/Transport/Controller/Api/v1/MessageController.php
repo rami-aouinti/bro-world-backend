@@ -11,7 +11,9 @@ use App\Messenger\Application\DTO\Message\Message as MessageDto;
 use App\Messenger\Application\Resource\ConversationResource;
 use App\Messenger\Application\Resource\MessageResource;
 use App\Messenger\Domain\Entity\Conversation;
+use App\Messenger\Domain\Repository\Interfaces\MessageRepositoryInterface;
 use App\Role\Domain\Enum\Role;
+use App\User\Application\Resource\UserResource;
 use App\User\Domain\Entity\User;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Request;
@@ -58,6 +60,7 @@ class MessageController extends Controller
 
     public function __construct(
         MessageResource $resource,
+        private readonly MessageRepositoryInterface $messageRepository,
         private readonly ConversationResource $conversationResource,
     ) {
         parent::__construct($resource);
@@ -74,10 +77,7 @@ class MessageController extends Controller
             throw new AccessDeniedHttpException('You are not allowed to access this conversation');
         }
 
-        $messages = $this->getResource()->find(
-            criteria: ['conversation' => $conversation],
-            orderBy: ['createdAt' => 'ASC'],
-        );
+        $messages = $this->messageRepository->findBy(['conversation' => $conversation]);
 
         return $this->getResponseHandler()->createResponse($request, $messages, $this->getResource());
     }
