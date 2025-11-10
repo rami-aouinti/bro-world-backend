@@ -11,11 +11,14 @@ use App\Messenger\Application\DTO\Message\Message as MessageDto;
 use App\Messenger\Application\Resource\ConversationResource;
 use App\Messenger\Application\Resource\MessageResource;
 use App\Messenger\Domain\Entity\Conversation;
+use App\Messenger\Domain\Enum\MessageStatusType;
 use App\Messenger\Domain\Repository\Interfaces\MessageRepositoryInterface;
+use App\Messenger\Domain\Repository\Interfaces\MessageStatusRepositoryInterface;
 use App\Role\Domain\Enum\Role;
 use App\User\Application\Resource\UserResource;
 use App\User\Domain\Entity\User;
 use OpenApi\Attributes as OA;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -61,6 +64,7 @@ class MessageController extends Controller
     public function __construct(
         MessageResource $resource,
         private readonly MessageRepositoryInterface $messageRepository,
+        private readonly MessageStatusRepositoryInterface $messageStatusRepository,
         private readonly ConversationResource $conversationResource,
     ) {
         parent::__construct($resource);
@@ -80,5 +84,28 @@ class MessageController extends Controller
         $messages = $this->messageRepository->findBy(['conversation' => $conversation]);
 
         return $this->getResponseHandler()->createResponse($request, $messages, $this->getResource());
+    }
+
+    /**
+     * @throws Throwable
+     */
+    #[Route(path: '/conversation/{conversation}/read', methods: [Request::METHOD_POST])]
+    #[IsGranted(Role::LOGGED->value)]
+    public function messagesForConversationMarkRead(User $loggedInUser, Request $request, Conversation $conversation): Response
+    {
+        if (!$conversation->getParticipants()->contains($loggedInUser)) {
+            throw new AccessDeniedHttpException('You are not allowed to access this conversation');
+        }
+
+        $messages = $this->messageRepository->findBy(['conversation' => $conversation]);
+
+        foreach ($messages as $message) {
+            $messageStatus = $this->messageStatusRepository->findOneBy(['message' => $message, 'user' => $loggedInUser]);
+            if ($messageStatus) {
+                $messageStatus->setStatus(MessageStatusType::READ);
+            }
+        }
+
+        return new JsonResponse(['success' => true], Response::HTTP_OK);
     }
 }
