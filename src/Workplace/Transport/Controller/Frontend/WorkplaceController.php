@@ -40,7 +40,7 @@ class WorkplaceController
     /**
      * @throws Throwable
      */
-    #[Route(path: '/my', methods: [Request::METHOD_GET])]
+    #[Route(path: '/', methods: [Request::METHOD_GET])]
     public function myWorkplaces(User $loggedInUser, Request $request): Response
     {
         $workplaces = $this->getResource()->findForMember($loggedInUser);
