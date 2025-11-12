@@ -35,7 +35,7 @@ final readonly class ResetPasswordController
      * @throws NotSupported
      * @throws Throwable
      */
-    #[Route('/api/auth/reset-password', name: 'api_auth_reset_password', methods: ['POST'])]
+    #[Route('/v1/auth/reset-password', name: 'api_auth_reset_password', methods: ['POST'])]
     public function __invoke(
         #[MapRequestPayload] array $payload
     ): JsonResponse {
