@@ -4,16 +4,19 @@ emails:
   registration:
     subject: "Email Verification"
     title: "Email Address Verification"
+    preheader: "Confirm your email address to activate your account."
     greeting: "Welcome, %name%!"
     intro: "Thank you for signing up on our website. To activate your account, please click the button below:"
     action: "Verify My Email Address"
+    alternative: "If the button above does not work, copy and paste this link into your browser:"
     ignore: "If you did not request this registration, you can safely ignore this email."
   activation:
     subject: "Email Verification Code"
     title: "Email Address Verification"
+    preheader: "Your one-time verification code is inside."
     greeting: "Welcome, %name%!"
     intro: "Thank you for signing up on our website."
-    instructions: "To verify your email address, please copy the code below and paste it into the verification form on our site:"
+    instructions: "To verify your email address, please copy the code below and paste it into the verification form on our site."
     ignore: "If you did not request this registration, you can safely ignore this email."
   password_reset:
     subject: "Forgot Password"
