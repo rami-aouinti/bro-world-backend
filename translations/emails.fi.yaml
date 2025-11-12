@@ -4,16 +4,19 @@ emails:
   registration:
     subject: "Sähköpostiosoitteen vahvistus"
     title: "Sähköpostiosoitteen vahvistus"
+    preheader: "Vahvista sähköpostiosoitteesi aktivoidaksesi tilin."
     greeting: "Tervetuloa, %name%!"
     intro: "Kiitos rekisteröitymisestä sivustollemme. Aktivoi tilisi napsauttamalla alla olevaa painiketta:"
     action: "Vahvista sähköpostiosoite"
+    alternative: "Jos painike ei toimi, kopioi ja liitä tämä linkki selaimeesi:"
     ignore: "Jos et pyytänyt rekisteröitymistä, voit huoletta jättää tämän viestin huomiotta."
   activation:
     subject: "Sähköpostin vahvistuskoodi"
     title: "Sähköpostiosoitteen vahvistus"
+    preheader: "Kertakäyttöinen vahvistuskoodisi löytyy tästä viestistä."
     greeting: "Tervetuloa, %name%!"
     intro: "Kiitos rekisteröitymisestä sivustollemme."
-    instructions: "Vahvista sähköpostiosoitteesi kopioimalla alla oleva koodi ja liittämällä se vahvistuslomakkeeseen sivustollamme:"
+    instructions: "Vahvista sähköpostiosoitteesi kopioimalla alla oleva koodi ja liittämällä se vahvistuslomakkeeseen sivustollamme."
     ignore: "Jos et pyytänyt rekisteröitymistä, voit huoletta jättää tämän viestin huomiotta."
   password_reset:
     subject: "Salasanan palautus"

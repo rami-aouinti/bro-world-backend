@@ -7,54 +7,175 @@
     <title>{{ 'emails.registration.title'|trans({}, 'emails', emailLocale) }}</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
             margin: 0;
             padding: 0;
+            background-color: #f5f7fa;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: #243447;
         }
-        .container {
-            max-width: 600px;
-            margin: 30px auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+
+        a {
+            color: inherit;
+        }
+
+        .preheader {
+            display: none;
+            visibility: hidden;
+            opacity: 0;
+            mso-hide: all;
+            font-size: 1px;
+            line-height: 1px;
+            max-height: 0;
+            max-width: 0;
+            overflow: hidden;
+        }
+
+        table {
+            border-spacing: 0;
+            border-collapse: collapse;
+        }
+
+        .wrapper {
+            width: 100%;
+            background-color: #f5f7fa;
+            padding: 24px 0;
+        }
+
+        .main {
+            width: 100%;
+            max-width: 620px;
+            background-color: #ffffff;
+            margin: 0 auto;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 18px 35px rgba(10, 22, 70, 0.08);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0056b3 0%, #3197ff 100%);
+            padding: 32px 32px 24px;
             text-align: center;
+            color: #ffffff;
         }
-        h1 {
-            color: #333;
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
         }
-        p {
+
+        .content {
+            padding: 32px 32px 16px;
+            text-align: left;
+        }
+
+        .content h2 {
+            margin-top: 0;
+            font-size: 20px;
+            font-weight: 600;
+            color: #0f2741;
+        }
+
+        .lead {
             font-size: 16px;
-            color: #555;
+            line-height: 1.6;
+            margin: 16px 0 24px;
         }
+
+        .cta {
+            text-align: center;
+            margin: 0 0 24px;
+        }
+
         .btn {
             display: inline-block;
-            margin-top: 20px;
-            padding: 12px 20px;
+            padding: 14px 28px;
             font-size: 16px;
-            color: #fff;
-            background: #007bff;
+            font-weight: 600;
+            color: #ffffff !important;
             text-decoration: none;
-            border-radius: 5px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #0056b3 0%, #3197ff 100%);
+            box-shadow: 0 10px 20px rgba(0, 86, 179, 0.25);
         }
+
         .btn:hover {
-            background: #0056b3;
+            filter: brightness(1.05);
         }
+
+        .helper-text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #516273;
+            word-break: break-word;
+        }
+
+        .helper-text a {
+            color: #0b6efd;
+        }
+
         .footer {
-            margin-top: 20px;
+            padding: 24px 32px 32px;
+            background-color: #f0f4f8;
+            text-align: center;
+        }
+
+        .footer p {
+            margin: 8px 0;
             font-size: 12px;
-            color: #777;
+            color: #6b7a8c;
+            line-height: 1.5;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .wrapper {
+                padding: 16px 0;
+            }
+
+            .content {
+                padding: 24px 20px 12px;
+            }
+
+            .footer {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>{{ 'emails.registration.greeting'|trans({'%name%': user.firstName}, 'emails', emailLocale) }}</h1>
-    <p>{{ 'emails.registration.intro'|trans({}, 'emails', emailLocale) }}</p>
-    <a href="{{ verification_url }}" class="btn text-light">{{ 'emails.registration.action'|trans({}, 'emails', emailLocale) }}</a>
-    <p>{{ 'emails.registration.ignore'|trans({}, 'emails', emailLocale) }}</p>
-    <p class="footer">{{ 'emails.common.automated_notice'|trans({}, 'emails', emailLocale) }}</p>
-</div>
+<span class="preheader">{{ 'emails.registration.preheader'|trans({}, 'emails', emailLocale) }}</span>
+<table class="wrapper" role="presentation" width="100%">
+    <tr>
+        <td align="center">
+            <table class="main" role="presentation" width="100%">
+                <tr>
+                    <td class="header">
+                        <h1>{{ 'emails.registration.title'|trans({}, 'emails', emailLocale) }}</h1>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="content">
+                        <h2>{{ 'emails.registration.greeting'|trans({'%name%': user.firstName}, 'emails', emailLocale) }}</h2>
+                        <p class="lead">{{ 'emails.registration.intro'|trans({}, 'emails', emailLocale) }}</p>
+                        <div class="cta">
+                            <a href="{{ verification_url }}" class="btn">{{ 'emails.registration.action'|trans({}, 'emails', emailLocale) }}</a>
+                        </div>
+                        <p class="helper-text">
+                            {{ 'emails.registration.alternative'|trans({}, 'emails', emailLocale) }}<br>
+                            <a href="{{ verification_url }}">{{ verification_url }}</a>
+                        </p>
+                        <p class="helper-text">{{ 'emails.registration.ignore'|trans({}, 'emails', emailLocale) }}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="footer">
+                        <p>{{ 'emails.common.automated_notice'|trans({}, 'emails', emailLocale) }}</p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
 </body>
 </html>
