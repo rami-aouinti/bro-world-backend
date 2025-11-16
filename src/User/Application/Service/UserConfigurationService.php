@@ -33,6 +33,7 @@ final class UserConfigurationService
 
         $payload = [
             'configurationKey' => 'theme',
+            'userId' => $user->getId(),
             'configurationValue' => [
                 'drawer' => true,
                 'theme-primary' => '#23F80356',
@@ -43,6 +44,28 @@ final class UserConfigurationService
             'workplaceId' => $this->defaultWorkplaceId,
             'flags' => ['USER'],
         ];
+
+        $payloadNotification = [
+            'configurationKey' => 'notification',
+            'userId' => $user->getId(),
+            'configurationValue' => [
+                'email.notification' => true,
+                'push.notification' => true,
+                'newsletter.notification' => true,
+            ],
+            'contextKey' => 'user',
+            'contextId' => $user->getId(),
+            'workplaceId' => $this->defaultWorkplaceId,
+            'flags' => ['USER'],
+        ];
+
+        $this->proxyService->request(
+            Request::METHOD_POST,
+            self::PATH,
+            $token,
+            $payloadNotification,
+            self::CREATE_CONFIGURATION_PATH
+        );
 
         $this->proxyService->request(
             Request::METHOD_POST,
