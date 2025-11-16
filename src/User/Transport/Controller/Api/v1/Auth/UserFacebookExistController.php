@@ -85,7 +85,9 @@ readonly class UserFacebookExistController
             $this->bus->dispatch(new UserCreatedMessage(
                 $user->getId(),
                 $request->request->all(),
-                $request->headers->get('Accept-Language', 'en')));
+                $request->headers->get('Accept-Language', 'en'),
+                $request->headers->get('Authorization')
+            ));
         } else {
             $user->setFacebookId($facebook);
             $this->entityManager->persist($user);

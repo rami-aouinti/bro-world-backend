@@ -10,6 +10,8 @@ parameters:
     logo_directory: '%kernel.project_dir%/public/uploads/logo'
     api_media_base_url: '%env(API_MEDIA_BASE_URL)%'
     api_notification_base_url: '%env(API_NOTIFICATION_BASE_URL)%'
+    api_configuration_base_url: '%env(API_CONFIGURATION_BASE_URL)%'
+    default_workplace_id: '%env(DEFAULT_WORKPLACE_ID)%'
     env(MONGODB_URI): ''
     env(MONGODB_DB): ''
 
@@ -159,6 +161,10 @@ services:
         arguments:
             $apiMediaBaseUrl: '%api_media_base_url%'
             $apiNotificationBaseUrl: '%api_notification_base_url%'
+            $apiConfigurationBaseUrl: '%api_configuration_base_url%'
+    App\User\Application\Service\UserConfigurationService:
+        arguments:
+            $defaultWorkplaceId: '%default_workplace_id%'
 
     App\Media\Application\Storage\MediaStorageInterface: '@App\Media\Infrastructure\Storage\AzureBlobStorage'
     App\Media\Domain\Repository\Interfaces\FolderRepositoryInterface: '@App\Media\Infrastructure\Repository\FolderRepository'

@@ -68,7 +68,8 @@ readonly class UserService
                 new UserCreatedMessage(
                     $user->getId(),
                     $request->request->all(),
-                    $request->headers->get('Accept-Language', 'en')
+                    $request->headers->get('Accept-Language', 'en'),
+                    $request->headers->get('Authorization')
                 )
             );
         } else {
