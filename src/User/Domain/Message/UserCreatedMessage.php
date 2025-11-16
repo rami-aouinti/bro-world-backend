@@ -17,7 +17,8 @@ readonly class UserCreatedMessage implements MessageHighInterface
     public function __construct(
         private string $userId,
         private array $userData,
-        private string $language
+        private string $language,
+        private ?string $token
     ) {
     }
 
@@ -34,5 +35,10 @@ readonly class UserCreatedMessage implements MessageHighInterface
     public function getLanguage(): string
     {
         return $this->language;
+    }
+
+    public function getToken(): ?string
+    {
+        return $this->token;
     }
 }

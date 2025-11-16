@@ -8,11 +8,13 @@ use App\User\Application\Service\Interfaces\UserElasticsearchServiceInterface;
 use App\User\Application\Service\Interfaces\UserRegistrationMailerInterface;
 use App\User\Application\Service\UserCacheService;
 use App\User\Application\Service\UserService;
+use App\User\Domain\Event\UserConfigurationEvent;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Message\UserCreatedMessage;
 use Doctrine\ORM\NonUniqueResultException;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 
 /**
@@ -27,7 +29,8 @@ readonly class UserCreatedHandlerMessage
         private UserService $userService,
         private UserCacheService $userCacheService,
         private UserElasticsearchServiceInterface $userElasticsearchService,
-        private UserRegistrationMailerInterface $registrationMailer
+        private UserRegistrationMailerInterface $registrationMailer,
+        private EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -49,6 +52,7 @@ readonly class UserCreatedHandlerMessage
             $message->getUserData(),
             $message->getLanguage()
         );
+        $this->eventDispatcher->dispatch(new UserConfigurationEvent($user, $message->getToken()));
         $this->generateEmail($user);
         $this->indexUser($user);
         $this->clearCache();

@@ -26,10 +26,12 @@ readonly class ApiProxyService implements ApiProxyServiceInterface
         private HttpClientInterface $httpClient,
         string $apiMediaBaseUrl,
         string $apiNotificationBaseUrl,
+        string $apiConfigurationBaseUrl,
     ) {
         $this->baseUrls = [
             'media'         => $apiMediaBaseUrl,
-            'notification'         => $apiNotificationBaseUrl,
+            'notification' => $apiNotificationBaseUrl,
+            'configuration' => $apiConfigurationBaseUrl,
         ];
     }
 
