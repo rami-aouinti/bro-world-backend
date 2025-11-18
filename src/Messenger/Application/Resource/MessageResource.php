@@ -8,6 +8,7 @@ use App\General\Application\DTO\Interfaces\RestDtoInterface;
 use App\General\Application\Rest\RestResource;
 use App\General\Domain\Entity\Interfaces\EntityInterface;
 use App\Messenger\Application\DTO\Message\Message as MessageDto;
+use App\Messenger\Application\Service\Interfaces\ConversationMessageCacheServiceInterface;
 use App\Messenger\Domain\Entity\Message as Entity;
 use App\Messenger\Domain\Repository\Interfaces\MessageDocumentRepositoryInterface;
 use App\Messenger\Domain\Repository\Interfaces\MessageRepositoryInterface as Repository;
@@ -40,6 +41,7 @@ class MessageResource extends RestResource
         Repository $repository,
         private readonly MessageDocumentRepositoryInterface $messageDocumentRepository,
         private readonly DocumentManager $documentManager,
+        private readonly ConversationMessageCacheServiceInterface $conversationMessageCacheService,
     ) {
         parent::__construct($repository);
 
@@ -65,6 +67,7 @@ class MessageResource extends RestResource
         }
 
         $this->messageDocumentRepository->save($document);
+        $this->conversationMessageCacheService->invalidateConversation($entity->getConversation());
     }
 
     #[Override]
@@ -79,5 +82,7 @@ class MessageResource extends RestResource
         if ($document instanceof MessageDocument) {
             $this->messageDocumentRepository->remove($document);
         }
+
+        $this->conversationMessageCacheService->invalidateConversation($entity->getConversation());
     }
 }

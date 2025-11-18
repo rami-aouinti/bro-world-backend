@@ -8,12 +8,11 @@ use App\General\Transport\Rest\Controller;
 use App\General\Transport\Rest\ResponseHandler;
 use App\General\Transport\Rest\Traits\Actions;
 use App\Messenger\Application\DTO\Message\Message as MessageDto;
-use App\Messenger\Application\Resource\ConversationResource;
+use App\Messenger\Application\Message\MarkConversationAsRead;
+use App\Messenger\Application\Service\Interfaces\ConversationMessageCacheServiceInterface;
 use App\Messenger\Application\Resource\MessageResource;
 use App\Messenger\Domain\Entity\Conversation;
-use App\Messenger\Domain\Enum\MessageStatusType;
 use App\Messenger\Domain\Repository\Interfaces\MessageRepositoryInterface;
-use App\Messenger\Domain\Repository\Interfaces\MessageStatusRepositoryInterface;
 use App\Role\Domain\Enum\Role;
 use App\User\Application\Resource\UserResource;
 use App\User\Domain\Entity\User;
@@ -23,10 +22,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Throwable;
 
 /**
@@ -64,8 +63,8 @@ class MessageController extends Controller
     public function __construct(
         MessageResource $resource,
         private readonly MessageRepositoryInterface $messageRepository,
-        private readonly MessageStatusRepositoryInterface $messageStatusRepository,
-        private readonly ConversationResource $conversationResource,
+        private readonly ConversationMessageCacheServiceInterface $conversationMessageCacheService,
+        private readonly MessageBusInterface $messageBus,
     ) {
         parent::__construct($resource);
     }
@@ -81,9 +80,15 @@ class MessageController extends Controller
             throw new AccessDeniedHttpException('You are not allowed to access this conversation');
         }
 
-        $messages = $this->messageRepository->findBy(['conversation' => $conversation]);
+        $dataProvider = fn (): array => $this->messageRepository->findBy(['conversation' => $conversation]);
 
-        return $this->getResponseHandler()->createResponse($request, $messages, $this->getResource());
+        return $this->conversationMessageCacheService->createResponse(
+            $request,
+            $conversation,
+            $dataProvider,
+            $this->getResource(),
+            $this->getResponseHandler(),
+        );
     }
 
     /**
@@ -91,21 +96,17 @@ class MessageController extends Controller
      */
     #[Route(path: '/conversation/{conversation}/read', methods: [Request::METHOD_POST])]
     #[IsGranted(Role::LOGGED->value)]
-    public function messagesForConversationMarkRead(User $loggedInUser, Request $request, Conversation $conversation): Response
+    public function messagesForConversationMarkRead(User $loggedInUser, Conversation $conversation): Response
     {
         if (!$conversation->getParticipants()->contains($loggedInUser)) {
             throw new AccessDeniedHttpException('You are not allowed to access this conversation');
         }
 
-        $messages = $this->messageRepository->findBy(['conversation' => $conversation]);
+        $this->messageBus->dispatch(new MarkConversationAsRead(
+            $conversation->getId(),
+            $loggedInUser->getId(),
+        ));
 
-        foreach ($messages as $message) {
-            $messageStatus = $this->messageStatusRepository->findOneBy(['message' => $message, 'user' => $loggedInUser]);
-            if ($messageStatus) {
-                $messageStatus->setStatus(MessageStatusType::READ);
-            }
-        }
-
-        return new JsonResponse(['success' => true], Response::HTTP_OK);
+        return new JsonResponse(['success' => true], Response::HTTP_ACCEPTED);
     }
 }
