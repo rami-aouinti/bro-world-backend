@@ -63,6 +63,47 @@ readonly class ApiProxyService implements ApiProxyServiceInterface
         $this->httpClient->request($method, $this->baseUrls[$type] . $path, array_filter($options));
     }
 
+    /**
+     * @param string      $type
+     * @param string|null $token
+     * @param string      $path
+     * @param array       $query
+     *
+     * @throws TransportExceptionInterface
+     * @throws JsonException
+     */
+    public function get(string $type, ?string $token, string $path, array $query = []): array
+    {
+        if (!isset($this->baseUrls[$type])) {
+            throw new InvalidArgumentException("Failed : {$type}");
+        }
+
+        $options = [
+            'headers' => array_filter([
+                'Content-Type' => 'application/json',
+                'Authorization' => $token,
+            ]),
+            'query' => !empty($query) ? $query : null,
+        ];
+
+        $response = $this->httpClient->request(
+            Request::METHOD_GET,
+            $this->baseUrls[$type] . $path,
+            array_filter($options)
+        );
+
+        $content = $response->getContent(false);
+
+        if ($content === '') {
+            return [];
+        }
+
+        /** @var array $data */
+        $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+
+        return $data;
+    }
+
     public function requestFile(string $method, string $type, Request $request, array $body = [], string $path = ''): array
     {
         if (!isset($this->baseUrls[$type])) {
