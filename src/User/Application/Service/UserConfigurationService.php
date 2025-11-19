@@ -10,9 +10,6 @@ use JsonException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
-use function array_key_exists;
-use function is_array;
-
 final class UserConfigurationService
 {
     private const string PATH = 'configuration';
@@ -76,49 +73,6 @@ final class UserConfigurationService
             $token,
             $payload,
             self::CREATE_CONFIGURATION_PATH
-        );
-    }
-
-    /**
-     * @throws JsonException
-     * @throws TransportExceptionInterface
-     */
-    public function getUserSettings(User $user, ?string $token): array
-    {
-        if ($token === null) {
-            return [];
-        }
-
-        $response = $this->proxyService->get(
-            self::PATH,
-            $token,
-            self::CREATE_CONFIGURATION_PATH,
-            [
-                'contextId' => $user->getId()->toString(),
-            ]
-        );
-
-        return array_map(
-            static function (array $item): array {
-                $value = $item['configurationValue'] ?? null;
-
-                if (is_array($value) && array_key_exists('_value', $value)) {
-                    $value = $value['_value'];
-                }
-
-                return [
-                    'id' => $item['id'] ?? null,
-                    'userId' => $item['userId'] ?? null,
-                    'configurationKey' => $item['configurationKey'] ?? null,
-                    'configurationValue' => $value,
-                    'context' => [
-                        'key' => $item['contextKey'] ?? null,
-                        'id' => $item['contextId'] ?? null,
-                    ],
-                    'flags' => $item['flags'] ?? [],
-                ];
-            },
-            $response
         );
     }
 }
