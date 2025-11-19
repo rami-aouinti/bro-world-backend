@@ -72,6 +72,12 @@ class Event implements EntityInterface
     #[Groups(['Event', 'Event.isPrivate'])]
     private bool $isPrivate;
 
+    #[ORM\Column(name: 'four_hour_reminder_sent', type: 'boolean', options: ['default' => false])]
+    private bool $fourHourReminderSent = false;
+
+    #[ORM\Column(name: 'fifteen_minute_reminder_sent', type: 'boolean', options: ['default' => false])]
+    private bool $fifteenMinuteReminderSent = false;
+
     /**
      * @throws Throwable
      */
@@ -200,6 +206,28 @@ class Event implements EntityInterface
     public function setIsPrivate(bool $isPrivate): void
     {
         $this->isPrivate = $isPrivate;
+        $this->touch();
+    }
+
+    public function isFourHourReminderSent(): bool
+    {
+        return $this->fourHourReminderSent;
+    }
+
+    public function markFourHourReminderSent(): void
+    {
+        $this->fourHourReminderSent = true;
+        $this->touch();
+    }
+
+    public function isFifteenMinuteReminderSent(): bool
+    {
+        return $this->fifteenMinuteReminderSent;
+    }
+
+    public function markFifteenMinuteReminderSent(): void
+    {
+        $this->fifteenMinuteReminderSent = true;
         $this->touch();
     }
 

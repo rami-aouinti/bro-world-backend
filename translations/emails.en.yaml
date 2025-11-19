@@ -31,6 +31,26 @@ emails:
     title: "Contact"
     greeting: "Hello, Admin!"
     message_from: "This is an email from %name% (%email%)."
+  event_reminder:
+    title: "Event Reminder"
+    greeting: "Hello, %name%!"
+    intro: "Here's a reminder for your event \"%event%\" scheduled for today."
+    window:
+      four_hours: "This reminder is sent 4 hours before the event starts."
+      fifteen_minutes: "This reminder is sent 15 minutes before the event starts."
+    details:
+      start: "Start time:"
+      location: "Location:"
+    closing: "See you soon!"
+    subject:
+      four_hours: "Your event \"%event%\" starts in 4 hours"
+      fifteen_minutes: "Your event \"%event%\" starts in 15 minutes"
+  birthday:
+    title: "Happy Birthday!"
+    subject: "Happy Birthday from Bro World!"
+    greeting: "Dear %name%,"
+    message: "The entire Bro World team wishes you a wonderful birthday."
+    closing: "Enjoy your day!"
   error:
     title: "Error notification"
     intro: "Hello,"

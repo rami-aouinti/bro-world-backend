@@ -172,4 +172,6 @@ After above command you will be inside symfony container and for display list of
 ./bin/console logs:cleanup                          # Command to cleanup logs(log_login, log_request) in the database (runs by cron every day at 00-00)
 ./bin/console messenger:messages-cleanup            # Command to cleanup messenger_messages table (runs by cron every day at 00-00)
 ./bin/console elastic:create-or-update-template     # Command in order to create/update index template in Elastic
+./bin/console event:send-reminders                  # Check today's events and send reminder emails (4h & 15 min before start)
+./bin/console user:send-birthday-greetings          # Send a Happy Birthday email to users celebrating today
 ```

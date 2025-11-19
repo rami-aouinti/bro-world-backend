@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\User\Domain\Repository\Interfaces;
 
 use App\User\Domain\Entity\User as Entity;
+use DateTimeImmutable;
 use Doctrine\ORM\NonUniqueResultException;
 
 /**
@@ -59,4 +60,9 @@ interface UserRepositoryInterface
      * @throws NonUniqueResultException
      */
     public function generateUsername(string $email): string;
+
+    /**
+     * @return array<int, Entity>
+     */
+    public function findUsersWithBirthdayOnDate(DateTimeImmutable $date): array;
 }
