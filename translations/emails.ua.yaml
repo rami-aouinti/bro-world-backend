@@ -31,6 +31,26 @@ emails:
     title: "Контакт"
     greeting: "Вітаємо, адміністраторе!"
     message_from: "Цей лист від %name% (%email%)."
+  event_reminder:
+    title: "Нагадування про подію"
+    greeting: "Привіт, %name%!"
+    intro: "Нагадуємо про подію \"%event%\", заплановану на сьогодні."
+    window:
+      four_hours: "Це нагадування надіслано за 4 години до початку події."
+      fifteen_minutes: "Це нагадування надіслано за 15 хвилин до початку події."
+    details:
+      start: "Час початку:"
+      location: "Місце проведення:"
+    closing: "До зустрічі!"
+    subject:
+      four_hours: "Подія \"%event%\" почнеться через 4 години"
+      fifteen_minutes: "Подія \"%event%\" почнеться через 15 хвилин"
+  birthday:
+    title: "З Днем народження!"
+    subject: "Вітання з Днем народження від Bro World!"
+    greeting: "Дорогий(а) %name%,"
+    message: "Команда Bro World бажає вам чудового свята."
+    closing: "Насолоджуйтеся цим днем!"
   error:
     title: "Сповіщення про помилку"
     intro: "Вітаємо,"

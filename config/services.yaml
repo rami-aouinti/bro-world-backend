@@ -37,6 +37,7 @@ services:
             $azureBlobContainer: '%env(AZURE_BLOB_CONTAINER)%'
             $azureBlobSasToken: '%env(AZURE_BLOB_SAS_TOKEN)%'
             $azureBlobApiVersion: '%env(default:2022-11-02:AZURE_BLOB_VERSION)%'
+            $defaultSenderEmail: '%env(resolve:APP_SENDER_EMAIL)%'
     _instanceof:
         App\General\Application\Rest\Interfaces\RestResourceInterface:
             tags: [ 'app.rest.resource', 'app.stopwatch' ]
@@ -165,6 +166,8 @@ services:
     App\User\Application\Service\UserConfigurationService:
         arguments:
             $defaultWorkplaceId: '%default_workplace_id%'
+
+    App\User\Application\Service\Interfaces\UserNotificationMailerInterface: '@App\User\Application\Service\UserNotificationMailer'
 
     App\Media\Application\Storage\MediaStorageInterface: '@App\Media\Infrastructure\Storage\AzureBlobStorage'
     App\Media\Domain\Repository\Interfaces\FolderRepositoryInterface: '@App\Media\Infrastructure\Repository\FolderRepository'

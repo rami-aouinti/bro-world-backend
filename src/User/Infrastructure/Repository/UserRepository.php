@@ -122,6 +122,27 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
+     * @return array<int, Entity>
+     */
+    public function findUsersWithBirthdayOnDate(DateTimeImmutable $date): array
+    {
+        $month = (int)$date->format('m');
+        $day = (int)$date->format('d');
+
+        return $this
+            ->createQueryBuilder('user')
+            ->innerJoin('user.profile', 'profile')
+            ->addSelect('profile')
+            ->where('profile.birthday IS NOT NULL')
+            ->andWhere('MONTH(profile.birthday) = :month')
+            ->andWhere('DAY(profile.birthday) = :day')
+            ->setParameter('month', $month)
+            ->setParameter('day', $day)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * @param string $column Column to check
      * @param string $value Value of specified column
      * @param string|null $id User id to ignore

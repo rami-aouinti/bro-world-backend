@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+{% set emailLocale = locale|default('en') %}
+<html lang="{{ emailLocale }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ 'emails.event_reminder.title'|trans({}, 'emails', emailLocale) }}</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: #243447;
+        }
+
+        .wrapper {
+            width: 100%;
+            background-color: #f5f7fa;
+            padding: 24px 0;
+        }
+
+        .main {
+            width: 100%;
+            max-width: 620px;
+            background-color: #ffffff;
+            margin: 0 auto;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 18px 35px rgba(10, 22, 70, 0.08);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0f9d58 0%, #34a853 100%);
+            padding: 32px;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .content {
+            padding: 32px;
+        }
+
+        .content h2 {
+            margin-top: 0;
+            font-size: 20px;
+        }
+
+        .lead {
+            font-size: 16px;
+            line-height: 1.6;
+            margin: 12px 0;
+        }
+
+        .details {
+            background: #f0f4f8;
+            border-radius: 12px;
+            padding: 16px;
+            list-style: none;
+        }
+
+        .details li {
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        .footer {
+            padding: 24px 32px;
+            background-color: #f0f4f8;
+            text-align: center;
+            font-size: 12px;
+            color: #6b7a8c;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .content {
+                padding: 24px;
+            }
+
+            .header {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+<table class="wrapper" role="presentation" width="100%">
+    <tr>
+        <td align="center">
+            <table class="main" role="presentation" width="100%">
+                <tr>
+                    <td class="header">
+                        <h1>{{ 'emails.event_reminder.title'|trans({}, 'emails', emailLocale) }}</h1>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="content">
+                        <h2>{{ 'emails.event_reminder.greeting'|trans({'%name%': user.firstName}, 'emails', emailLocale) }}</h2>
+                        <p class="lead">{{ 'emails.event_reminder.intro'|trans({'%event%': event.title}, 'emails', emailLocale) }}</p>
+                        <p class="lead">{{ ('emails.event_reminder.window.' ~ reminder_window)|trans({}, 'emails', emailLocale) }}</p>
+                        <ul class="details">
+                            <li><strong>{{ 'emails.event_reminder.details.start'|trans({}, 'emails', emailLocale) }}</strong> {{ event.start|date('Y-m-d H:i') }}</li>
+                            {% if event.location %}
+                                <li><strong>{{ 'emails.event_reminder.details.location'|trans({}, 'emails', emailLocale) }}</strong> {{ event.location }}</li>
+                            {% endif %}
+                        </ul>
+                        <p class="lead">{{ 'emails.event_reminder.closing'|trans({}, 'emails', emailLocale) }}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="footer">
+                        <p>{{ 'emails.common.automated_notice'|trans({}, 'emails', emailLocale) }}</p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

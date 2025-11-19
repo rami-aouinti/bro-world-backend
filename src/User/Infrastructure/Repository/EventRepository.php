@@ -7,6 +7,7 @@ namespace App\User\Infrastructure\Repository;
 use App\General\Infrastructure\Repository\BaseRepository;
 use App\User\Domain\Entity\Event as Entity;
 use App\User\Domain\Repository\Interfaces\EventRepositoryInterface;
+use DateTimeImmutable;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -34,5 +35,20 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
     public function __construct(
         protected ManagerRegistry $managerRegistry,
     ) {
+    }
+
+    /**
+     * @return array<int, Entity>
+     */
+    public function findEventsWithinPeriod(DateTimeImmutable $from, DateTimeImmutable $to): array
+    {
+        return $this
+            ->createQueryBuilder('event')
+            ->where('event.start >= :from')
+            ->andWhere('event.start < :to')
+            ->setParameter('from', $from)
+            ->setParameter('to', $to)
+            ->getQuery()
+            ->getResult();
     }
 }
