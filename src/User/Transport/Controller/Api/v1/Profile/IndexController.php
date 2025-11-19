@@ -6,7 +6,6 @@ namespace App\User\Transport\Controller\Api\v1\Profile;
 
 use App\General\Domain\Utils\JSON;
 use App\Role\Application\Security\Interfaces\RolesServiceInterface;
-use App\User\Application\Service\UserConfigurationService;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Repository\Interfaces\FollowRepositoryInterface;
 use App\User\Infrastructure\Repository\UserRepository;
@@ -28,7 +27,6 @@ use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * @package App\User
@@ -42,16 +40,14 @@ class IndexController
         private readonly RolesServiceInterface $rolesService,
         private readonly CacheInterface $userCache,
         private readonly UserRepository $userRepository,
-        private readonly FollowRepositoryInterface $followRepository,
-        private readonly UserConfigurationService $configurationService,
+        private readonly FollowRepositoryInterface $followRepository
     ) {
     }
 
     /**
      * Get current user profile data, accessible only for 'IS_AUTHENTICATED_FULLY' users.
      *
-     * @param Request $request
-     * @param User    $loggedInUser
+     * @param User $loggedInUser
      *
      * @throws InvalidArgumentException
      * @throws JsonException
@@ -105,7 +101,7 @@ class IndexController
             ],
         ),
     )]
-    public function __invoke(Request $request, User $loggedInUser): JsonResponse
+    public function __invoke(User $loggedInUser): JsonResponse
     {
         $user = $this->getFormattedUser($loggedInUser);
         $output = JSON::decode(
@@ -121,14 +117,6 @@ class IndexController
         /** @var array<int, string> $roles */
         $roles = $user['roles'];
         $output['roles'] = $this->rolesService->getInheritedRoles($roles);
-
-        $token = $request->headers->get('Authorization');
-
-        try {
-            $output['settings'] = $this->configurationService->getUserSettings($loggedInUser, $token);
-        } catch (JsonException | TransportExceptionInterface) {
-            $output['settings'] = [];
-        }
 
         return new JsonResponse($output);
     }
